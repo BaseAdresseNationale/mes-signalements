@@ -1,4 +1,4 @@
-import { getExistingLocationLabel } from "../../hooks/useSignalement";
+import { getExistingLocationLabel } from "../../../hooks/useSignalement";
 import { StyledForm } from "../signalement.styles";
 
 interface SignalementNumeroDeleteFormProps {
@@ -26,26 +26,29 @@ export default function SignalementNumeroDeleteForm({
       </section>
       <section>
         <div className="form-row">
-          <label className="label-fr" htmlFor="comment">
-            Raisons de la suppression*
-          </label>
-          <textarea
-            name="comment"
-            onChange={(event) =>
-              onEditSignalement(
-                "changesRequested",
-                "comment"
-              )(event.target.value)
-            }
-            required
-          />
+          <div className="fr-input-group">
+            <label className="fr-label" htmlFor="comment">
+              Raisons de la suppression*
+            </label>
+            <textarea
+              className="fr-input"
+              name="comment"
+              onChange={(event) =>
+                onEditSignalement(
+                  "changesRequested",
+                  "comment"
+                )(event.target.value)
+              }
+              required
+            />
+          </div>
         </div>
       </section>
       <div className="form-controls">
-        <button className="btn-fr" style={{ color: "white" }} type="submit">
+        <button className="fr-btn" style={{ color: "white" }} type="submit">
           Envoyer le signalement
         </button>
-        <button className="btn-fr" type="button" onClick={onClose}>
+        <button className="fr-btn" type="button" onClick={onClose}>
           Annuler
         </button>
       </div>

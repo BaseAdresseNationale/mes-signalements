@@ -6,7 +6,14 @@ import {
   ExistingVoie,
   Position,
   Signalement,
-} from "../lib/signalement";
+} from "../api/signalement";
+import {
+  BANPlateformeResultTypeEnum,
+  IBANPlateformeLieuDit,
+  IBANPlateformeNumero,
+  IBANPlateformeResult,
+  IBANPlateformeVoie,
+} from "../api/ban-plateforme/types";
 
 export const positionTypeOptions = [
   { value: "entrée", label: "Entrée", color: "green" },
@@ -20,25 +27,17 @@ export const positionTypeOptions = [
   { value: "inconnue", label: "Inconnu", color: "white" },
 ];
 
-export const isSignalementAvailable = (address: any) => {
-  return (
-    address?.type === "voie" ||
-    address?.type === "lieu-dit" ||
-    address?.type === "numero"
-  );
-};
-
 export const getPositionTypeLabel = (positionType: Position.type) => {
   return positionTypeOptions.find(({ value }) => value === positionType)?.label;
 };
 
 export function getExistingLocationType(type: string) {
   switch (type) {
-    case "voie":
+    case BANPlateformeResultTypeEnum.VOIE:
       return ExistingLocation.type.VOIE;
-    case "lieu-dit":
+    case BANPlateformeResultTypeEnum.LIEU_DIT:
       return ExistingLocation.type.TOPONYME;
-    case "numero":
+    case BANPlateformeResultTypeEnum.NUMERO:
       return ExistingLocation.type.NUMERO;
     default:
       throw new Error(
@@ -47,19 +46,21 @@ export function getExistingLocationType(type: string) {
   }
 }
 
-export function getExistingLocationLabel(address: any) {
+export function getExistingLocationLabel(address: IBANPlateformeResult) {
   switch (address.type) {
-    case "voie":
-      return address.nomVoie;
-    case "lieu-dit":
-      return address.nomVoie;
-    case "numero":
-      return `${address.numero} ${address.suffixe || ""} ${
-        address.voie.nomVoie
-      }`;
+    case BANPlateformeResultTypeEnum.VOIE:
+      return (address as IBANPlateformeVoie).nomVoie;
+    case BANPlateformeResultTypeEnum.LIEU_DIT:
+      return (address as IBANPlateformeLieuDit).nomVoie;
+    case BANPlateformeResultTypeEnum.NUMERO:
+      return `${(address as IBANPlateformeNumero).numero} ${
+        (address as IBANPlateformeNumero).suffixe || ""
+      } ${(address as IBANPlateformeNumero).voie.nomVoie}`;
     default:
       throw new Error(
-        `Impossible de créer un signalement pour le type : ${address.type}`
+        `Impossible de créer un signalement pour le type : ${
+          (address as IBANPlateformeResult).type
+        }`
       );
   }
 }
@@ -115,7 +116,7 @@ export const getInitialSignalement = (
   address: any,
   signalementType?: Signalement.type
 ): Signalement | null => {
-  if (!address || !isSignalementAvailable(address)) {
+  if (!address) {
     return null;
   }
 
@@ -220,7 +221,6 @@ export function useSignalement(address: any) {
     createSignalement,
     deleteSignalement,
     signalement,
-    isSignalementAvailable: isSignalementAvailable(address),
     onEditSignalement,
     isEditParcellesMode,
     setIsEditParcellesMode,

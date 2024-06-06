@@ -1,12 +1,22 @@
-import { positionTypeOptions } from "../hooks/useSignalement";
+import { positionTypeOptions } from "../../hooks/useSignalement";
 import styled from "styled-components";
-import { Point, Position } from "../lib/signalement";
-import SelectInput from "./common/SelectInput";
+import { Point, Position } from "../../api/signalement";
+import SelectInput from "../common/SelectInput";
 
 const StyledContainer = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
+
+  > button {
+    margin-top: 30px;
+    align-self: center;
+  }
+
+  > .position-input {
+    max-width: 100px;
+    margin-left: 5px;
+  }
 `;
 
 interface PositionInputProps {
@@ -41,23 +51,15 @@ export default function PositionInput({
           })
         }
       />
-      <input
-        className="fr-input"
-        disabled
-        style={{ width: 90, padding: 5, marginLeft: 10, marginRight: 10 }}
-        value={point.coordinates[0]}
-      />
-      <input
-        className="fr-input"
-        disabled
-        style={{ width: 90, padding: 5 }}
-        value={point.coordinates[1]}
-      />
-      <button
-        type="button"
-        onClick={onDelete}
-        style={{ marginTop: 5, marginLeft: 5 }}
-      >
+      <div className="fr-input-group position-input">
+        <label className="fr-label">Longitude</label>
+        <input className="fr-input" disabled value={point.coordinates[0]} />
+      </div>
+      <div className="fr-input-group position-input">
+        <label className="fr-label">Latitude</label>
+        <input className="fr-input" disabled value={point.coordinates[1]} />
+      </div>
+      <button type="button" onClick={onDelete}>
         <span className="icon">X</span>
       </button>
     </StyledContainer>

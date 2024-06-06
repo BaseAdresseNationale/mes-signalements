@@ -3,9 +3,13 @@ import { StyledForm } from "./signalement.styles";
 import {
   getExistingLocationLabel,
   getPositionTypeLabel,
-} from "../hooks/useSignalement";
-import { Position, Signalement, SignalementsService } from "../lib/signalement";
-import Modal from "./common/Modal";
+} from "../../hooks/useSignalement";
+import {
+  Position,
+  Signalement,
+  SignalementsService,
+} from "../../api/signalement";
+import Modal from "../common/Modal";
 
 interface SignalementRecapModalProps {
   signalement: Signalement;
@@ -123,29 +127,32 @@ export default function SignalementRecapModal({
             merci de renseigner vos coordonnées.
           </p>
           <div className="form-row">
-            <label className="fr-label" htmlFor="lastName">
-              Nom
-            </label>
-            <input
-              name="lastName"
-              className="fr-input"
-              value={signalement.author?.lastName || ""}
-              onChange={(event) =>
-                onEditSignalement("author", "lastName")(event.target.value)
-              }
-            />
-
-            <label className="fr-label" htmlFor="firstName">
-              Prénom
-            </label>
-            <input
-              name="firstName"
-              className="fr-input"
-              value={signalement.author?.firstName || ""}
-              onChange={(event) =>
-                onEditSignalement("author", "firstName")(event.target.value)
-              }
-            />
+            <div className="fr-input-group">
+              <label className="fr-label" htmlFor="lastName">
+                Nom
+              </label>
+              <input
+                name="lastName"
+                className="fr-input"
+                value={signalement.author?.lastName || ""}
+                onChange={(event) =>
+                  onEditSignalement("author", "lastName")(event.target.value)
+                }
+              />
+            </div>
+            <div className="fr-input-group">
+              <label className="fr-label" htmlFor="firstName">
+                Prénom
+              </label>
+              <input
+                name="firstName"
+                className="fr-input"
+                value={signalement.author?.firstName || ""}
+                onChange={(event) =>
+                  onEditSignalement("author", "firstName")(event.target.value)
+                }
+              />
+            </div>
           </div>
 
           <label className="fr-label" htmlFor="email">
@@ -153,6 +160,7 @@ export default function SignalementRecapModal({
           </label>
           <input
             name="email"
+            className="fr-input"
             required={true}
             type="email"
             value={signalement.author?.email || ""}

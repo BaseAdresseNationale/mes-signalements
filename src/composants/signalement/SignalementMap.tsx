@@ -1,9 +1,9 @@
 import { useCallback, useMemo } from "react";
 import { Marker, Layer, Source, useMap } from "react-map-gl/maplibre";
-import { positionTypeOptions } from "../hooks/useSignalement";
-import { useCadastre, parcelleHoveredLayer } from "../hooks/useCadastre";
-import { cadastreLayers } from "./map/layers";
-import { Position, Signalement } from "../lib/signalement";
+import { positionTypeOptions } from "../../hooks/useSignalement";
+import { useCadastre, parcelleHoveredLayer } from "../../hooks/useCadastre";
+import { Position, Signalement } from "../../api/signalement";
+import { cadastreLayers } from "../map/layers";
 
 interface SignalementMapProps {
   signalement: Signalement;

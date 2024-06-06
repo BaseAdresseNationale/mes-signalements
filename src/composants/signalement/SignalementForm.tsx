@@ -1,16 +1,12 @@
 import { useState } from "react";
-
-import { getExistingLocationLabel } from "../hooks/useSignalement";
-import { StyledForm } from "./signalement.styles";
 import SignalementToponymeForm from "./signalement-toponyme/SignalementToponymeForm";
 import SignalementNumeroForm from "./signalement-numero/SignalementNumeroForm";
 import RecapModal from "./RecapModal";
 import SignalementNumeroDeleteForm from "./signalement-numero/SignalementNumeroDeleteForm";
-import { Signalement } from "../lib/signalement";
+import { Signalement } from "../../api/signalement";
 
 interface SignalementFormProps {
   signalement: Signalement;
-  createSignalement: (type: Signalement.type) => void;
   onEditSignalement: any;
   onClose: any;
   address: any;
@@ -20,7 +16,6 @@ interface SignalementFormProps {
 
 export default function SignalementForm({
   signalement,
-  createSignalement,
   onEditSignalement,
   onClose,
   address,
@@ -44,63 +39,6 @@ export default function SignalementForm({
 
   return (
     <>
-      {!signalement && (
-        <StyledForm>
-          <button className="close-btn" type="button" onClick={onClose}>
-            X
-          </button>
-          <section>
-            <h4>Signalement</h4>
-            <h5>Lieu concerné</h5>
-            <div className="form-row">{getExistingLocationLabel(address)}</div>
-            <div className="form-row">
-              {address.codePostal} {address.commune.nom}
-            </div>
-            <br />
-            <div className="form-row">
-              <button
-                type="button"
-                style={{ color: "white", marginBottom: 10 }}
-                onClick={() =>
-                  createSignalement(Signalement.type.LOCATION_TO_UPDATE)
-                }
-              >
-                Demander une modification
-              </button>
-            </div>
-            <div className="form-row">
-              {address.type === "numero" && (
-                <button
-                  type="button"
-                  style={{ color: "white", marginBottom: 10 }}
-                  onClick={() =>
-                    createSignalement(Signalement.type.LOCATION_TO_DELETE)
-                  }
-                >
-                  Demander la suppression
-                </button>
-              )}
-            </div>
-          </section>
-          {address.type === "voie" && (
-            <section>
-              <h5>Adresse non référencée</h5>
-              <div className="form-row">
-                <button
-                  type="button"
-                  style={{ color: "white", marginBottom: 10 }}
-                  onClick={() =>
-                    createSignalement(Signalement.type.LOCATION_TO_CREATE)
-                  }
-                >
-                  Signaler un numéro manquant
-                </button>
-              </div>
-            </section>
-          )}
-        </StyledForm>
-      )}
-
       {signalement?.type === Signalement.type.LOCATION_TO_UPDATE &&
         (address.type === "voie" || address.type === "lieu-dit") && (
           <SignalementToponymeForm

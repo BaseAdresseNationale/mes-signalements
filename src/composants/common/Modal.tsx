@@ -1,3 +1,4 @@
+import ReactDOM from "react-dom";
 import styled from "styled-components";
 
 const StyledContainer = styled.div`
@@ -57,7 +58,9 @@ interface ModalProps {
 }
 
 function Modal({ title, children, onClose }: ModalProps) {
-  return (
+  const rootElement = document.getElementById("root");
+
+  return ReactDOM.createPortal(
     <StyledContainer>
       <div className="modal">
         <div className="header">
@@ -68,7 +71,8 @@ function Modal({ title, children, onClose }: ModalProps) {
         </div>
         {children}
       </div>
-    </StyledContainer>
+    </StyledContainer>,
+    rootElement as HTMLElement
   );
 }
 

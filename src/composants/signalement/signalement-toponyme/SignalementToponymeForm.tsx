@@ -1,6 +1,6 @@
 import { StyledForm } from "../signalement.styles";
-import { getExistingLocationLabel } from "../../hooks/useSignalement";
-import { Signalement } from "../../lib/signalement";
+import { getExistingLocationLabel } from "../../../hooks/useSignalement";
+import { Signalement } from "../../../api/signalement";
 
 interface SignalementToponymeFormProps {
   signalement: Signalement;
@@ -30,15 +30,21 @@ export default function SignalementToponymeForm({
       <section>
         <h5>Modifications demandées</h5>
         <div className="form-row">
-          <input
-            required
-            type="text"
-            className="fr-input"
-            value={nom as string}
-            onChange={(event) =>
-              onEditSignalement("changesRequested", "nom")(event.target.value)
-            }
-          />
+          <div className="fr-input-group">
+            <label className="fr-label" htmlFor="nom">
+              Nom
+            </label>
+            <input
+              name="nom"
+              required
+              type="text"
+              className="fr-input"
+              value={nom as string}
+              onChange={(event) =>
+                onEditSignalement("changesRequested", "nom")(event.target.value)
+              }
+            />
+          </div>
         </div>
         {/* <h6>Positions :</h6>
         {positions.map(({position, positionType}, index) => (

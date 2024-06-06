@@ -1,11 +1,11 @@
 import { useMemo } from "react";
 import { StyledForm } from "../signalement.styles";
-import PositionInput from "../PositionInput";
+import PositionInput from "../../common/PositionInput";
 import {
   getExistingLocationLabel,
   getInitialSignalement,
-} from "../../hooks/useSignalement";
-import { Position, Signalement } from "../../lib/signalement";
+} from "../../../hooks/useSignalement";
+import { Position, Signalement } from "../../../api/signalement";
 
 interface SignalementNumeroFormProps {
   signalement: Signalement;
@@ -66,37 +66,43 @@ export default function SignalementNumeroForm({
             : "Modifications demandées"}
         </h5>
         <div className="form-row">
-          <label className="fr-label" htmlFor="numero">
-            Numéro*
-          </label>
-          <input
-            name="numero"
-            required
-            min={1}
-            max={9998}
-            type="number"
-            value={numero as number}
-            onChange={(event) =>
-              onEditSignalement(
-                "changesRequested",
-                "numero"
-              )(event.target.value)
-            }
-          />
-          <label className="fr-label" htmlFor="suffixe">
-            Suffixe
-          </label>
-          <input
-            name="suffixe"
-            value={suffixe as string}
-            placeholder={"bis, ter..."}
-            onChange={(event) =>
-              onEditSignalement(
-                "changesRequested",
-                "suffixe"
-              )(event.target.value)
-            }
-          />
+          <div className="fr-input-group">
+            <label className="fr-label" htmlFor="numero">
+              Numéro*
+            </label>
+            <input
+              className="fr-input"
+              name="numero"
+              required
+              min={1}
+              max={9998}
+              type="number"
+              value={numero as number}
+              onChange={(event) =>
+                onEditSignalement(
+                  "changesRequested",
+                  "numero"
+                )(event.target.value)
+              }
+            />
+          </div>
+          <div className="fr-input-group">
+            <label className="fr-label" htmlFor="suffixe">
+              Suffixe
+            </label>
+            <input
+              name="suffixe"
+              className="fr-input"
+              value={suffixe as string}
+              placeholder={"bis, ter..."}
+              onChange={(event) =>
+                onEditSignalement(
+                  "changesRequested",
+                  "suffixe"
+                )(event.target.value)
+              }
+            />
+          </div>
         </div>
         <h6>Positions :</h6>
         <legend>
@@ -123,7 +129,7 @@ export default function SignalementNumeroForm({
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           <button
             type="button"
-            className="btn-fr"
+            className="fr-btn"
             style={{ color: "white", marginBottom: 10 }}
             onClick={() =>
               onEditSignalement(
@@ -149,7 +155,7 @@ export default function SignalementNumeroForm({
         </div>
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           <button
-            className="btn-fr"
+            className="fr-btn"
             type="button"
             style={{ color: "white", marginBottom: 10 }}
             onClick={() => setIsEditParcellesMode(!isEditParcellesMode)}
@@ -160,33 +166,36 @@ export default function SignalementNumeroForm({
           </button>
         </div>
         <div className="form-row">
-          <label className="fr-label" htmlFor="nomVoie">
-            Nom de la voie*
-          </label>
-          <input
-            name="nomVoie"
-            required
-            disabled={isCreation}
-            value={nomVoie as string}
-            onChange={(event) =>
-              onEditSignalement(
-                "changesRequested",
-                "nomVoie"
-              )(event.target.value)
-            }
-          />
+          <div className="fr-input-group">
+            <label className="fr-label" htmlFor="nomVoie">
+              Nom de la voie*
+            </label>
+            <input
+              className="fr-input"
+              name="nomVoie"
+              required
+              disabled={isCreation}
+              value={nomVoie as string}
+              onChange={(event) =>
+                onEditSignalement(
+                  "changesRequested",
+                  "nomVoie"
+                )(event.target.value)
+              }
+            />
+          </div>
         </div>
       </section>
       <div className="form-controls">
         <button
-          className="btn-fr"
+          className="fr-btn"
           disabled={isSubmitDisabled}
           style={{ color: "white" }}
           type="submit"
         >
           Envoyer le signalement
         </button>
-        <button className="btn-fr" type="button" onClick={onClose}>
+        <button className="fr-btn" type="button" onClick={onClose}>
           Annuler
         </button>
       </div>
