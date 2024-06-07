@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { StyledForm } from "./signalement.styles";
 import {
   getExistingLocationLabel,
@@ -155,20 +156,32 @@ export default function SignalementRecapModal({
             </div>
           </div>
 
-          <label className="fr-label" htmlFor="email">
-            Email*
-          </label>
-          <input
-            name="email"
-            className="fr-input"
-            required={true}
-            type="email"
-            value={signalement.author?.email || ""}
-            onChange={(event) =>
-              onEditSignalement("author", "email")(event.target.value)
-            }
-          />
+          <div className="fr-input-group">
+            <label className="fr-label" htmlFor="email">
+              Email*
+            </label>
+            <input
+              name="email"
+              className="fr-input"
+              required={true}
+              type="email"
+              value={signalement.author?.email || ""}
+              onChange={(event) =>
+                onEditSignalement("author", "email")(event.target.value)
+              }
+            />
+          </div>
+
+          <div className="captcha-wrapper">
+            <HCaptcha
+              sitekey={process.env.REACT_APP_HCAPTCHA_SITE_KEY || ""}
+              onVerify={(token) =>
+                onEditSignalement("author", "captchaToken")(token)
+              }
+            />
+          </div>
         </section>
+
         {submitStatus === "success" && (
           <div className="fr-alert fr-alert--success">
             <p>Votre signalement a bien été envoyée.</p>

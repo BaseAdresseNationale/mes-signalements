@@ -1,10 +1,10 @@
-import styled from 'styled-components'
+import styled from "styled-components";
 
 export const SignalementTypeWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`
+`;
 
 export const StyledForm = styled.form`
   position: relative;
@@ -81,6 +81,12 @@ export const StyledForm = styled.form`
     }
   }
 
+  .captcha-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 1em;
+  }
+
   h6 {
     margin: 1em 0 0 0;
   }
@@ -88,4 +94,4 @@ export const StyledForm = styled.form`
   legend {
     font-style: italic;
   }
-`
+`;
