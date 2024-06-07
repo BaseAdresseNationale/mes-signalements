@@ -1,13 +1,20 @@
 import { useCallback, useMemo } from "react";
-import { Marker, Layer, Source, useMap } from "react-map-gl/maplibre";
-import { positionTypeOptions } from "../../hooks/useSignalement";
+import { Layer, Source, useMap } from "react-map-gl/maplibre";
 import { useCadastre, parcelleHoveredLayer } from "../../hooks/useCadastre";
 import { Position, Signalement } from "../../api/signalement";
-import { cadastreLayers } from "../map/layers";
+import { cadastreLayers } from "./layers";
+import {
+  getSignalementPositionColor,
+  positionTypeOptions,
+} from "../../utils/signalement.utils";
+import { Marker } from "./Marker";
 
 interface SignalementMapProps {
   signalement: Signalement;
-  onEditSignalement: (property: string, key: string) => (value: any) => void;
+  onEditSignalement: (
+    property: keyof Signalement,
+    key: string
+  ) => (value: any) => void;
   isEditParcellesMode: boolean;
 }
 
@@ -57,16 +64,6 @@ function SignalementMap({
     [signalementLabel]
   );
 
-  const getSignalementPositionColor = useCallback(
-    (positionType: Position.type) => {
-      return (
-        positionTypeOptions.find(({ value }) => value === positionType)
-          ?.color || "white"
-      );
-    },
-    []
-  );
-
   return (
     <>
       <Source
@@ -93,33 +90,12 @@ function SignalementMap({
       </Source>
       {positions?.map(({ point, type }, index) => (
         <Marker
-          key={index} // eslint-disable-line react/no-array-index-key
-          longitude={point.coordinates[0]}
-          latitude={point.coordinates[1]}
-          anchor="bottom"
-          draggable
+          key={index}
+          label={getSignalementPositionLabel(type)}
+          coordinates={point.coordinates as [number, number]}
+          color={getSignalementPositionColor(type)}
           onDragEnd={onMarkerDragEnd(index)}
-        >
-          <label
-            className="map-pin-label"
-            style={{ color: getSignalementPositionColor(type) }}
-          >
-            {getSignalementPositionLabel(type)}
-          </label>
-          {/* <style jsx>{`
-            .map-pin-label {
-              position: absolute;
-              top: -20px;
-              white-space: nowrap;
-              transform: translateX(calc(-50% + 10px));
-            }
-          `}</style> */}
-          <span
-            className="fr-icon-map-pin-2-line"
-            aria-hidden="true"
-            style={{ color: getSignalementPositionColor(type) }}
-          />
-        </Marker>
+        />
       ))}
     </>
   );

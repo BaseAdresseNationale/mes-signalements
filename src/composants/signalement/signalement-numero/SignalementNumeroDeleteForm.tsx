@@ -1,4 +1,4 @@
-import { getExistingLocationLabel } from "../../../hooks/useSignalement";
+import { getExistingLocationLabel } from "../../../utils/signalement.utils";
 import { StyledForm } from "../signalement.styles";
 
 interface SignalementNumeroDeleteFormProps {

@@ -1,11 +1,17 @@
-import { IBANPlateformeVoie } from "../../api/ban-plateforme/types";
-import { getExistingLocationLabel } from "../../hooks/useSignalement";
+import {
+  IBANPlateformeResult,
+  IBANPlateformeVoie,
+} from "../../api/ban-plateforme/types";
 import { Signalement } from "../../api/signalement";
+import { getExistingLocationLabel } from "../../utils/signalement.utils";
 import { Card } from "../common/Card";
 
 interface VoieCardProps {
   adresse: IBANPlateformeVoie;
-  createSignalement: (type: Signalement.type) => void;
+  createSignalement: (
+    type: Signalement.type,
+    adresse: IBANPlateformeResult
+  ) => void;
 }
 
 export function VoieCard({ adresse, createSignalement }: VoieCardProps) {
@@ -31,7 +37,9 @@ export function VoieCard({ adresse, createSignalement }: VoieCardProps) {
       <button
         type="button"
         className="fr-btn"
-        onClick={() => createSignalement(Signalement.type.LOCATION_TO_UPDATE)}
+        onClick={() =>
+          createSignalement(Signalement.type.LOCATION_TO_UPDATE, adresse)
+        }
       >
         Demander une modification
       </button>
@@ -39,7 +47,9 @@ export function VoieCard({ adresse, createSignalement }: VoieCardProps) {
       <button
         type="button"
         className="fr-btn"
-        onClick={() => createSignalement(Signalement.type.LOCATION_TO_CREATE)}
+        onClick={() =>
+          createSignalement(Signalement.type.LOCATION_TO_CREATE, adresse)
+        }
       >
         Signaler un numéro manquant
       </button>

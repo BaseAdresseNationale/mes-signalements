@@ -1,6 +1,6 @@
 import { StyledForm } from "../signalement.styles";
-import { getExistingLocationLabel } from "../../../hooks/useSignalement";
 import { Signalement } from "../../../api/signalement";
+import { getExistingLocationLabel } from "../../../utils/signalement.utils";
 
 interface SignalementToponymeFormProps {
   signalement: Signalement;
@@ -65,7 +65,7 @@ export default function SignalementToponymeForm({
           <Button
             type='button'
             style={{color: 'white', marginBottom: 10}}
-            onClick={() => onEditSignalement('changesRequested', 'positions')([...positions, {position: {type: 'Point', coordinates: initialPositionCoords}, positionType: 'entrée'}])}
+            onClick={() => onEditSignalement('changesRequested', 'positions')([...positions, {position: {type: 'Point', coordinates: blurPosition(initialPositionCoords)}, positionType: 'entrée'}])}
           >
             Ajouter une position
           </Button>

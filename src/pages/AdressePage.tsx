@@ -1,4 +1,4 @@
-import { useLoaderData, useNavigation } from "react-router-dom";
+import { useLoaderData } from "react-router-dom";
 import {
   IBANPlateformeNumero,
   IBANPlateformeResult,
@@ -7,20 +7,19 @@ import {
   IBANPlateformeLieuDit,
 } from "../api/ban-plateforme/types";
 import { NumeroCard } from "../composants/adresse/NumeroCard";
-import { useSignalement } from "../hooks/useSignalement";
 import SignalementForm from "../composants/signalement/SignalementForm";
 import { Signalement } from "../api/signalement";
 import { VoieCard } from "../composants/adresse/VoieCard";
 import { LieuDitCard } from "../composants/adresse/LieuDitCard";
-import Loader from "../composants/common/Loader";
 import { useContext, useEffect } from "react";
 import { MapContext } from "../layouts/MapLayout";
+import SignalementContext, {
+  SignalementContextType,
+} from "../contexts/signalement.context";
 
 export function AdressePage() {
   const mapContext = useContext(MapContext);
   const map = mapContext?.map;
-
-  const navigation = useNavigation();
 
   const { adresse } = useLoaderData() as {
     adresse: IBANPlateformeResult;
@@ -57,15 +56,11 @@ export function AdressePage() {
     onEditSignalement,
     isEditParcellesMode,
     setIsEditParcellesMode,
-  } = useSignalement(adresse);
+  } = useContext(SignalementContext) as SignalementContextType;
 
   const handleCloseSignalementForm = () => {
     deleteSignalement();
   };
-
-  if (navigation.state === "loading") {
-    return <Loader />;
-  }
 
   return (
     <>

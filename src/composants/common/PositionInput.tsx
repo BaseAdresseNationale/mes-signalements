@@ -1,7 +1,7 @@
-import { positionTypeOptions } from "../../hooks/useSignalement";
 import styled from "styled-components";
 import { Point, Position } from "../../api/signalement";
 import SelectInput from "../common/SelectInput";
+import { positionTypeOptions } from "../../utils/signalement.utils";
 
 const StyledContainer = styled.div`
   display: flex;

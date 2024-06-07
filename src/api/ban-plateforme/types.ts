@@ -1,3 +1,5 @@
+import { Position } from "../signalement";
+
 export enum BANPlateformeResultTypeEnum {
   NUMERO = "numero",
   VOIE = "voie",
@@ -29,7 +31,7 @@ export interface IBANPlateformeNumero extends IBANPlateformeResult {
   numero: number;
   suffixe: string;
   positions: {
-    positionType: string;
+    positionType: Position.type;
     position: {
       type: string;
       coordinates: [number, number];
@@ -46,6 +48,7 @@ export interface IBANPlateformeNumero extends IBANPlateformeResult {
   codePostal: string;
   lat: number;
   lon: number;
+  positionType: Position.type;
 }
 
 export interface IBANPlateformeVoie extends IBANPlateformeResult {

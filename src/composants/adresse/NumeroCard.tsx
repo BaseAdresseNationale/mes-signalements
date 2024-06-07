@@ -1,11 +1,17 @@
-import { getExistingLocationLabel } from "../../hooks/useSignalement";
 import { Signalement } from "../../api/signalement";
-import { IBANPlateformeNumero } from "../../api/ban-plateforme/types";
+import {
+  IBANPlateformeNumero,
+  IBANPlateformeResult,
+} from "../../api/ban-plateforme/types";
 import { Card } from "../common/Card";
+import { getExistingLocationLabel } from "../../utils/signalement.utils";
 
 interface NumeroCardProps {
   adresse: IBANPlateformeNumero;
-  createSignalement: (type: Signalement.type) => void;
+  createSignalement: (
+    type: Signalement.type,
+    adresse: IBANPlateformeResult
+  ) => void;
 }
 
 export function NumeroCard({ adresse, createSignalement }: NumeroCardProps) {
@@ -59,14 +65,18 @@ export function NumeroCard({ adresse, createSignalement }: NumeroCardProps) {
       <button
         type="button"
         className="fr-btn"
-        onClick={() => createSignalement(Signalement.type.LOCATION_TO_UPDATE)}
+        onClick={() =>
+          createSignalement(Signalement.type.LOCATION_TO_UPDATE, adresse)
+        }
       >
         Demander une modification
       </button>
       <button
         type="button"
         className="fr-btn"
-        onClick={() => createSignalement(Signalement.type.LOCATION_TO_DELETE)}
+        onClick={() =>
+          createSignalement(Signalement.type.LOCATION_TO_DELETE, adresse)
+        }
       >
         Demander la suppression
       </button>

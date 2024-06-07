@@ -9,6 +9,8 @@ import { OpenAPI } from "./api/signalement";
 
 import "@gouvfr/dsfr/dist/dsfr.min.css";
 import "@gouvfr/dsfr/dist/utility/utility.min.css";
+import "maplibre-gl/dist/maplibre-gl.css";
+import { SignalementContextProvider } from "./contexts/signalement.context";
 
 const API_SIGNALEMENT_URL = process.env.REACT_APP_API_SIGNALEMENT_URL;
 
@@ -61,7 +63,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <SignalementContextProvider>
+      <RouterProvider router={router} />
+    </SignalementContextProvider>
   </React.StrictMode>
 );
 

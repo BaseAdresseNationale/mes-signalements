@@ -15,7 +15,7 @@ export function Header() {
                   <p className="fr-header__service-title">Mes Signalements</p>
                 </a>
                 <p className="fr-header__service-tagline">
-                  Signaler un problème dans la Base Adresse Nationnale
+                  Signaler un problème dans la Base Adresse Nationale
                 </p>
               </div>
             </div>

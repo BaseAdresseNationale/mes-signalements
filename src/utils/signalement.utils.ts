@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   ExistingLocation,
   ExistingNumero,
@@ -16,15 +15,47 @@ import {
 } from "../api/ban-plateforme/types";
 
 export const positionTypeOptions = [
-  { value: "entrée", label: "Entrée", color: "green" },
-  { value: "délivrance postale", label: "Délivrance postale", color: "blue" },
-  { value: "bâtiment", label: "Bâtiment", color: "orange" },
-  { value: "cage d’escalier", label: "Cage d’escalier", color: "purple" },
-  { value: "logement", label: "Logement", color: "red" },
-  { value: "parcelle", label: "Parcelle", color: "yellow" },
-  { value: "segment", label: "Segment", color: "black" },
-  { value: "service technique", label: "Service technique", color: "grey" },
-  { value: "inconnue", label: "Inconnu", color: "white" },
+  {
+    value: Position.type.ENTR_E,
+    label: "Entrée",
+    color: "var(--background-action-high-blue-france)",
+  },
+  {
+    value: Position.type.D_LIVRANCE_POSTALE,
+    label: "Délivrance postale",
+    color: "var(--background-action-high-red-marianne)",
+  },
+  {
+    value: Position.type.B_TIMENT,
+    label: "Bâtiment",
+    color: "var(--background-action-high-green-tilleul-verveine)",
+  },
+  {
+    value: Position.type.CAGE_D_ESCALIER,
+    label: "Cage d’escalier",
+    color: "var(--background-action-high-green-bourgeon)",
+  },
+  {
+    value: Position.type.LOGEMENT,
+    label: "Logement",
+    color: "var(--background-action-high-green-menthe)",
+  },
+  {
+    value: Position.type.PARCELLE,
+    label: "Parcelle",
+    color: "var(--background-action-high-blue-ecume)",
+  },
+  {
+    value: Position.type.SEGMENT,
+    label: "Segment",
+    color: "var(--background-action-high-purple-glycine)",
+  },
+  {
+    value: Position.type.SERVICE_TECHNIQUE,
+    label: "Service technique",
+    color: "var(--background-action-high-pink-macaron)",
+  },
+  { value: Position.type.INCONNUE, label: "Inconnu", color: "black" },
 ];
 
 export const getPositionTypeLabel = (positionType: Position.type) => {
@@ -69,12 +100,12 @@ export function getExistingLocation(
   address: any
 ): ExistingNumero | ExistingVoie | ExistingToponyme {
   switch (address.type) {
-    case "voie":
+    case BANPlateformeResultTypeEnum.VOIE:
       return {
         type: ExistingLocation.type.VOIE,
         nom: address.nomVoie,
       } as ExistingVoie;
-    case "lieu-dit":
+    case BANPlateformeResultTypeEnum.LIEU_DIT:
       return {
         type: ExistingLocation.type.TOPONYME,
         nom: address.nomVoie,
@@ -87,7 +118,7 @@ export function getExistingLocation(
         },
         parcelles: address.parcelles,
       } as ExistingToponyme;
-    case "numero":
+    case BANPlateformeResultTypeEnum.NUMERO:
       return {
         type: ExistingLocation.type.NUMERO,
         numero: address.numero,
@@ -111,6 +142,13 @@ export function getExistingLocation(
       );
   }
 }
+
+export const getSignalementPositionColor = (positionType: Position.type) => {
+  return (
+    positionTypeOptions.find(({ value }) => value === positionType)?.color ||
+    "black"
+  );
+};
 
 export const getInitialSignalement = (
   address: any,
@@ -144,11 +182,11 @@ export const getInitialSignalement = (
       nom: address.nomVoie,
     };
   } else if (signalementType === Signalement.type.LOCATION_TO_UPDATE) {
-    if (address.type === "voie") {
+    if (address.type === BANPlateformeResultTypeEnum.VOIE) {
       initialSignalement.changesRequested = {
         nom: address.nomVoie,
       };
-    } else if (address.type === "lieu-dit") {
+    } else if (address.type === BANPlateformeResultTypeEnum.LIEU_DIT) {
       initialSignalement.changesRequested = {
         nom: address.nomVoie,
         // For the moment we don't allow to change the position of a toponyme
@@ -189,40 +227,3 @@ export const getInitialSignalement = (
 
   return initialSignalement as Signalement;
 };
-
-export function useSignalement(address: any) {
-  const [signalement, setSignalement] = useState<Signalement | null>(null);
-  const [isEditParcellesMode, setIsEditParcellesMode] = useState(false);
-
-  const createSignalement = (signalementType: Signalement.type) => {
-    setSignalement(getInitialSignalement(address, signalementType));
-  };
-
-  const deleteSignalement = () => {
-    setSignalement(null);
-  };
-
-  const onEditSignalement =
-    (property: keyof Signalement, key: string) => (value: any) => {
-      setSignalement(
-        (state) =>
-          state &&
-          ({
-            ...state,
-            [property]: {
-              ...(state[property] as {}),
-              [key]: value,
-            },
-          } as Signalement)
-      );
-    };
-
-  return {
-    createSignalement,
-    deleteSignalement,
-    signalement,
-    onEditSignalement,
-    isEditParcellesMode,
-    setIsEditParcellesMode,
-  };
-}

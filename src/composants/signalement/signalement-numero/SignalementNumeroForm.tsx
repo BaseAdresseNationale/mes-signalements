@@ -1,11 +1,12 @@
 import { useMemo } from "react";
 import { StyledForm } from "../signalement.styles";
 import PositionInput from "../../common/PositionInput";
+import { Position, Signalement } from "../../../api/signalement";
 import {
   getExistingLocationLabel,
   getInitialSignalement,
-} from "../../../hooks/useSignalement";
-import { Position, Signalement } from "../../../api/signalement";
+} from "../../../utils/signalement.utils";
+import { blurPosition } from "../../../utils/position.utils";
 
 interface SignalementNumeroFormProps {
   signalement: Signalement;
@@ -138,8 +139,11 @@ export default function SignalementNumeroForm({
               )([
                 ...(positions as Position[]),
                 {
-                  point: { type: "Point", coordinates: initialPositionCoords },
-                  type: "entrée",
+                  point: {
+                    type: "Point",
+                    coordinates: blurPosition(initialPositionCoords),
+                  },
+                  type: Position.type.ENTR_E,
                 },
               ])
             }

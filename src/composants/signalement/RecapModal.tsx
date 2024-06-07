@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { StyledForm } from "./signalement.styles";
-import {
-  getExistingLocationLabel,
-  getPositionTypeLabel,
-} from "../../hooks/useSignalement";
+
 import {
   Position,
   Signalement,
   SignalementsService,
 } from "../../api/signalement";
 import Modal from "../common/Modal";
+import {
+  getExistingLocationLabel,
+  getPositionTypeLabel,
+} from "../../utils/signalement.utils";
 
 interface SignalementRecapModalProps {
   signalement: Signalement;
