@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import { useCallback, useMemo, useEffect, useState } from "react";
 import { PARCELLES_MINZOOM } from "../composants/map/layers";
 import { MapLayerMouseEvent } from "react-map-gl";
