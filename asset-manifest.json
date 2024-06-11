@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/mes-signalements/static/css/main.51d1fd8d.css",
-    "main.js": "/mes-signalements/static/js/main.36c55cf2.js",
+    "main.js": "/mes-signalements/static/js/main.3f1b837d.js",
     "static/js/453.a22a643b.chunk.js": "/mes-signalements/static/js/453.a22a643b.chunk.js",
     "static/js/66.741c27f3.chunk.js": "/mes-signalements/static/js/66.741c27f3.chunk.js",
     "static/media/Spectral-ExtraBold.woff": "/mes-signalements/static/media/Spectral-ExtraBold.81a643ce9c2f56f86158.woff",
@@ -629,12 +629,12 @@
     "static/media/arrow-up-s-fill.svg": "/mes-signalements/static/media/arrow-up-s-fill.90adf7ab45a8f0b94c4c.svg",
     "static/media/subtract-line.svg": "/mes-signalements/static/media/subtract-line.8867e73b30a386373114.svg",
     "main.51d1fd8d.css.map": "/mes-signalements/static/css/main.51d1fd8d.css.map",
-    "main.36c55cf2.js.map": "/mes-signalements/static/js/main.36c55cf2.js.map",
+    "main.3f1b837d.js.map": "/mes-signalements/static/js/main.3f1b837d.js.map",
     "453.a22a643b.chunk.js.map": "/mes-signalements/static/js/453.a22a643b.chunk.js.map",
     "66.741c27f3.chunk.js.map": "/mes-signalements/static/js/66.741c27f3.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.51d1fd8d.css",
-    "static/js/main.36c55cf2.js"
+    "static/js/main.3f1b837d.js"
   ]
 }
