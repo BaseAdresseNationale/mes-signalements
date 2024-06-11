@@ -30,33 +30,38 @@ Object.assign(OpenAPI, {
   TOKEN: API_SIGNALEMENNT_SOURCE_TOKEN,
 });
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <MapLayout />,
-  },
-  {
-    path: "/:code",
-    element: (
-      <MapLayout>
-        <AdressePage />
-      </MapLayout>
-    ),
-    loader: async ({ params }) => {
-      if (!params.code) {
-        return {
-          adresse: null,
-        };
-      }
-      const adresse = await lookup(params.code);
-
-      return {
-        adresse,
-      };
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <MapLayout />,
     },
-    errorElement: <div>Une erreur est survenue</div>,
-  },
-]);
+    {
+      path: "/:code",
+      element: (
+        <MapLayout>
+          <AdressePage />
+        </MapLayout>
+      ),
+      loader: async ({ params }) => {
+        if (!params.code) {
+          return {
+            adresse: null,
+          };
+        }
+        const adresse = await lookup(params.code);
+
+        return {
+          adresse,
+        };
+      },
+      errorElement: <div>Une erreur est survenue</div>,
+    },
+  ],
+  {
+    basename: process.env.PUBLIC_URL,
+  }
+);
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
