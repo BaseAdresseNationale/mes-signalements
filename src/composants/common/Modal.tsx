@@ -24,7 +24,6 @@ const StyledContainer = styled.div`
     height: fit-content;
     flex-direction: column;
     overflow: auto;
-    width: 850px;
 
     > .header {
       display: flex;
@@ -47,6 +46,12 @@ const StyledContainer = styled.div`
           background: none;
         }
       }
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    > .modal {
+      padding: 1em;
     }
   }
 `;

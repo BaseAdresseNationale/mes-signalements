@@ -15,6 +15,10 @@ export const StyledForm = styled.form`
   margin: unset !important;
   overflow: scroll;
 
+  input {
+    outline: none;
+  }
+
   section:not(:first-of-type) {
     margin-top: 2em;
   }
@@ -93,5 +97,9 @@ export const StyledForm = styled.form`
 
   legend {
     font-style: italic;
+  }
+
+  @media screen and (max-width: 768px) {
+    padding: 0;
   }
 `;

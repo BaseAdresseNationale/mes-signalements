@@ -20,6 +20,7 @@ const StyledSearch = styled.div<{ $animationDuration: number }>`
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   transition: ${({ $animationDuration }) =>
     `top ${$animationDuration}ms ease-in-out`};
+  max-width: calc(100% - 20px);
 
   &.show {
     top: 50px;

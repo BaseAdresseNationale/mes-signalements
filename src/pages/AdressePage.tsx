@@ -45,7 +45,8 @@ export function AdressePage() {
     }
     map.flyTo({
       center: position as [number, number],
-      zoom: 16,
+      zoom: 20,
+      screenSpeed: 2,
     });
   }, [map, adresse]);
 
