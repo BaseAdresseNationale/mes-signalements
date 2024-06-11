@@ -1,0 +1,51 @@
+name: Deploy to Github Pages
+
+on:
+  push:
+    branches:
+      - master
+
+  workflow_dispatch:
+
+env:
+  PUBLIC_URL: ${{ vars.PUBLIC_URL }}
+  REACT_APP_HCAPTCHA_SITE_KEY: ${{ vars.REACT_APP_HCAPTCHA_SITE_KEY }}
+  REACT_APP_API_SIGNALEMENT_URL: ${{ vars.REACT_APP_API_SIGNALEMENT_URL }}
+  REACT_APP_BAN_PLATEFORME_URL: ${{ vars.REACT_APP_BAN_PLATEFORME_URL }}
+  REACT_APP_API_ADRESSE_URL: ${{ vars.REACT_APP_API_ADRESSE_URL }}
+
+jobs:
+  #   scan:
+  #     name: gitleaks
+  #     runs-on: ubuntu-latest
+  #     steps:
+  #       - uses: actions/checkout@v3
+  #         with:
+  #           fetch-depth: 0
+  #       - uses: gitleaks/gitleaks-action@v2
+  #         env:
+  #           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #           GITLEAKS_LICENSE: ${{secrets.BAL_GITLEAKS_LICENSE}}
+
+  deployment:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+          cache: "npm"
+
+      - name: Build
+        run: |
+          npm i
+          npm run build
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          publish_dir: ./build
+          publish_branch: gh-pages
