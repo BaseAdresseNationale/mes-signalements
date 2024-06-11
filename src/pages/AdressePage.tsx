@@ -16,9 +16,11 @@ import { MapContext } from "../layouts/MapLayout";
 import SignalementContext, {
   SignalementContextType,
 } from "../contexts/signalement.context";
+import useWindowSize from "../hooks/useWindowSize";
 
 export function AdressePage() {
   const mapContext = useContext(MapContext);
+  const { isMobile } = useWindowSize();
   const map = mapContext?.map;
 
   const { adresse } = useLoaderData() as {
@@ -45,10 +47,11 @@ export function AdressePage() {
     }
     map.flyTo({
       center: position as [number, number],
+      offset: [0, isMobile ? -100 : 0],
       zoom: 20,
       screenSpeed: 2,
     });
-  }, [map, adresse]);
+  }, [map, adresse, isMobile]);
 
   const {
     createSignalement,

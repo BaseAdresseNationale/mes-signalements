@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { MOBILE_BREAKPOINT } from "../../../hooks/useWindowSize";
 
 export const StyledDrawer = styled.div<{ $animationDuration: number }>`
   position: absolute;
@@ -20,7 +21,7 @@ export const StyledDrawer = styled.div<{ $animationDuration: number }>`
     left: 0;
   }
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: ${MOBILE_BREAKPOINT}px) {
     position: absolute;
     height: 50%;
     bottom: -50%;

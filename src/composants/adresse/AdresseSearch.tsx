@@ -39,6 +39,7 @@ const StyledResultList = styled.div`
       width: 100%;
       text-align: left;
       padding: 5px 10px;
+      cursor: pointer;
       &:hover {
         background-color: #eee;
       }
@@ -101,7 +102,6 @@ function _AdresseSearch(props: {}, ref: React.ForwardedRef<HTMLDivElement>) {
                       onClick={result.onClick}
                       key={result.code}
                       type="button"
-                      className="autocomplete-btn"
                     >
                       {result.nom}
                     </button>

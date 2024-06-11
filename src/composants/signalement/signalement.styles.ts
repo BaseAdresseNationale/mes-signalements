@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { MOBILE_BREAKPOINT } from "../../hooks/useWindowSize";
 
 export const SignalementTypeWrapper = styled.div`
   display: flex;
@@ -99,7 +100,7 @@ export const StyledForm = styled.form`
     font-style: italic;
   }
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: ${MOBILE_BREAKPOINT}px) {
     padding: 0;
   }
 `;

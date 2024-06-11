@@ -36,6 +36,8 @@ const Layout = styled.div`
   > .main-wrapper {
     flex: 1 1 auto;
     position: relative;
+    height: 100%;
+    overflow: hidden;
 
     .loader-wrapper {
       height: 100%;

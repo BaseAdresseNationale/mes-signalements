@@ -1,5 +1,6 @@
 import ReactDOM from "react-dom";
 import styled from "styled-components";
+import { MOBILE_BREAKPOINT } from "../../hooks/useWindowSize";
 
 const StyledContainer = styled.div`
   height: 100vh;
@@ -49,7 +50,7 @@ const StyledContainer = styled.div`
     }
   }
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: ${MOBILE_BREAKPOINT}px) {
     > .modal {
       padding: 1em;
     }
