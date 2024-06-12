@@ -99,6 +99,7 @@ function _AdresseSearch(props: {}, ref: React.ForwardedRef<HTMLDivElement>) {
                   <label>{name}</label>
                   {results.map((result) => (
                     <button
+                      tabIndex={0}
                       onClick={result.onClick}
                       key={result.code}
                       type="button"

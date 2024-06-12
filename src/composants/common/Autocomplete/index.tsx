@@ -60,8 +60,8 @@ const Autocomplete = <T extends { code: string }>({
           onFocus={() => setHasFocus(true)}
           onBlur={(e) => {
             if (
-              e.target instanceof Element &&
-              (e.target.tagName === "BUTTON" || e.target.tagName === "INPUT")
+              e.relatedTarget instanceof Element &&
+              e.relatedTarget.tagName === "BUTTON"
             ) {
               return;
             }
@@ -87,6 +87,7 @@ const Autocomplete = <T extends { code: string }>({
               results.map((result) => ({
                 ...result,
                 onClick: () => onSelectResult(result),
+                onTouchStart: () => onSelectResult(result),
               }))
             )}
           {results.length === 0 && search.length >= 4 && <p>Aucun résultat</p>}
