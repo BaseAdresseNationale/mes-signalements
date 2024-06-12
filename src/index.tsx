@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { RouterProvider, createHashRouter } from "react-router-dom";
 import { MapLayout } from "./layouts/MapLayout";
 import { lookup } from "./api/ban-plateforme";
 import { AdressePage } from "./pages/AdressePage";
@@ -29,7 +29,7 @@ Object.assign(OpenAPI, {
   BASE: API_SIGNALEMENT_URL,
 });
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: "/",
     element: <MapLayout />,
