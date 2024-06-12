@@ -29,38 +29,33 @@ Object.assign(OpenAPI, {
   BASE: API_SIGNALEMENT_URL,
 });
 
-const router = createBrowserRouter(
-  [
-    {
-      path: "/",
-      element: <MapLayout />,
-    },
-    {
-      path: "/:code",
-      element: (
-        <MapLayout>
-          <AdressePage />
-        </MapLayout>
-      ),
-      loader: async ({ params }) => {
-        if (!params.code) {
-          return {
-            adresse: null,
-          };
-        }
-        const adresse = await lookup(params.code);
-
-        return {
-          adresse,
-        };
-      },
-      errorElement: <div>Une erreur est survenue</div>,
-    },
-  ],
+const router = createBrowserRouter([
   {
-    basename: process.env.PUBLIC_URL,
-  }
-);
+    path: "/",
+    element: <MapLayout />,
+  },
+  {
+    path: "/:code",
+    element: (
+      <MapLayout>
+        <AdressePage />
+      </MapLayout>
+    ),
+    loader: async ({ params }) => {
+      if (!params.code) {
+        return {
+          adresse: null,
+        };
+      }
+      const adresse = await lookup(params.code);
+
+      return {
+        adresse,
+      };
+    },
+    errorElement: <div>Une erreur est survenue</div>,
+  },
+]);
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
