@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
+import { useSearchParams } from "react-router-dom";
 import { StyledForm } from "./signalement.styles";
 
 import {
+  CreateSignalementDTO,
   Position,
   Signalement,
   SignalementsService,
@@ -29,12 +31,20 @@ export default function SignalementRecapModal({
   onSubmit,
 }: SignalementRecapModalProps) {
   const [submitStatus, setSubmitStatus] = useState<string | null>(null);
+  let [searchParams] = useSearchParams();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSubmitStatus("loading");
     try {
-      await SignalementsService.createSignalement(signalement);
+      const sourceId =
+        searchParams.get("sourceId") ||
+        process.env.REACT_APP_API_SIGNALEMENT_SOURCE_ID;
+      console.log("sourceId", sourceId);
+      await SignalementsService.createSignalement(
+        signalement as CreateSignalementDTO,
+        sourceId
+      );
       setSubmitStatus("success");
       setTimeout(() => {
         onSubmit();

@@ -18,16 +18,15 @@ if (!API_SIGNALEMENT_URL) {
   throw new Error("REACT_APP_API_SIGNALEMENT_URL is not defined");
 }
 
-const API_SIGNALEMENNT_SOURCE_TOKEN =
-  process.env.REACT_APP_API_SIGNALEMENT_SOURCE_TOKEN;
+const API_SIGNALEMENNT_SOURCE_ID =
+  process.env.REACT_APP_API_SIGNALEMENT_SOURCE_ID;
 
-if (!API_SIGNALEMENNT_SOURCE_TOKEN) {
-  throw new Error("REACT_APP_API_SIGNALEMENT_SOURCE_TOKEN is not defined");
+if (!API_SIGNALEMENNT_SOURCE_ID) {
+  throw new Error("REACT_APP_API_SIGNALEMENT_SOURCE_ID is not defined");
 }
 
 Object.assign(OpenAPI, {
   BASE: API_SIGNALEMENT_URL,
-  TOKEN: API_SIGNALEMENNT_SOURCE_TOKEN,
 });
 
 const router = createBrowserRouter(

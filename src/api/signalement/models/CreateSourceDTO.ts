@@ -8,9 +8,8 @@ export type CreateSourceDTO = {
 };
 export namespace CreateSourceDTO {
     export enum type {
-        ADMINISTRATION = 'ADMINISTRATION',
-        PARTICULIER = 'PARTICULIER',
-        ENTREPRISE = 'ENTREPRISE',
+        PUBLIC = 'PUBLIC',
+        PRIVATE = 'PRIVATE',
     }
 }
 

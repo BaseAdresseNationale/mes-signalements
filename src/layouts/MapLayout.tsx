@@ -1,13 +1,13 @@
 import styled from "styled-components";
 import Map, { MapRef } from "react-map-gl/maplibre";
-import { createContext, useContext, useEffect, useRef } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { Header } from "../composants/common/Header";
 import { Drawer } from "../composants/common/Drawer";
 import {
   useLoaderData,
   useLocation,
-  useNavigate,
   useNavigation,
+  useSearchParams,
 } from "react-router-dom";
 import { AdresseSearch } from "../composants/adresse/AdresseSearch";
 import SignalementMap from "../composants/map/SignalementMap";
@@ -21,6 +21,8 @@ import {
   getExistingLocationLabel,
   getSignalementPositionColor,
 } from "../utils/signalement.utils";
+import useNavigateWithPreservedSearchParams from "../hooks/useNavigateWithPreservedSearchParams";
+import { Source, SourcesService } from "../api/signalement";
 
 const Layout = styled.div`
   position: relative;
@@ -62,6 +64,7 @@ interface MapLayoutProps {
 }
 
 export function MapLayout({ children }: MapLayoutProps) {
+  const [customSource, setCustomSource] = useState<Source>();
   const mapRef = useRef<MapRef>(null);
   const searchRef = useRef<HTMLDivElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
@@ -73,7 +76,8 @@ export function MapLayout({ children }: MapLayoutProps) {
     deleteSignalement,
   } = useContext(SignalementContext) as SignalementContextType;
 
-  const navigate = useNavigate();
+  const { navigate } = useNavigateWithPreservedSearchParams();
+  let [searchParams] = useSearchParams();
   const navigation = useNavigation();
   const location = useLocation();
   const loaderData = useLoaderData();
@@ -97,6 +101,21 @@ export function MapLayout({ children }: MapLayoutProps) {
     }
   }, [navigation, location]);
 
+  useEffect(() => {
+    async function fetchCustomSource() {
+      const source = await SourcesService.getSourceById(
+        searchParams.get("sourceId") as string
+      );
+
+      setCustomSource(source);
+    }
+    if (!searchParams.has("sourceId")) {
+      return;
+    }
+
+    fetchCustomSource();
+  }, [searchParams]);
+
   const handleCloseDrawer = () => {
     deleteSignalement();
     navigate("/");
@@ -105,7 +124,7 @@ export function MapLayout({ children }: MapLayoutProps) {
   return (
     <MapContext.Provider value={{ map: mapRef.current }}>
       <Layout>
-        <Header />
+        <Header customSource={customSource} />
         <div className="main-wrapper">
           <Map
             ref={mapRef}
@@ -123,13 +142,15 @@ export function MapLayout({ children }: MapLayoutProps) {
             }}
             mapStyle="https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json"
           >
-            {!signalement && adresse?.lat && adresse?.lon && (
-              <Marker
-                label={getExistingLocationLabel(adresse)}
-                coordinates={[adresse.lon, adresse.lat]}
-                color={getSignalementPositionColor(adresse.positionType)}
-              />
-            )}
+            {!signalement?.changesRequested?.positions &&
+              adresse?.lat &&
+              adresse?.lon && (
+                <Marker
+                  label={getExistingLocationLabel(adresse)}
+                  coordinates={[adresse.lon, adresse.lat]}
+                  color={getSignalementPositionColor(adresse.positionType)}
+                />
+              )}
             {signalement?.changesRequested?.positions && (
               <SignalementMap
                 isEditParcellesMode={isEditParcellesMode}

@@ -46,15 +46,20 @@ export class SignalementsService {
     /**
      * Create a new signalement
      * @param requestBody
+     * @param sourceId
      * @returns Signalement
      * @throws ApiError
      */
     public static createSignalement(
         requestBody: CreateSignalementDTO,
+        sourceId?: string,
     ): CancelablePromise<Signalement> {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/signalements',
+            query: {
+                'sourceId': sourceId,
+            },
             body: requestBody,
             mediaType: 'application/json',
         });

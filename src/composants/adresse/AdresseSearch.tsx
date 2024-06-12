@@ -1,10 +1,10 @@
 import styled from "styled-components";
 import { APIAdressePropertyType } from "../../api/api-adresse/types";
-import { useNavigate } from "react-router-dom";
 import { search } from "../../api/api-adresse";
 import Autocomplete from "../common/Autocomplete";
 import { ANIMATION_DURATION } from "../../layouts/MapLayout";
 import { forwardRef } from "react";
+import useNavigateWithPreservedSearchParams from "../../hooks/useNavigateWithPreservedSearchParams";
 
 const StyledSearch = styled.div<{ $animationDuration: number }>`
   position: absolute;
@@ -54,7 +54,7 @@ interface IAdresseResult {
 }
 
 function _AdresseSearch(props: {}, ref: React.ForwardedRef<HTMLDivElement>) {
-  const navigate = useNavigate();
+  const { navigate } = useNavigateWithPreservedSearchParams();
 
   const fetchAdresses = async (query: string): Promise<IAdresseResult[]> => {
     const results = await search({ q: query, limit: 10 });

@@ -1,4 +1,10 @@
-export function Header() {
+import { Source } from "../../api/signalement";
+
+interface HeaderProps {
+  customSource?: Source;
+}
+
+export function Header({ customSource }: HeaderProps) {
   return (
     <header role="banner" className="fr-header">
       <div className="fr-header__body">
@@ -18,6 +24,9 @@ export function Header() {
                   Signaler un problème dans la Base Adresse Nationale
                 </p>
               </div>
+            </div>
+            <div className="fr-header__tools">
+              {customSource && customSource.nom}
             </div>
           </div>
         </div>
