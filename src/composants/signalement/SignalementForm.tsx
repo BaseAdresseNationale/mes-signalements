@@ -1,46 +1,43 @@
-import { useState } from "react";
-import SignalementToponymeForm from "./signalement-toponyme/SignalementToponymeForm";
-import SignalementNumeroForm from "./signalement-numero/SignalementNumeroForm";
-import RecapModal from "./RecapModal";
-import SignalementNumeroDeleteForm from "./signalement-numero/SignalementNumeroDeleteForm";
-import { Signalement } from "../../api/signalement";
+import React, { useState } from 'react'
+import SignalementToponymeForm from './signalement-toponyme/SignalementToponymeForm'
+import SignalementNumeroForm from './signalement-numero/SignalementNumeroForm'
+import RecapModal from './RecapModal'
+import SignalementNumeroDeleteForm from './signalement-numero/SignalementNumeroDeleteForm'
+import { Signalement } from '../../api/signalement'
+import { BANPlateformeResultTypeEnum } from '../../api/ban-plateforme/types'
+import { MapRef } from 'react-map-gl/dist/esm/exports-maplibre'
 
 interface SignalementFormProps {
-  signalement: Signalement;
-  onEditSignalement: any;
-  onClose: any;
-  address: any;
-  setIsEditParcellesMode: any;
-  isEditParcellesMode: boolean;
+  signalement: Signalement
+  map?: MapRef
+  onEditSignalement: any
+  onClose: any
+  address: any
+  setIsEditParcellesMode: any
+  isEditParcellesMode: boolean
 }
 
 export default function SignalementForm({
   signalement,
+  map,
   onEditSignalement,
   onClose,
   address,
   setIsEditParcellesMode,
   isEditParcellesMode,
 }: SignalementFormProps) {
-  const [showRecapModal, setShowRecapModal] = useState(false);
-
-  const getCenterCoords = () => {
-    const splittedHash = window.location.hash.split("/");
-    return [
-      Number.parseFloat(splittedHash[2]),
-      Number.parseFloat(splittedHash[1]),
-    ];
-  };
+  const [showRecapModal, setShowRecapModal] = useState(false)
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setShowRecapModal(true);
-  };
+    event.preventDefault()
+    setShowRecapModal(true)
+  }
 
   return (
     <>
       {signalement?.type === Signalement.type.LOCATION_TO_UPDATE &&
-        (address.type === "voie" || address.type === "lieu-dit") && (
+        (address.type === BANPlateformeResultTypeEnum.VOIE ||
+          address.type === BANPlateformeResultTypeEnum.LIEU_DIT) && (
           <SignalementToponymeForm
             onClose={onClose}
             onSubmit={handleSubmit}
@@ -51,7 +48,7 @@ export default function SignalementForm({
         )}
 
       {signalement?.type === Signalement.type.LOCATION_TO_CREATE &&
-        address.type === "voie" && (
+        address.type === BANPlateformeResultTypeEnum.VOIE && (
           <SignalementNumeroForm
             setIsEditParcellesMode={setIsEditParcellesMode}
             onClose={onClose}
@@ -59,12 +56,12 @@ export default function SignalementForm({
             onEditSignalement={onEditSignalement}
             signalement={signalement}
             isEditParcellesMode={isEditParcellesMode}
-            initialPositionCoords={getCenterCoords()}
+            initialPositionCoords={[map?.getCenter()?.lng || 0, map?.getCenter()?.lat || 0]}
           />
         )}
 
       {signalement?.type === Signalement.type.LOCATION_TO_UPDATE &&
-        address.type === "numero" && (
+        address.type === BANPlateformeResultTypeEnum.NUMERO && (
           <SignalementNumeroForm
             setIsEditParcellesMode={setIsEditParcellesMode}
             onClose={onClose}
@@ -79,6 +76,7 @@ export default function SignalementForm({
 
       {signalement?.type === Signalement.type.LOCATION_TO_DELETE && (
         <SignalementNumeroDeleteForm
+          signalement={signalement}
           address={address}
           onClose={onClose}
           onSubmit={handleSubmit}
@@ -95,5 +93,5 @@ export default function SignalementForm({
         />
       )}
     </>
-  );
+  )
 }

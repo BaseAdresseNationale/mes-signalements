@@ -1,24 +1,21 @@
-import React, { forwardRef } from "react";
-import { StyledDrawer } from "./Drawer.styles";
-import { ANIMATION_DURATION } from "../../../layouts/MapLayout";
+import React, { forwardRef } from 'react'
+import { StyledDrawer } from './Drawer.styles'
+import { ANIMATION_DURATION } from '../../../layouts/MapLayout'
 
 interface DrawerProps {
-  ref: React.Ref<HTMLDivElement>;
-  children: React.ReactNode;
-  onClose: () => void;
+  ref: React.Ref<HTMLDivElement>
+  children: React.ReactNode
+  onClose: () => void
 }
 
-function _Drawer(
-  { children, onClose }: DrawerProps,
-  ref: React.Ref<HTMLDivElement>
-) {
+function _Drawer({ children, onClose }: DrawerProps, ref: React.Ref<HTMLDivElement>) {
   return (
     <StyledDrawer ref={ref} $animationDuration={ANIMATION_DURATION}>
-      <div className="header">
+      <div className='header'>
         <button
-          className="fr-btn fr-btn--close fr-btn--tertiary-no-outline"
-          title="Fermer"
-          type="button"
+          className='fr-btn fr-btn--close fr-btn--tertiary-no-outline'
+          title='Fermer'
+          type='button'
           onClick={onClose}
         >
           Fermer
@@ -26,7 +23,7 @@ function _Drawer(
       </div>
       {children}
     </StyledDrawer>
-  );
+  )
 }
 
-export const Drawer = forwardRef(_Drawer);
+export const Drawer = forwardRef(_Drawer)

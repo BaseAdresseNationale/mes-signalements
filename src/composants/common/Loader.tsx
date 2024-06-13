@@ -1,4 +1,5 @@
-import styled from "styled-components";
+import React from 'react'
+import styled from 'styled-components'
 
 const StyledLoader = styled.div<{ $size: number }>`
   @keyframes rotation {
@@ -17,14 +18,14 @@ const StyledLoader = styled.div<{ $size: number }>`
   display: block;
   box-sizing: border-box;
   animation: rotation 1s linear infinite;
-`;
+`
 
 interface LoaderProps {
-  size?: number;
+  size?: number
 }
 
 function Loader({ size = 24 }: LoaderProps) {
-  return <StyledLoader $size={size} />;
+  return <StyledLoader $size={size} />
 }
 
-export default Loader;
+export default Loader

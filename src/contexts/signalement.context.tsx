@@ -1,56 +1,52 @@
-import { createContext, useState } from "react";
-import { Signalement } from "../api/signalement";
-import { getInitialSignalement } from "../utils/signalement.utils";
-import { IBANPlateformeResult } from "../api/ban-plateforme/types";
+import React, { createContext, useState } from 'react'
+import { ChangesRequested, Signalement } from '../api/signalement'
+import { getInitialSignalement } from '../utils/signalement.utils'
+import { IBANPlateformeResult } from '../api/ban-plateforme/types'
 
 export interface SignalementContextType {
-  signalement: Signalement | null;
+  signalement: Signalement | null
   createSignalement: (
     signalementType: Signalement.type,
-    adresse: IBANPlateformeResult
-  ) => void;
-  deleteSignalement: () => void;
-  onEditSignalement: (
-    property: keyof Signalement,
-    key: string
-  ) => (value: any) => void;
-  isEditParcellesMode: boolean;
-  setIsEditParcellesMode: (isEditParcellesMode: boolean) => void;
+    adresse: IBANPlateformeResult,
+    changesRequested?: ChangesRequested,
+  ) => void
+  deleteSignalement: () => void
+  onEditSignalement: (property: keyof Signalement, key: string) => (value: any) => void
+  isEditParcellesMode: boolean
+  setIsEditParcellesMode: (isEditParcellesMode: boolean) => void
 }
 
-const SignalementContext = createContext<SignalementContextType | null>(null);
+const SignalementContext = createContext<SignalementContextType | null>(null)
 
-export function SignalementContextProvider(props: {
-  children: React.ReactNode;
-}) {
-  const [signalement, setSignalement] = useState<Signalement | null>(null);
-  const [isEditParcellesMode, setIsEditParcellesMode] = useState(false);
+export function SignalementContextProvider(props: { children: React.ReactNode }) {
+  const [signalement, setSignalement] = useState<Signalement | null>(null)
+  const [isEditParcellesMode, setIsEditParcellesMode] = useState(false)
 
   const createSignalement = (
     signalementType: Signalement.type,
-    adresse: IBANPlateformeResult
+    adresse: IBANPlateformeResult,
+    changesRequested?: ChangesRequested,
   ) => {
-    setSignalement(getInitialSignalement(adresse, signalementType));
-  };
+    setSignalement(getInitialSignalement(adresse, signalementType, changesRequested))
+  }
 
   const deleteSignalement = () => {
-    setSignalement(null);
-  };
+    setSignalement(null)
+  }
 
-  const onEditSignalement =
-    (property: keyof Signalement, key: string) => (value: any) => {
-      setSignalement(
-        (state) =>
-          state &&
-          ({
-            ...state,
-            [property]: {
-              ...(state[property] as {}),
-              [key]: value,
-            },
-          } as Signalement)
-      );
-    };
+  const onEditSignalement = (property: keyof Signalement, key: string) => (value: any) => {
+    setSignalement(
+      (state) =>
+        state &&
+        ({
+          ...state,
+          [property]: {
+            ...(state[property] as object),
+            [key]: value,
+          },
+        } as Signalement),
+    )
+  }
 
   const value = {
     signalement,
@@ -59,9 +55,9 @@ export function SignalementContextProvider(props: {
     onEditSignalement,
     isEditParcellesMode,
     setIsEditParcellesMode,
-  };
+  }
 
-  return <SignalementContext.Provider value={value} {...props} />;
+  return <SignalementContext.Provider value={value} {...props} />
 }
 
-export default SignalementContext;
+export default SignalementContext

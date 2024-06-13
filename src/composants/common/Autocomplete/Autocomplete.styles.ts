@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components'
 
 export const StyledAutocomplete = styled.div`
   position: relative;
@@ -22,4 +22,4 @@ export const StyledAutocomplete = styled.div`
       margin: 0;
     }
   }
-`;
+`

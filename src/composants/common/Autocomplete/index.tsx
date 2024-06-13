@@ -1,13 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
-import { StyledAutocomplete } from "./Autocomplete.styles";
+import React, { useEffect, useRef, useState } from 'react'
+import { StyledAutocomplete } from './Autocomplete.styles'
 
 interface AutocompleteProps<T> {
-  fetchResults: (search: string) => Promise<T[]>;
-  renderResultList: (
-    results: Array<T & { onClick: () => void }>
-  ) => React.ReactNode;
-  onSelect: (result: T) => void;
-  inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
+  fetchResults: (search: string) => Promise<T[]>
+  renderResultList: (results: Array<T & { onClick: () => void }>) => React.ReactNode
+  onSelect: (result: T) => void
+  inputProps?: React.InputHTMLAttributes<HTMLInputElement>
 }
 
 const Autocomplete = <T extends { code: string }>({
@@ -16,79 +14,72 @@ const Autocomplete = <T extends { code: string }>({
   inputProps,
   onSelect,
 }: AutocompleteProps<T>) => {
-  const searchTimeoutRef = useRef({} as NodeJS.Timeout);
-  const [hasFocus, setHasFocus] = useState(false);
-  const [search, setSearch] = useState("");
-  const [results, setResults] = useState<T[]>([]);
+  const searchTimeoutRef = useRef({} as NodeJS.Timeout)
+  const [hasFocus, setHasFocus] = useState(false)
+  const [search, setSearch] = useState('')
+  const [results, setResults] = useState<T[]>([])
 
   useEffect(() => {
     async function fetch() {
       if (search.length >= 4) {
-        const results = await fetchResults(search);
+        const results = await fetchResults(search)
 
-        setResults(results);
+        setResults(results)
       } else {
-        setResults([]);
+        setResults([])
       }
     }
 
-    fetch();
-  }, [search, fetchResults]);
+    fetch()
+  }, [search, fetchResults])
 
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value.length <= 4) {
-      setSearch(e.target.value);
+      setSearch(e.target.value)
     } else if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
+      clearTimeout(searchTimeoutRef.current)
     }
     searchTimeoutRef.current = setTimeout(() => {
-      setSearch(e.target.value);
-    }, 500);
-  };
+      setSearch(e.target.value)
+    }, 500)
+  }
 
   const onSelectResult = (result: T) => {
-    onSelect(result);
-    setHasFocus(false);
-  };
+    onSelect(result)
+    setHasFocus(false)
+  }
 
   return (
     <StyledAutocomplete>
-      <div className="fr-search-bar" id="header-search" role="search">
+      <div className='fr-search-bar' id='header-search' role='search'>
         <input
-          className="fr-input"
+          className='fr-input'
           onChange={onSearch}
           onFocus={() => setHasFocus(true)}
           onBlur={(e) => {
-            if (
-              e.relatedTarget instanceof Element &&
-              e.relatedTarget.tagName === "BUTTON"
-            ) {
-              return;
+            if (e.relatedTarget instanceof Element && e.relatedTarget.tagName === 'BUTTON') {
+              return
             }
-            setHasFocus(false);
+            setHasFocus(false)
           }}
-          type="search"
-          id="autocomplete-search"
-          name="autocomplete-search"
+          type='search'
+          id='autocomplete-search'
+          name='autocomplete-search'
           {...inputProps}
         />
-        <button
-          className="fr-btn"
-          title="Rechercher"
-          disabled={inputProps?.disabled}
-        >
+        <button className='fr-btn' title='Rechercher' disabled={inputProps?.disabled}>
           Rechercher
         </button>
       </div>
       {hasFocus && (
-        <div className="results">
+        <div className='results'>
           {results.length > 0 &&
             renderResultList(
               results.map((result) => ({
                 ...result,
                 onClick: () => onSelectResult(result),
                 onTouchStart: () => onSelectResult(result),
-              }))
+              })),
             )}
           {results.length === 0 && search.length >= 4 && <p>Aucun résultat</p>}
           {results.length === 0 && search.length > 0 && search.length < 4 && (
@@ -97,7 +88,7 @@ const Autocomplete = <T extends { code: string }>({
         </div>
       )}
     </StyledAutocomplete>
-  );
-};
+  )
+}
 
-export default Autocomplete;
+export default Autocomplete

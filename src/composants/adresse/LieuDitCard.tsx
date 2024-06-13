@@ -1,17 +1,12 @@
-import {
-  IBANPlateformeLieuDit,
-  IBANPlateformeResult,
-} from "../../api/ban-plateforme/types";
-import { Signalement } from "../../api/signalement";
-import { getExistingLocationLabel } from "../../utils/signalement.utils";
-import { Card } from "../common/Card";
+import React from 'react'
+import { IBANPlateformeLieuDit, IBANPlateformeResult } from '../../api/ban-plateforme/types'
+import { Signalement } from '../../api/signalement'
+import { getExistingLocationLabel } from '../../utils/signalement.utils'
+import { Card } from '../common/Card'
 
 interface LieuDitCardProps {
-  adresse: IBANPlateformeLieuDit;
-  createSignalement: (
-    type: Signalement.type,
-    adresse: IBANPlateformeResult
-  ) => void;
+  adresse: IBANPlateformeLieuDit
+  createSignalement: (type: Signalement.type, adresse: IBANPlateformeResult) => void
 }
 
 export function LieuDitCard({ adresse, createSignalement }: LieuDitCardProps) {
@@ -26,23 +21,20 @@ export function LieuDitCard({ adresse, createSignalement }: LieuDitCardProps) {
           Région : <b>{adresse.commune.region.nom}</b>
         </li>
         <li>
-          Département :{" "}
+          Département :{' '}
           <b>
-            {adresse.commune.departement.nom} (
-            {adresse.commune.departement.code})
+            {adresse.commune.departement.nom} ({adresse.commune.departement.code})
           </b>
         </li>
       </ul>
 
       <button
-        type="button"
-        className="fr-btn"
-        onClick={() =>
-          createSignalement(Signalement.type.LOCATION_TO_UPDATE, adresse)
-        }
+        type='button'
+        className='fr-btn'
+        onClick={() => createSignalement(Signalement.type.LOCATION_TO_UPDATE, adresse)}
       >
         Demander une modification
       </button>
     </Card>
-  );
+  )
 }

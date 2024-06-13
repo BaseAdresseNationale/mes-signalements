@@ -1,5 +1,7 @@
-import { Marker as _Marker } from "react-map-gl/maplibre";
-import styled from "styled-components";
+import React from 'react'
+import { MarkerDragEvent } from 'react-map-gl/dist/esm/types'
+import { Marker as _Marker } from 'react-map-gl/maplibre'
+import styled from 'styled-components'
 
 const StyledMarker = styled(_Marker)`
   .map-pin-label {
@@ -10,13 +12,13 @@ const StyledMarker = styled(_Marker)`
     white-space: nowrap;
     transform: translateX(calc(-50% + 10px));
   }
-`;
+`
 
 interface MarkerProps {
-  label: string;
-  coordinates: [number, number];
-  color: string;
-  onDragEnd?: (event: any) => void;
+  label: string
+  coordinates: [number, number]
+  color: string
+  onDragEnd?: (event: MarkerDragEvent<any>) => void
 }
 
 export function Marker({ label, coordinates, color, onDragEnd }: MarkerProps) {
@@ -24,17 +26,13 @@ export function Marker({ label, coordinates, color, onDragEnd }: MarkerProps) {
     <StyledMarker
       longitude={coordinates[0]}
       latitude={coordinates[1]}
-      anchor="bottom"
+      anchor='bottom'
       {...(onDragEnd ? { draggable: true, onDragEnd } : {})}
     >
-      <label className="map-pin-label" style={{ color }}>
+      <label className='map-pin-label' style={{ color }}>
         {label}
       </label>
-      <span
-        className="fr-icon-map-pin-2-fill"
-        aria-hidden="true"
-        style={{ color }}
-      />
+      <span className='fr-icon-map-pin-2-fill' aria-hidden='true' style={{ color }} />
     </StyledMarker>
-  );
+  )
 }

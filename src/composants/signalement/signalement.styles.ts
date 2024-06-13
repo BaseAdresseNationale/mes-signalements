@@ -1,11 +1,11 @@
-import styled from "styled-components";
-import { MOBILE_BREAKPOINT } from "../../hooks/useWindowSize";
+import styled from 'styled-components'
+import { MOBILE_BREAKPOINT } from '../../hooks/useWindowSize'
 
 export const SignalementTypeWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
+`
 
 export const StyledForm = styled.form`
   position: relative;
@@ -103,4 +103,4 @@ export const StyledForm = styled.form`
   @media screen and (max-width: ${MOBILE_BREAKPOINT}px) {
     padding: 0;
   }
-`;
+`

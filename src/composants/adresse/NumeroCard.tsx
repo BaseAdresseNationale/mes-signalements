@@ -1,17 +1,12 @@
-import { Signalement } from "../../api/signalement";
-import {
-  IBANPlateformeNumero,
-  IBANPlateformeResult,
-} from "../../api/ban-plateforme/types";
-import { Card } from "../common/Card";
-import { getExistingLocationLabel } from "../../utils/signalement.utils";
+import React from 'react'
+import { Signalement } from '../../api/signalement'
+import { IBANPlateformeNumero, IBANPlateformeResult } from '../../api/ban-plateforme/types'
+import { Card } from '../common/Card'
+import { getExistingLocationLabel } from '../../utils/signalement.utils'
 
 interface NumeroCardProps {
-  adresse: IBANPlateformeNumero;
-  createSignalement: (
-    type: Signalement.type,
-    adresse: IBANPlateformeResult
-  ) => void;
+  adresse: IBANPlateformeNumero
+  createSignalement: (type: Signalement.type, adresse: IBANPlateformeResult) => void
 }
 
 export function NumeroCard({ adresse, createSignalement }: NumeroCardProps) {
@@ -26,17 +21,16 @@ export function NumeroCard({ adresse, createSignalement }: NumeroCardProps) {
           Région : <b>{adresse.commune.region.nom}</b>
         </li>
         <li>
-          Département :{" "}
+          Département :{' '}
           <b>
-            {adresse.commune.departement.nom} (
-            {adresse.commune.departement.code})
+            {adresse.commune.departement.nom} ({adresse.commune.departement.code})
           </b>
         </li>
         <li>
           Code postal : <b>{adresse.codePostal}</b>
         </li>
         <li>
-          Clé d'interopérabilité : <b>{adresse.id}</b>
+          Clé d&apos;interopérabilité : <b>{adresse.id}</b>
         </li>
       </ul>
 
@@ -57,29 +51,25 @@ export function NumeroCard({ adresse, createSignalement }: NumeroCardProps) {
           {adresse.certifie ? (
             <>✅ Cette adresse a été certifiée par la commune</>
           ) : (
-            <>❌ Cette adresse n'a pas été certifiée par la commune</>
+            <>❌ Cette adresse n&apos;a pas été certifiée par la commune</>
           )}
         </p>
       </div>
 
       <button
-        type="button"
-        className="fr-btn"
-        onClick={() =>
-          createSignalement(Signalement.type.LOCATION_TO_UPDATE, adresse)
-        }
+        type='button'
+        className='fr-btn'
+        onClick={() => createSignalement(Signalement.type.LOCATION_TO_UPDATE, adresse)}
       >
         Demander une modification
       </button>
       <button
-        type="button"
-        className="fr-btn"
-        onClick={() =>
-          createSignalement(Signalement.type.LOCATION_TO_DELETE, adresse)
-        }
+        type='button'
+        className='fr-btn'
+        onClick={() => createSignalement(Signalement.type.LOCATION_TO_DELETE, adresse)}
       >
         Demander la suppression
       </button>
     </Card>
-  );
+  )
 }

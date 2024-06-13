@@ -1,7 +1,8 @@
-import styled from "styled-components";
-import { Point, Position } from "../../api/signalement";
-import SelectInput from "../common/SelectInput";
-import { positionTypeOptions } from "../../utils/signalement.utils";
+import React from 'react'
+import styled from 'styled-components'
+import { Point, Position } from '../../api/signalement'
+import SelectInput from '../common/SelectInput'
+import { positionTypeOptions } from '../../utils/signalement.utils'
 
 const StyledContainer = styled.div`
   display: flex;
@@ -17,19 +18,13 @@ const StyledContainer = styled.div`
     max-width: 100px;
     margin-left: 5px;
   }
-`;
+`
 
 interface PositionInputProps {
-  point: Point;
-  type: Position.type;
-  onDelete: () => void;
-  onEditPositionType: ({
-    point,
-    type,
-  }: {
-    point: Point;
-    type: Position.type;
-  }) => void;
+  point: Point
+  type: Position.type
+  onDelete: () => void
+  onEditPositionType: ({ point, type }: { point: Point; type: Position.type }) => void
 }
 
 export default function PositionInput({
@@ -41,7 +36,7 @@ export default function PositionInput({
   return (
     <StyledContainer>
       <SelectInput
-        label="Type de position*"
+        label='Type de position*'
         value={type}
         options={positionTypeOptions}
         handleChange={(type) =>
@@ -51,17 +46,17 @@ export default function PositionInput({
           })
         }
       />
-      <div className="fr-input-group position-input">
-        <label className="fr-label">Longitude</label>
-        <input className="fr-input" disabled value={point.coordinates[0]} />
+      <div className='fr-input-group position-input'>
+        <label className='fr-label'>Longitude</label>
+        <input className='fr-input' disabled value={point.coordinates[0]} />
       </div>
-      <div className="fr-input-group position-input">
-        <label className="fr-label">Latitude</label>
-        <input className="fr-input" disabled value={point.coordinates[1]} />
+      <div className='fr-input-group position-input'>
+        <label className='fr-label'>Latitude</label>
+        <input className='fr-input' disabled value={point.coordinates[1]} />
       </div>
-      <button type="button" onClick={onDelete}>
-        <span className="icon">X</span>
+      <button type='button' onClick={onDelete}>
+        <span className='icon'>X</span>
       </button>
     </StyledContainer>
-  );
+  )
 }

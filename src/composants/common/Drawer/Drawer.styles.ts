@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import { MOBILE_BREAKPOINT } from "../../../hooks/useWindowSize";
+import styled from 'styled-components'
+import { MOBILE_BREAKPOINT } from '../../../hooks/useWindowSize'
 
 export const StyledDrawer = styled.div<{ $animationDuration: number }>`
   position: absolute;
@@ -14,8 +14,7 @@ export const StyledDrawer = styled.div<{ $animationDuration: number }>`
   background: white;
   padding: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  transition: ${({ $animationDuration }) =>
-    `left ${$animationDuration}ms ease-in-out`};
+  transition: ${({ $animationDuration }) => `left ${$animationDuration}ms ease-in-out`};
 
   &.open {
     left: 0;
@@ -34,11 +33,10 @@ export const StyledDrawer = styled.div<{ $animationDuration: number }>`
     background: white;
     padding: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    transition: ${({ $animationDuration }) =>
-      `bottom ${$animationDuration}ms ease-in-out`};
+    transition: ${({ $animationDuration }) => `bottom ${$animationDuration}ms ease-in-out`};
   }
 
   &.open {
     bottom: 0;
   }
-`;
+`

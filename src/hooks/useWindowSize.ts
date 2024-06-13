@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react'
 
-export const MOBILE_BREAKPOINT = 768;
+export const MOBILE_BREAKPOINT = 768
 
 function getSize() {
   return {
@@ -8,31 +8,31 @@ function getSize() {
     innerWidth: window.innerWidth,
     outerHeight: window.outerHeight,
     outerWidth: window.outerWidth,
-  };
+  }
 }
 
 function useWindowSize() {
-  const [windowSize, setWindowSize] = useState(getSize());
-  const [isMobile, setIsMobile] = useState(false);
+  const [windowSize, setWindowSize] = useState(getSize())
+  const [isMobile, setIsMobile] = useState(false)
 
   const onResize = () => {
-    const size = getSize();
-    setWindowSize(size);
-    setIsMobile(size.innerWidth <= MOBILE_BREAKPOINT);
-  };
+    const size = getSize()
+    setWindowSize(size)
+    setIsMobile(size.innerWidth <= MOBILE_BREAKPOINT)
+  }
 
   useEffect(() => {
-    onResize();
-  }, []);
+    onResize()
+  }, [])
 
   useEffect(() => {
-    window.addEventListener("resize", onResize);
+    window.addEventListener('resize', onResize)
     return () => {
-      window.removeEventListener("resize", onResize);
-    };
-  }, []);
+      window.removeEventListener('resize', onResize)
+    }
+  }, [])
 
-  return { windowSize, isMobile };
+  return { windowSize, isMobile }
 }
 
-export default useWindowSize;
+export default useWindowSize

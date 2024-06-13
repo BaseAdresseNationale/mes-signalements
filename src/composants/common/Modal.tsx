@@ -1,6 +1,7 @@
-import ReactDOM from "react-dom";
-import styled from "styled-components";
-import { MOBILE_BREAKPOINT } from "../../hooks/useWindowSize";
+import React from 'react'
+import ReactDOM from 'react-dom'
+import styled from 'styled-components'
+import { MOBILE_BREAKPOINT } from '../../hooks/useWindowSize'
 
 const StyledContainer = styled.div`
   height: 100vh;
@@ -55,31 +56,31 @@ const StyledContainer = styled.div`
       padding: 1em;
     }
   }
-`;
+`
 
 interface ModalProps {
-  title: string;
-  children: React.ReactNode;
-  onClose: () => void;
+  title: string
+  children: React.ReactNode
+  onClose: () => void
 }
 
 function Modal({ title, children, onClose }: ModalProps) {
-  const rootElement = document.getElementById("root");
+  const rootElement = document.getElementById('root')
 
   return ReactDOM.createPortal(
     <StyledContainer>
-      <div className="modal">
-        <div className="header">
+      <div className='modal'>
+        <div className='header'>
           <h3>{title}</h3>
-          <button type="button" onClick={onClose}>
+          <button type='button' onClick={onClose}>
             X
           </button>
         </div>
         {children}
       </div>
     </StyledContainer>,
-    rootElement as HTMLElement
-  );
+    rootElement as HTMLElement,
+  )
 }
 
-export default Modal;
+export default Modal

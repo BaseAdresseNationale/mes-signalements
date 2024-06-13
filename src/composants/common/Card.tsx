@@ -1,7 +1,8 @@
-import styled from "styled-components";
+import React from 'react'
+import styled from 'styled-components'
 
 interface CardProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
 const StyledContainer = styled.div`
@@ -25,8 +26,8 @@ const StyledContainer = styled.div`
   button:not(:first-of-type) {
     margin-top: 10px;
   }
-`;
+`
 
 export function Card({ children }: CardProps) {
-  return <StyledContainer>{children}</StyledContainer>;
+  return <StyledContainer>{children}</StyledContainer>
 }
