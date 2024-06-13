@@ -18,6 +18,8 @@ export default function SignalementNumeroDeleteForm({
   address,
   onSubmit,
 }: SignalementNumeroDeleteFormProps) {
+  const { comment } = signalement.changesRequested
+
   const isSubmitDisabled = useMemo(() => {
     return (
       JSON.stringify(getInitialSignalement(address, signalement.type)) ===
@@ -43,6 +45,7 @@ export default function SignalementNumeroDeleteForm({
             <textarea
               className='fr-input'
               name='comment'
+              value={comment as string}
               onChange={(event) =>
                 onEditSignalement('changesRequested', 'comment')(event.target.value)
               }
