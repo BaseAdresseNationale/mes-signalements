@@ -7,13 +7,7 @@ import {
   Position,
   Signalement,
 } from '../api/signalement'
-import {
-  BANPlateformeResultTypeEnum,
-  IBANPlateformeLieuDit,
-  IBANPlateformeNumero,
-  IBANPlateformeResult,
-  IBANPlateformeVoie,
-} from '../api/ban-plateforme/types'
+import { BANPlateformeResultTypeEnum } from '../api/ban-plateforme/types'
 
 export const positionTypeOptions = [
   {
@@ -63,36 +57,114 @@ export const getPositionTypeLabel = (positionType: Position.type) => {
   return positionTypeOptions.find(({ value }) => value === positionType)?.label
 }
 
-export function getExistingLocationType(type: string) {
-  switch (type) {
-    case BANPlateformeResultTypeEnum.VOIE:
-      return ExistingLocation.type.VOIE
-    case BANPlateformeResultTypeEnum.LIEU_DIT:
-      return ExistingLocation.type.TOPONYME
-    case BANPlateformeResultTypeEnum.NUMERO:
-      return ExistingLocation.type.NUMERO
-    default:
-      throw new Error(`Impossible de créer un signalement pour le type : ${type}`)
+export function getSignalementCoodinates(signalement: Signalement): [number, number] | undefined {
+  if ((signalement.existingLocation as ExistingNumero)?.position) {
+    return [
+      (signalement.existingLocation as ExistingNumero).position.point.coordinates[0],
+      (signalement.existingLocation as ExistingNumero).position.point.coordinates[1],
+    ]
+  } else if (signalement.changesRequested.positions) {
+    return [
+      signalement.changesRequested.positions[0].point.coordinates[0],
+      signalement.changesRequested.positions[0].point.coordinates[1],
+    ]
   }
 }
 
-export function getExistingLocationLabel(address: IBANPlateformeResult) {
-  switch (address.type) {
-    case BANPlateformeResultTypeEnum.VOIE:
-      return (address as IBANPlateformeVoie).nomVoie
-    case BANPlateformeResultTypeEnum.LIEU_DIT:
-      return (address as IBANPlateformeLieuDit).nomVoie
-    case BANPlateformeResultTypeEnum.NUMERO:
-      return `${(address as IBANPlateformeNumero).numero} ${
-        (address as IBANPlateformeNumero).suffixe || ''
-      } ${(address as IBANPlateformeNumero).voie.nomVoie}`
+export const getRequestedLocationLabel = (changesRequested: ChangesRequested) => {
+  return `${changesRequested.numero} ${
+    changesRequested.suffixe ? `${changesRequested.suffixe} ` : ''
+  }${changesRequested.nomVoie}`
+}
+
+export const getExistingLocationLabel = (
+  existingLocation: ExistingNumero | ExistingToponyme | ExistingVoie,
+) => {
+  let label = ''
+  switch (existingLocation.type) {
+    case ExistingLocation.type.NUMERO: {
+      const existingNumero = existingLocation as ExistingNumero
+      label = `${existingNumero.numero} ${
+        existingNumero.suffixe ? `${existingNumero.suffixe} ` : ''
+      }${existingNumero.toponyme.nom}`
+      break
+    }
+    case ExistingLocation.type.VOIE: {
+      const existingVoie = existingLocation as ExistingVoie
+      label = existingVoie.nom
+      break
+    }
+    case ExistingLocation.type.TOPONYME: {
+      const existingToponyme = existingLocation as ExistingToponyme
+      label = existingToponyme.nom
+      break
+    }
     default:
-      throw new Error(
-        `Impossible de créer un signalement pour le type : ${
-          (address as IBANPlateformeResult).type
-        }`,
-      )
+      label = ''
   }
+
+  return label
+}
+
+export const getSignalementLabel = (signalement: Signalement) => {
+  let label = ''
+  switch (signalement.type) {
+    case Signalement.type.LOCATION_TO_UPDATE:
+      label = getExistingLocationLabel((signalement as any).existingLocation)
+      break
+    case Signalement.type.LOCATION_TO_CREATE:
+      label = getRequestedLocationLabel(signalement.changesRequested)
+      break
+    case Signalement.type.LOCATION_TO_DELETE:
+      label = getExistingLocationLabel((signalement as any).existingLocation)
+      break
+    default:
+      label = 'Autre demande'
+  }
+
+  return `${label} - ${signalement.codeCommune}`
+}
+
+export const getSignalementColor = (type: Signalement.type) => {
+  let color = ''
+  switch (type) {
+    case Signalement.type.LOCATION_TO_UPDATE:
+      color = 'blue-ecume'
+      break
+    case Signalement.type.LOCATION_TO_CREATE:
+      color = 'green-menthe'
+      break
+    case Signalement.type.LOCATION_TO_DELETE:
+      color = 'purple-glycine'
+      break
+    default:
+      color = 'black'
+  }
+
+  return color
+}
+
+export const getSignalementTypeLabel = (type: Signalement.type) => {
+  let label = ''
+  switch (type) {
+    case Signalement.type.LOCATION_TO_UPDATE:
+      label = 'Modification'
+      break
+    case Signalement.type.LOCATION_TO_CREATE:
+      label = 'Création'
+      break
+    case Signalement.type.LOCATION_TO_DELETE:
+      label = 'Suppression'
+      break
+    default:
+      label = 'Autre demande'
+  }
+
+  return label
+}
+
+export const getSignalementPositionColor = (positionType: Position.type) => {
+  return positionTypeOptions.find(({ value }) => value === positionType)?.color || 'black'
 }
 
 export function getExistingLocation(
@@ -140,8 +212,17 @@ export function getExistingLocation(
   }
 }
 
-export const getSignalementPositionColor = (positionType: Position.type) => {
-  return positionTypeOptions.find(({ value }) => value === positionType)?.color || 'black'
+export function getExistingLocationType(type: string) {
+  switch (type) {
+    case BANPlateformeResultTypeEnum.VOIE:
+      return ExistingLocation.type.VOIE
+    case BANPlateformeResultTypeEnum.LIEU_DIT:
+      return ExistingLocation.type.TOPONYME
+    case BANPlateformeResultTypeEnum.NUMERO:
+      return ExistingLocation.type.NUMERO
+    default:
+      throw new Error(`Impossible de créer un signalement pour le type : ${type}`)
+  }
 }
 
 export const getInitialSignalement = (

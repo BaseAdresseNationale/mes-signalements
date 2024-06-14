@@ -4,13 +4,14 @@ import reportWebVitals from './reportWebVitals'
 import { RouterProvider, createHashRouter } from 'react-router-dom'
 import { MapLayout } from './layouts/MapLayout'
 import { lookup } from './api/ban-plateforme'
-import { AdressePage } from './pages/AdressePage'
+import { SignalementPage } from './pages/SignalementPage'
 import { OpenAPI } from './api/signalement'
 
 import '@gouvfr/dsfr/dist/dsfr.min.css'
 import '@gouvfr/dsfr/dist/utility/utility.min.css'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import { SignalementContextProvider } from './contexts/signalement.context'
+import { SourcePage } from './pages/SourcePage'
+import { MapContextProvider } from './contexts/map.context'
 
 const API_SIGNALEMENT_URL = process.env.REACT_APP_API_SIGNALEMENT_URL
 
@@ -37,7 +38,7 @@ const router = createHashRouter([
     path: '/:code',
     element: (
       <MapLayout>
-        <AdressePage />
+        <SignalementPage />
       </MapLayout>
     ),
     loader: async ({ params }) => {
@@ -54,14 +55,22 @@ const router = createHashRouter([
     },
     errorElement: <div>Une erreur est survenue</div>,
   },
+  {
+    path: '/source',
+    element: (
+      <MapLayout>
+        <SourcePage />
+      </MapLayout>
+    ),
+  },
 ])
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
-    <SignalementContextProvider>
+    <MapContextProvider>
       <RouterProvider router={router} />
-    </SignalementContextProvider>
+    </MapContextProvider>
   </React.StrictMode>,
 )
 

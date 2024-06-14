@@ -9,7 +9,7 @@ import { MapRef } from 'react-map-gl/dist/esm/exports-maplibre'
 
 interface SignalementFormProps {
   signalement: Signalement
-  map?: MapRef
+  map: MapRef | null
   onEditSignalement: any
   onClose: any
   address: any
