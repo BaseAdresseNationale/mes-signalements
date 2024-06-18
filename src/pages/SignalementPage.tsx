@@ -1,3 +1,4 @@
+import React, { useContext, useEffect, useMemo } from 'react'
 import { useLoaderData, useSearchParams } from 'react-router-dom'
 import {
   IBANPlateformeNumero,
@@ -11,32 +12,33 @@ import SignalementForm from '../composants/signalement/SignalementForm'
 import { ChangesRequested, Signalement } from '../api/signalement'
 import { VoieCard } from '../composants/adresse/VoieCard'
 import { LieuDitCard } from '../composants/adresse/LieuDitCard'
-import React, { useContext, useEffect } from 'react'
-import { MapContext } from '../layouts/MapLayout'
-import SignalementContext, { SignalementContextType } from '../contexts/signalement.context'
 import useWindowSize from '../hooks/useWindowSize'
+import { useSignalement } from '../hooks/useSignalement'
+import { MapContext } from '../contexts/map.context'
+import { getSignalementPositionColor } from '../utils/signalement.utils'
+import SignalementMap from '../composants/map/SignalementMap'
+import { Marker } from '../composants/map/Marker'
+import { getAdresseLabel } from '../utils/adresse.utils'
 
-export function AdressePage() {
-  const mapContext = useContext(MapContext)
+export function SignalementPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { isMobile } = useWindowSize()
-  const map = mapContext?.map
+  const { mapRef, setMapChildren } = useContext(MapContext)
   const { adresse } = useLoaderData() as {
     adresse: IBANPlateformeResult
   }
-
   const {
+    signalement,
     createSignalement,
     deleteSignalement,
-    signalement,
     onEditSignalement,
     isEditParcellesMode,
     setIsEditParcellesMode,
-  } = useContext(SignalementContext) as SignalementContextType
+  } = useSignalement()
 
   // Fly to location
   useEffect(() => {
-    if (!map) {
+    if (!mapRef?.current) {
       return
     }
 
@@ -51,13 +53,13 @@ export function AdressePage() {
       const numero = adresse as IBANPlateformeNumero
       position = [numero.lon, numero.lat]
     }
-    map.flyTo({
+    mapRef.current.flyTo({
       center: position as [number, number],
       offset: [0, isMobile ? -100 : 0],
       zoom: 20,
       screenSpeed: 2,
     })
-  }, [map, adresse, isMobile])
+  }, [mapRef, adresse, isMobile])
 
   // Create a signalement from search params
   useEffect(() => {
@@ -81,6 +83,42 @@ export function AdressePage() {
   const handleCloseSignalementForm = () => {
     deleteSignalement()
   }
+
+  // Map content
+  const mapContent = useMemo(
+    () => (
+      <>
+        {!signalement?.changesRequested?.positions &&
+          (adresse as IBANPlateformeNumero)?.lat &&
+          (adresse as IBANPlateformeNumero)?.lon && (
+            <Marker
+              label={getAdresseLabel(adresse)}
+              coordinates={[
+                (adresse as IBANPlateformeNumero).lon,
+                (adresse as IBANPlateformeNumero).lat,
+              ]}
+              color={getSignalementPositionColor((adresse as IBANPlateformeNumero).positionType)}
+            />
+          )}
+        {signalement?.changesRequested?.positions && (
+          <SignalementMap
+            isEditParcellesMode={isEditParcellesMode}
+            signalement={signalement}
+            onEditSignalement={onEditSignalement}
+          />
+        )}
+      </>
+    ),
+    [signalement, adresse, isEditParcellesMode],
+  )
+
+  // Update map content
+  useEffect(() => {
+    setMapChildren(mapContent)
+    return () => {
+      setMapChildren(null)
+    }
+  }, [setMapChildren, mapContent])
 
   return (
     <>
@@ -110,7 +148,7 @@ export function AdressePage() {
       {signalement && (
         <SignalementForm
           address={adresse}
-          map={map}
+          map={mapRef?.current || null}
           signalement={signalement as Signalement}
           onEditSignalement={onEditSignalement}
           onClose={handleCloseSignalementForm}

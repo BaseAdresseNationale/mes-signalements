@@ -1,8 +1,8 @@
 import React from 'react'
 import { IBANPlateformeResult, IBANPlateformeVoie } from '../../api/ban-plateforme/types'
 import { Signalement } from '../../api/signalement'
-import { getExistingLocationLabel } from '../../utils/signalement.utils'
 import { Card } from '../common/Card'
+import { getAdresseLabel } from '../../utils/adresse.utils'
 
 interface VoieCardProps {
   adresse: IBANPlateformeVoie
@@ -12,7 +12,7 @@ interface VoieCardProps {
 export function VoieCard({ adresse, createSignalement }: VoieCardProps) {
   return (
     <Card>
-      <h1>{getExistingLocationLabel(adresse)}</h1>
+      <h1>{getAdresseLabel(adresse)}</h1>
       <h2>
         {adresse.commune.nom} - {adresse.commune.code}
       </h2>

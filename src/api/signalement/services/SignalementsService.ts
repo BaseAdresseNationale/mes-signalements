@@ -10,7 +10,7 @@ import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
 export class SignalementsService {
     /**
-     * Get all signalements for a given codeCommune
+     * Get signalements
      * @param codeCommune
      * @param sourceId
      * @param type
@@ -20,8 +20,8 @@ export class SignalementsService {
      * @returns any[]
      * @throws ApiError
      */
-    public static getSignalementsByCodeCommune(
-        codeCommune: string,
+    public static getSignalements(
+        codeCommune?: string,
         sourceId?: string,
         type?: 'LOCATION_TO_UPDATE' | 'LOCATION_TO_DELETE' | 'LOCATION_TO_CREATE' | 'OTHER',
         status?: 'PENDING' | 'IGNORED' | 'PROCESSED',
@@ -30,11 +30,9 @@ export class SignalementsService {
     ): CancelablePromise<any[]> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/signalements/{codeCommune}',
-            path: {
-                'codeCommune': codeCommune,
-            },
+            url: '/signalements',
             query: {
+                'codeCommune': codeCommune,
                 'sourceId': sourceId,
                 'type': type,
                 'status': status,

@@ -1,11 +1,14 @@
 import React from 'react'
 import { Source } from '../../api/signalement'
+import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
 
 interface HeaderProps {
   customSource?: Source
 }
 
 export function Header({ customSource }: HeaderProps) {
+  const { navigate } = useNavigateWithPreservedSearchParams()
+
   return (
     <header role='banner' className='fr-header'>
       <div className='fr-header__body'>
@@ -26,7 +29,22 @@ export function Header({ customSource }: HeaderProps) {
                 </p>
               </div>
             </div>
-            <div className='fr-header__tools'>{customSource && customSource.nom}</div>
+            <div className='fr-header__tools'>
+              <div className='fr-header__tools-links'>
+                {customSource && (
+                  <ul className='fr-btns-group'>
+                    <li>
+                      <button
+                        className='fr-btn fr-icon-account-circle-fill'
+                        onClick={() => navigate('/source')}
+                      >
+                        {customSource.nom}
+                      </button>
+                    </li>
+                  </ul>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

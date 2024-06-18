@@ -1,8 +1,8 @@
 import React from 'react'
 import { IBANPlateformeLieuDit, IBANPlateformeResult } from '../../api/ban-plateforme/types'
 import { Signalement } from '../../api/signalement'
-import { getExistingLocationLabel } from '../../utils/signalement.utils'
 import { Card } from '../common/Card'
+import { getAdresseLabel } from '../../utils/adresse.utils'
 
 interface LieuDitCardProps {
   adresse: IBANPlateformeLieuDit
@@ -12,7 +12,7 @@ interface LieuDitCardProps {
 export function LieuDitCard({ adresse, createSignalement }: LieuDitCardProps) {
   return (
     <Card>
-      <h1>{getExistingLocationLabel(adresse)}</h1>
+      <h1>{getAdresseLabel(adresse)}</h1>
       <h2>
         {adresse.commune.nom} - {adresse.commune.code}
       </h2>

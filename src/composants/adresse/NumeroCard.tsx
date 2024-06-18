@@ -2,7 +2,7 @@ import React from 'react'
 import { Signalement } from '../../api/signalement'
 import { IBANPlateformeNumero, IBANPlateformeResult } from '../../api/ban-plateforme/types'
 import { Card } from '../common/Card'
-import { getExistingLocationLabel } from '../../utils/signalement.utils'
+import { getAdresseLabel } from '../../utils/adresse.utils'
 
 interface NumeroCardProps {
   adresse: IBANPlateformeNumero
@@ -12,7 +12,7 @@ interface NumeroCardProps {
 export function NumeroCard({ adresse, createSignalement }: NumeroCardProps) {
   return (
     <Card>
-      <h1>{getExistingLocationLabel(adresse)}</h1>
+      <h1>{getAdresseLabel(adresse)}</h1>
       <h2>
         {adresse.commune.nom} - {adresse.commune.code}
       </h2>
