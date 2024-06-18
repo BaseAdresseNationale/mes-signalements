@@ -77,7 +77,10 @@ export function SourcePage() {
         <p>{getSignalementLabel(signalement)}</p>
         <p>Créé le {new Date(signalement._createdAt).toLocaleDateString()}</p>
         {signalement.processedBy && (
-          <p>Traité le {new Date(signalement._updatedAt).toLocaleDateString()}</p>
+          <p>
+            Traité le {new Date(signalement._updatedAt).toLocaleDateString()} par{' '}
+            {signalement.processedBy.nom}
+          </p>
         )}
       </StyledSignalementCard>
     )
