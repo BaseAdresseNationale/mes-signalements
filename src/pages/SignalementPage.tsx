@@ -19,11 +19,12 @@ import { getSignalementPositionColor } from '../utils/signalement.utils'
 import SignalementMap from '../composants/map/SignalementMap'
 import { Marker } from '../composants/map/Marker'
 import { getAdresseLabel } from '../utils/adresse.utils'
+import { useMapContent } from '../hooks/useMapContent'
 
 export function SignalementPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { isMobile } = useWindowSize()
-  const { mapRef, setMapChildren } = useContext(MapContext)
+  const { mapRef } = useContext(MapContext)
   const { adresse } = useLoaderData() as {
     adresse: IBANPlateformeResult
   }
@@ -112,13 +113,7 @@ export function SignalementPage() {
     [signalement, adresse, isEditParcellesMode],
   )
 
-  // Update map content
-  useEffect(() => {
-    setMapChildren(mapContent)
-    return () => {
-      setMapChildren(null)
-    }
-  }, [setMapChildren, mapContent])
+  useMapContent(mapContent)
 
   return (
     <>

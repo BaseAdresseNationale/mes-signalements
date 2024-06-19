@@ -12,6 +12,7 @@ import '@gouvfr/dsfr/dist/utility/utility.min.css'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { SourcePage } from './pages/SourcePage'
 import { MapContextProvider } from './contexts/map.context'
+import { AdresseSearchPage } from './pages/AdresseSearchPage'
 
 const API_SIGNALEMENT_URL = process.env.REACT_APP_API_SIGNALEMENT_URL
 
@@ -32,7 +33,11 @@ Object.assign(OpenAPI, {
 const router = createHashRouter([
   {
     path: '/',
-    element: <MapLayout />,
+    element: (
+      <MapLayout>
+        <AdresseSearchPage />
+      </MapLayout>
+    ),
   },
   {
     path: '/:code',

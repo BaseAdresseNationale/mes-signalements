@@ -1,4 +1,104 @@
+// DSFR default blue color
+const DEFAULT_COLOR = '#000091'
+
+const NUMEROS_POINT_MIN = 12
+const NUMEROS_MIN = 17
+
+const TOPONYME_MIN = 15
+const TOPONYME_MAX = 24
+
+const VOIE_MIN = 15
+const VOIE_MAX = 24
+
 export const PARCELLES_MINZOOM = 14
+
+export const adresseCircleLayer = {
+  id: 'adresse',
+  source: 'base-adresse-nationale',
+  'source-layer': 'adresses',
+  type: 'circle',
+  minzoom: NUMEROS_POINT_MIN,
+  paint: {
+    'circle-color': '#000091',
+    'circle-radius': {
+      stops: [
+        [12, 0.8],
+        [17, 6],
+      ],
+    },
+  },
+}
+
+export const adresseLabelLayer = {
+  id: 'adresse-label',
+  source: 'base-adresse-nationale',
+  'source-layer': 'adresses',
+  type: 'symbol',
+  minzoom: NUMEROS_MIN,
+  paint: {
+    'text-color': DEFAULT_COLOR,
+  },
+  layout: {
+    'text-font': ['Noto Sans Bold'],
+    'text-size': {
+      stops: [
+        [NUMEROS_MIN, 13],
+        [19, 16],
+      ],
+    },
+    'text-field': [
+      'case',
+      ['has', 'suffixe'],
+      ['format', ['get', 'numero'], {}, ' ', {}, ['get', 'suffixe'], {}],
+      ['get', 'numero'],
+    ],
+    'text-ignore-placement': false,
+    'text-variable-anchor': ['bottom'],
+    'text-radial-offset': 1,
+  },
+}
+
+export const voieLayer = {
+  id: 'voie',
+  source: 'base-adresse-nationale',
+  'source-layer': 'toponymes',
+  type: 'symbol',
+  minzoom: VOIE_MIN,
+  maxzoom: VOIE_MAX,
+  paint: {
+    'text-color': DEFAULT_COLOR,
+  },
+  layout: {
+    'text-font': ['Noto Sans Bold'],
+    'text-size': ['step', ['get', 'nbNumeros'], 8, 20, 10, 50, 14, 100, 16],
+    'text-field': ['get', 'nomVoie'],
+  },
+}
+
+export const toponymeLayer = {
+  id: 'toponyme',
+  source: 'base-adresse-nationale',
+  'source-layer': 'toponymes',
+  type: 'symbol',
+  minzoom: TOPONYME_MIN,
+  maxzoom: TOPONYME_MAX,
+  paint: {
+    'text-color': DEFAULT_COLOR,
+  },
+  layout: {
+    'text-font': ['Noto Sans Bold'],
+    'text-size': {
+      stops: [
+        [0, 3],
+        [10, 15],
+      ],
+    },
+    'text-field': ['get', 'nomVoie'],
+    'text-ignore-placement': false,
+    'text-variable-anchor': ['bottom', 'top', 'right', 'left'],
+    'text-radial-offset': 0.1,
+  },
+}
 
 export const cadastreLayers = [
   {
@@ -84,4 +184,32 @@ export const cadastreLayers = [
       'text-translate-anchor': 'map',
     },
   },
+]
+
+export const parcelleHoveredLayer = {
+  id: 'parcelle-hovered',
+  type: 'fill',
+  source: 'cadastre',
+  'source-layer': 'parcelles',
+  minzoom: PARCELLES_MINZOOM,
+  layout: {
+    visibility: 'none',
+  },
+  paint: {
+    'fill-color': [
+      'case',
+      ['boolean', ['feature-state', 'hover'], false],
+      '#0053b3',
+      'transparent',
+    ],
+    'fill-opacity': 0.6,
+  },
+}
+
+export const interactiveLayers = [
+  adresseCircleLayer,
+  adresseLabelLayer,
+  voieLayer,
+  toponymeLayer,
+  parcelleHoveredLayer,
 ]

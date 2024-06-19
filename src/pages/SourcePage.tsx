@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useCustomSource } from '../hooks/useCustomSource'
-import MapContext from '../contexts/map.context'
 import {
   getSignalementColor,
   getSignalementCoodinates,
@@ -11,6 +10,7 @@ import { Marker } from '../composants/map/Marker'
 import { Filters } from '../composants/common/Filters'
 import { Signalement } from '../api/signalement'
 import styled from 'styled-components'
+import { useMapContent } from '../hooks/useMapContent'
 
 const StyledWrapper = styled.div`
   padding-top: 10px;
@@ -58,7 +58,6 @@ export function SourcePage() {
   const [currentFilter, setCurrentFilter] = useState<Signalement.status | null>(
     Signalement.status.PENDING,
   )
-  const { setMapChildren } = useContext(MapContext)
   const { signalements: customSourceSignalements } = useCustomSource()
   const filteredSignalements = useMemo(
     () =>
@@ -106,13 +105,7 @@ export function SourcePage() {
     [filteredSignalements],
   )
 
-  // Update map content
-  useEffect(() => {
-    setMapChildren(mapContent)
-    return () => {
-      setMapChildren(null)
-    }
-  }, [setMapChildren, mapContent])
+  useMapContent(mapContent)
 
   return (
     <StyledWrapper>

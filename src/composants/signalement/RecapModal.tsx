@@ -10,7 +10,8 @@ import {
   SignalementsService,
 } from '../../api/signalement'
 import Modal from '../common/Modal'
-import { getExistingLocationLabel, getPositionTypeLabel } from '../../utils/signalement.utils'
+import { getPositionTypeLabel } from '../../utils/signalement.utils'
+import { getAdresseLabel } from '../../utils/adresse.utils'
 
 interface SignalementRecapModalProps {
   signalement: Signalement
@@ -58,7 +59,7 @@ export default function SignalementRecapModal({
             <div className='signalement-recap'>
               <div>
                 <h5>Lieu concerné</h5>
-                <p>{getExistingLocationLabel(address)}</p>
+                <p>{getAdresseLabel(address)}</p>
                 {address.positions && (
                   <>
                     <h6>Positions : </h6>
@@ -159,7 +160,7 @@ export default function SignalementRecapModal({
             <div className='signalement-recap'>
               <div>
                 <h5>Lieu concerné</h5>
-                <p>{getExistingLocationLabel(address)}</p>
+                <p>{getAdresseLabel(address)}</p>
                 {address.positions && (
                   <>
                     <h6>Positions : </h6>

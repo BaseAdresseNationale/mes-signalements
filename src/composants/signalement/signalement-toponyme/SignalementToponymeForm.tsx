@@ -1,7 +1,8 @@
 import { StyledForm } from '../signalement.styles'
 import { Signalement } from '../../../api/signalement'
-import { getExistingLocationLabel, getInitialSignalement } from '../../../utils/signalement.utils'
+import { getInitialSignalement } from '../../../utils/signalement.utils'
 import React, { useMemo } from 'react'
+import { getAdresseLabel } from '../../../utils/adresse.utils'
 
 interface SignalementToponymeFormProps {
   signalement: Signalement
@@ -32,7 +33,7 @@ export default function SignalementToponymeForm({
       <h4>Signalement d&apos;un problème d&apos;adressage</h4>
       <section>
         <h5>Lieu concernée</h5>
-        <div className='form-row'>{getExistingLocationLabel(address)}</div>
+        <div className='form-row'>{getAdresseLabel(address)}</div>
         <div className='form-row'>{address.commune.nom}</div>
       </section>
       <section>

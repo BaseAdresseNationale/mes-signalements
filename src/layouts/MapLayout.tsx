@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import Map from 'react-map-gl/maplibre'
-import React, { useContext, useEffect, useRef } from 'react'
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { Header } from '../composants/common/Header'
 import { Drawer } from '../composants/common/Drawer'
 import { useLocation, useNavigation } from 'react-router-dom'
@@ -9,6 +9,7 @@ import Loader from '../composants/common/Loader'
 import useNavigateWithPreservedSearchParams from '../hooks/useNavigateWithPreservedSearchParams'
 import { useCustomSource } from '../hooks/useCustomSource'
 import MapContext from '../contexts/map.context'
+import { interactiveLayers } from '../composants/map/layers'
 
 const Layout = styled.div`
   position: relative;
@@ -46,6 +47,10 @@ interface MapLayoutProps {
 export function MapLayout({ children }: MapLayoutProps) {
   const searchRef = useRef<HTMLDivElement>(null)
   const drawerRef = useRef<HTMLDivElement>(null)
+
+  const [cursor, setCursor] = useState<string | null>(null)
+  const onMouseEnter = useCallback(() => setCursor('pointer'), [])
+  const onMouseLeave = useCallback(() => setCursor(null), [])
 
   const { mapRef, mapChildren } = useContext(MapContext)
   const { source: customSource } = useCustomSource()
@@ -95,6 +100,10 @@ export function MapLayout({ children }: MapLayoutProps) {
             zoom: 5.5,
           }}
           mapStyle='https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json'
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
+          interactiveLayerIds={interactiveLayers.map((layer) => layer.id)}
+          {...(cursor ? { cursor } : {})}
         >
           {mapChildren}
         </Map>
