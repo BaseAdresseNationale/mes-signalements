@@ -69,7 +69,7 @@ function _AdresseSearch(props: any, ref: React.ForwardedRef<HTMLDivElement>) {
     <StyledSearch ref={ref} $animationDuration={ANIMATION_DURATION}>
       <Autocomplete
         inputProps={{
-          placeholder: '10 avenue de Ségure, Paris',
+          placeholder: '20 avenue de Ségur, Paris',
           style: { width: 400 },
         }}
         fetchResults={fetchAdresses}
