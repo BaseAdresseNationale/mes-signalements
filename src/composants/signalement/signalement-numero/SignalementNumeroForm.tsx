@@ -2,8 +2,9 @@ import React, { useMemo } from 'react'
 import { StyledForm } from '../signalement.styles'
 import PositionInput from '../../common/PositionInput'
 import { Position, Signalement } from '../../../api/signalement'
-import { getExistingLocationLabel, getInitialSignalement } from '../../../utils/signalement.utils'
+import { getInitialSignalement } from '../../../utils/signalement.utils'
 import { blurPosition } from '../../../utils/position.utils'
+import { getAdresseLabel } from '../../../utils/adresse.utils'
 
 interface SignalementNumeroFormProps {
   signalement: Signalement
@@ -50,7 +51,7 @@ export default function SignalementNumeroForm({
       {!isCreation && (
         <section>
           <h5>Adresse concernée</h5>
-          <div className='form-row'>{getExistingLocationLabel(address)}</div>
+          <div className='form-row'>{getAdresseLabel(address)}</div>
           <div className='form-row'>
             {address.codePostal} {address.commune.nom}
           </div>

@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react'
-import { getExistingLocationLabel, getInitialSignalement } from '../../../utils/signalement.utils'
+import { getInitialSignalement } from '../../../utils/signalement.utils'
 import { StyledForm } from '../signalement.styles'
 import { Signalement } from '../../../api/signalement'
+import { getAdresseLabel } from '../../../utils/adresse.utils'
 
 interface SignalementNumeroDeleteFormProps {
   signalement: Signalement
@@ -31,7 +32,7 @@ export default function SignalementNumeroDeleteForm({
       <h4>Demande de suppression d&apos;un numéro</h4>
       <section>
         <h5>Adresse concernée</h5>
-        <div className='form-row'>{getExistingLocationLabel(address)}</div>
+        <div className='form-row'>{getAdresseLabel(address)}</div>
         <div className='form-row'>
           {address.codePostal} {address.commune.nom}
         </div>
