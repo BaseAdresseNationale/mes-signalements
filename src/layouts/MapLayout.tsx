@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import Map from 'react-map-gl/maplibre'
+import Map, { NavigationControl } from 'react-map-gl/maplibre'
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { Header } from '../composants/common/Header'
 import { Drawer } from '../composants/common/Drawer'
@@ -9,7 +9,9 @@ import Loader from '../composants/common/Loader'
 import useNavigateWithPreservedSearchParams from '../hooks/useNavigateWithPreservedSearchParams'
 import { useCustomSource } from '../hooks/useCustomSource'
 import MapContext from '../contexts/map.context'
-import { interactiveLayers } from '../composants/map/layers'
+import { interactiveLayers } from '../config/map/layers'
+import { mapStyles } from '../config/map/styles'
+import { StylesSwitch } from '../composants/map/StylesSwitch'
 
 const Layout = styled.div`
   position: relative;
@@ -97,15 +99,17 @@ export function MapLayout({ children }: MapLayoutProps) {
           initialViewState={{
             longitude: 2,
             latitude: 47,
-            zoom: 5.5,
+            zoom: 5,
           }}
-          mapStyle='https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json'
+          mapStyle={mapStyles[0].uri}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
           interactiveLayerIds={interactiveLayers.map((layer) => layer.id)}
           {...(cursor ? { cursor } : {})}
         >
           {mapChildren}
+          <StylesSwitch styles={mapStyles} position='bottom-right' />
+          <NavigationControl position='bottom-right' />
         </Map>
         <AdresseSearch ref={searchRef} />
         <Drawer ref={drawerRef} onClose={handleCloseDrawer}>

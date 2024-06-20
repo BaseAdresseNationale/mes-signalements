@@ -13,6 +13,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import { SourcePage } from './pages/SourcePage'
 import { MapContextProvider } from './contexts/map.context'
 import { AdresseSearchPage } from './pages/AdresseSearchPage'
+import GlobalStyle from './globalStyles'
 
 const API_SIGNALEMENT_URL = process.env.REACT_APP_API_SIGNALEMENT_URL
 
@@ -73,6 +74,7 @@ const router = createHashRouter([
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
+    <GlobalStyle />
     <MapContextProvider>
       <RouterProvider router={router} />
     </MapContextProvider>

@@ -238,8 +238,6 @@ export const getInitialSignalement = (
     type: signalementType,
     codeCommune: address.commune.code,
     author: {
-      firstName: '',
-      lastName: '',
       email: '',
     },
     changesRequested: {},
@@ -277,7 +275,7 @@ export const getInitialSignalement = (
       } else {
         initialSignalement.changesRequested = {
           numero: address.numero,
-          suffixe: address.suffixe,
+          suffixe: address.suffixe || '',
           nomVoie: address.voie.nomVoie,
           positions: address.positions.map(
             ({ position, positionType }: { position: any; positionType: Position.type }) => ({

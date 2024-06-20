@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Layer, MapLayerMouseEvent, Source, useMap } from 'react-map-gl/maplibre'
 import { Position, Signalement } from '../../api/signalement'
-import { cadastreLayers, parcelleHoveredLayer } from './layers'
+import { cadastreLayers, parcelleHoveredLayer } from '../../config/map/layers'
 import { getSignalementPositionColor, positionTypeOptions } from '../../utils/signalement.utils'
 import { Marker } from './Marker'
 

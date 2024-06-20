@@ -1,5 +1,6 @@
 // DSFR default blue color
-const DEFAULT_COLOR = '#000091'
+export const DEFAULT_COLOR_DARK = '#000091'
+export const DEFAULT_COLOR_LIGHT = '#f0f0f0'
 
 const NUMEROS_POINT_MIN = 12
 const NUMEROS_MIN = 17
@@ -19,7 +20,7 @@ export const adresseCircleLayer = {
   type: 'circle',
   minzoom: NUMEROS_POINT_MIN,
   paint: {
-    'circle-color': '#000091',
+    'circle-color': DEFAULT_COLOR_DARK,
     'circle-radius': {
       stops: [
         [12, 0.8],
@@ -36,7 +37,7 @@ export const adresseLabelLayer = {
   type: 'symbol',
   minzoom: NUMEROS_MIN,
   paint: {
-    'text-color': DEFAULT_COLOR,
+    'text-color': DEFAULT_COLOR_DARK,
   },
   layout: {
     'text-font': ['Noto Sans Bold'],
@@ -66,7 +67,7 @@ export const voieLayer = {
   minzoom: VOIE_MIN,
   maxzoom: VOIE_MAX,
   paint: {
-    'text-color': DEFAULT_COLOR,
+    'text-color': DEFAULT_COLOR_DARK,
   },
   layout: {
     'text-font': ['Noto Sans Bold'],
@@ -83,7 +84,7 @@ export const toponymeLayer = {
   minzoom: TOPONYME_MIN,
   maxzoom: TOPONYME_MAX,
   paint: {
-    'text-color': DEFAULT_COLOR,
+    'text-color': DEFAULT_COLOR_DARK,
   },
   layout: {
     'text-font': ['Noto Sans Bold'],

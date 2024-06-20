@@ -5,7 +5,7 @@ import RecapModal from './RecapModal'
 import SignalementNumeroDeleteForm from './signalement-numero/SignalementNumeroDeleteForm'
 import { Signalement } from '../../api/signalement'
 import { BANPlateformeResultTypeEnum } from '../../api/ban-plateforme/types'
-import { MapRef } from 'react-map-gl/dist/esm/exports-maplibre'
+import { MapRef } from 'react-map-gl/maplibre'
 
 interface SignalementFormProps {
   signalement: Signalement

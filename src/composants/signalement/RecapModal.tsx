@@ -199,46 +199,22 @@ export default function SignalementRecapModal({
         <section>
           <h4>Contact</h4>
           <p>
-            Pour vous tenir informé de l&apos;avancement de votre signalement, merci de renseigner
-            vos coordonnées.
+            Vous pouvez nous laisser votre adresse email si vous souhaitez être tenu informé du
+            traitement de votre signalement.
           </p>
           <div className='form-row'>
             <div className='fr-input-group'>
-              <label className='fr-label' htmlFor='lastName'>
-                Nom
+              <label className='fr-label' htmlFor='email'>
+                Email
               </label>
               <input
-                name='lastName'
+                name='email'
                 className='fr-input'
-                value={signalement.author?.lastName || ''}
-                onChange={(event) => onEditSignalement('author', 'lastName')(event.target.value)}
+                type='email'
+                value={signalement.author?.email || ''}
+                onChange={(event) => onEditSignalement('author', 'email')(event.target.value)}
               />
             </div>
-            <div className='fr-input-group'>
-              <label className='fr-label' htmlFor='firstName'>
-                Prénom
-              </label>
-              <input
-                name='firstName'
-                className='fr-input'
-                value={signalement.author?.firstName || ''}
-                onChange={(event) => onEditSignalement('author', 'firstName')(event.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className='fr-input-group'>
-            <label className='fr-label' htmlFor='email'>
-              Email*
-            </label>
-            <input
-              name='email'
-              className='fr-input'
-              required={true}
-              type='email'
-              value={signalement.author?.email || ''}
-              onChange={(event) => onEditSignalement('author', 'email')(event.target.value)}
-            />
           </div>
 
           <div className='captcha-wrapper'>
