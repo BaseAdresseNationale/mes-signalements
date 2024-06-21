@@ -13,8 +13,14 @@ import styled from 'styled-components'
 import { useMapContent } from '../hooks/useMapContent'
 
 const StyledWrapper = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   padding-top: 10px;
   .signalement-list {
+    overflow-y: scroll;
+    flex: 1;
     list-style-type: none;
     padding: 0;
     margin: 0;

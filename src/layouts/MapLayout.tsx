@@ -102,14 +102,15 @@ export function MapLayout({ children }: MapLayoutProps) {
             zoom: 5,
           }}
           mapStyle={mapStyles[0].uri}
+          attributionControl={false}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
           interactiveLayerIds={interactiveLayers.map((layer) => layer.id)}
           {...(cursor ? { cursor } : {})}
         >
           {mapChildren}
-          <StylesSwitch styles={mapStyles} position='bottom-right' />
-          <NavigationControl position='bottom-right' />
+          <NavigationControl position='top-right' />
+          <StylesSwitch styles={mapStyles} position='top-right' />
         </Map>
         <AdresseSearch ref={searchRef} />
         <Drawer ref={drawerRef} onClose={handleCloseDrawer}>

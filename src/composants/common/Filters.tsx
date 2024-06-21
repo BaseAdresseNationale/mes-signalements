@@ -1,7 +1,24 @@
 import React from 'react'
 import styled from 'styled-components'
+import { MOBILE_BREAKPOINT } from '../../hooks/useWindowSize'
 
-const StyledFilters = styled.ul``
+const StyledFilters = styled.div`
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-around;
+  position: sticky;
+  flex-shrink: 0;
+
+  > button:not(:first-child) {
+    margin-left: 5px;
+  }
+
+  @media screen and (max-width: ${MOBILE_BREAKPOINT}px) {
+    > button {
+      font-size: 0.8em;
+    }
+  }
+`
 
 interface FiltersProps {
   options: { label: string; value: string | null }[]
@@ -11,7 +28,7 @@ interface FiltersProps {
 
 export function Filters({ options, value, onChange }: FiltersProps) {
   return (
-    <StyledFilters className='fr-btns-group fr-btns-group--inline'>
+    <StyledFilters>
       {options.map(({ label, value: _value }, index) => (
         <button
           key={index}

@@ -5,6 +5,7 @@ import Autocomplete from '../common/Autocomplete'
 import { ANIMATION_DURATION } from '../../layouts/MapLayout'
 import React, { forwardRef } from 'react'
 import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
+import { MOBILE_BREAKPOINT } from '../../hooks/useWindowSize'
 
 const StyledSearch = styled.div<{ $animationDuration: number }>`
   position: absolute;
@@ -19,10 +20,28 @@ const StyledSearch = styled.div<{ $animationDuration: number }>`
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   transition: ${({ $animationDuration }) => `top ${$animationDuration}ms ease-in-out`};
-  max-width: calc(100% - 20px);
+
+  input {
+    width: 400px;
+  }
 
   &.show {
     top: 50px;
+  }
+
+  @media screen and (max-width: ${MOBILE_BREAKPOINT}px) {
+    padding: 10px;
+    width: calc(100% - 80px);
+    left: 10px;
+    transform: none;
+
+    input {
+      width: 100%;
+    }
+
+    &.show {
+      top: 10px;
+    }
   }
 `
 
@@ -70,7 +89,6 @@ function _AdresseSearch(props: any, ref: React.ForwardedRef<HTMLDivElement>) {
       <Autocomplete
         inputProps={{
           placeholder: '20 avenue de Ségur, Paris',
-          style: { width: 400 },
         }}
         fetchResults={fetchAdresses}
         onSelect={(adresse) => navigate(`/${adresse.code}`)}

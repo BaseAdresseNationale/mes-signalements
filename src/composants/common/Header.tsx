@@ -19,6 +19,26 @@ export function Header({ customSource }: HeaderProps) {
                 <div className='fr-header__logo'>
                   <p className='fr-logo' />
                 </div>
+                <div className='fr-header__navbar'>
+                  {customSource && (
+                    <ul className='fr-btns-group'>
+                      <li>
+                        <button
+                          className='fr-btn fr-icon-account-circle-fill'
+                          onClick={() => navigate('/source')}
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            fontSize: '0.8em',
+                          }}
+                        >
+                          {customSource.nom}
+                        </button>
+                      </li>
+                    </ul>
+                  )}
+                </div>
               </div>
               <div className='fr-header__service'>
                 <a href='/' title='Accueil - Mes Signalements - DINUM)'>
