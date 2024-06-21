@@ -13,14 +13,14 @@ const VOIE_MAX = 24
 
 export const PARCELLES_MINZOOM = 14
 
-export const adresseCircleLayer = {
+export const getAdresseCircleLayer = (color = DEFAULT_COLOR_DARK) => ({
   id: 'adresse',
   source: 'base-adresse-nationale',
   'source-layer': 'adresses',
   type: 'circle',
   minzoom: NUMEROS_POINT_MIN,
   paint: {
-    'circle-color': DEFAULT_COLOR_DARK,
+    'circle-color': color,
     'circle-radius': {
       stops: [
         [12, 0.8],
@@ -28,16 +28,16 @@ export const adresseCircleLayer = {
       ],
     },
   },
-}
+})
 
-export const adresseLabelLayer = {
+export const getAdresseLabelLayer = (color = DEFAULT_COLOR_DARK) => ({
   id: 'adresse-label',
   source: 'base-adresse-nationale',
   'source-layer': 'adresses',
   type: 'symbol',
   minzoom: NUMEROS_MIN,
   paint: {
-    'text-color': DEFAULT_COLOR_DARK,
+    'text-color': color,
   },
   layout: {
     'text-font': ['Noto Sans Bold'],
@@ -57,9 +57,9 @@ export const adresseLabelLayer = {
     'text-variable-anchor': ['bottom'],
     'text-radial-offset': 1,
   },
-}
+})
 
-export const voieLayer = {
+export const getVoieLayer = (color = DEFAULT_COLOR_DARK) => ({
   id: 'voie',
   source: 'base-adresse-nationale',
   'source-layer': 'toponymes',
@@ -67,16 +67,16 @@ export const voieLayer = {
   minzoom: VOIE_MIN,
   maxzoom: VOIE_MAX,
   paint: {
-    'text-color': DEFAULT_COLOR_DARK,
+    'text-color': color,
   },
   layout: {
     'text-font': ['Noto Sans Bold'],
     'text-size': ['step', ['get', 'nbNumeros'], 8, 20, 10, 50, 14, 100, 16],
     'text-field': ['get', 'nomVoie'],
   },
-}
+})
 
-export const toponymeLayer = {
+export const getToponymeLayer = (color = DEFAULT_COLOR_DARK) => ({
   id: 'toponyme',
   source: 'base-adresse-nationale',
   'source-layer': 'toponymes',
@@ -84,7 +84,7 @@ export const toponymeLayer = {
   minzoom: TOPONYME_MIN,
   maxzoom: TOPONYME_MAX,
   paint: {
-    'text-color': DEFAULT_COLOR_DARK,
+    'text-color': color,
   },
   layout: {
     'text-font': ['Noto Sans Bold'],
@@ -99,7 +99,42 @@ export const toponymeLayer = {
     'text-variable-anchor': ['bottom', 'top', 'right', 'left'],
     'text-radial-offset': 0.1,
   },
+})
+
+export const parcelleHoveredLayer = {
+  id: 'parcelle-hovered',
+  type: 'fill',
+  source: 'cadastre',
+  'source-layer': 'parcelles',
+  minzoom: PARCELLES_MINZOOM,
+  layout: {
+    visibility: 'none',
+  },
+  paint: {
+    'fill-color': [
+      'case',
+      ['boolean', ['feature-state', 'hover'], false],
+      '#0053b3',
+      'transparent',
+    ],
+    'fill-opacity': 0.6,
+  },
 }
+
+export const interactiveLayers = [
+  getAdresseCircleLayer(),
+  getAdresseLabelLayer(),
+  getVoieLayer(),
+  getToponymeLayer(),
+  parcelleHoveredLayer,
+]
+
+export const getBanLayers = (color: string) => [
+  getAdresseCircleLayer(color),
+  getAdresseLabelLayer(color),
+  getVoieLayer(color),
+  getToponymeLayer(color),
+]
 
 export const cadastreLayers = [
   {
@@ -185,32 +220,4 @@ export const cadastreLayers = [
       'text-translate-anchor': 'map',
     },
   },
-]
-
-export const parcelleHoveredLayer = {
-  id: 'parcelle-hovered',
-  type: 'fill',
-  source: 'cadastre',
-  'source-layer': 'parcelles',
-  minzoom: PARCELLES_MINZOOM,
-  layout: {
-    visibility: 'none',
-  },
-  paint: {
-    'fill-color': [
-      'case',
-      ['boolean', ['feature-state', 'hover'], false],
-      '#0053b3',
-      'transparent',
-    ],
-    'fill-opacity': 0.6,
-  },
-}
-
-export const interactiveLayers = [
-  adresseCircleLayer,
-  adresseLabelLayer,
-  voieLayer,
-  toponymeLayer,
-  parcelleHoveredLayer,
 ]

@@ -1,20 +1,15 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Layer, MapLayerMouseEvent, Source, useMap } from 'react-map-gl/maplibre'
-import {
-  //   DEFAULT_COLOR_DARK,
-  //   DEFAULT_COLOR_LIGHT,
-  adresseCircleLayer,
-  adresseLabelLayer,
-  toponymeLayer,
-  voieLayer,
-} from '../../config/map/layers'
+import { DEFAULT_COLOR_DARK, getBanLayers } from '../../config/map/layers'
 import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
+import { mapStyles } from '../../config/map/styles'
 
-const banLayers = [adresseCircleLayer, adresseLabelLayer, voieLayer, toponymeLayer]
+// const banLayers = [adresseCircleLayer, adresseLabelLayer, voieLayer, toponymeLayer]
 
 export function AdresseSearchMap() {
   const map = useMap()
   const { navigate } = useNavigateWithPreservedSearchParams()
+  const [banLayers, setBanLayers] = useState(getBanLayers(DEFAULT_COLOR_DARK))
 
   useEffect(() => {
     if (!map.current) {
@@ -28,16 +23,12 @@ export function AdresseSearchMap() {
     }
 
     // Update layers color on style change
-    // map?.current.on('styledata', () => {
-    //   const curStyle = map.current?.getStyle()
-    //   const layerColor = curStyle?.name === 'Bright' ? DEFAULT_COLOR_DARK : DEFAULT_COLOR_LIGHT
-    //   banLayers.forEach((layer) => {
-    //     const l = map.current?.getLayer(layer.id)
-    //     l?.type === 'circle'
-    //       ? l?.setPaintProperty('circle-color', layerColor)
-    //       : l?.setPaintProperty('text-color', layerColor)
-    //   })
-    // })
+    map?.current.on('styledata', () => {
+      const curStyle = map.current?.getStyle()
+      const layerColor =
+        mapStyles.find(({ id }) => id === curStyle?.name)?.layersColor || DEFAULT_COLOR_DARK
+      setBanLayers(getBanLayers(layerColor))
+    })
 
     banLayers.forEach((layer) => {
       if (map?.current) {
