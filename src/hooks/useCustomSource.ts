@@ -19,8 +19,11 @@ export function useCustomSource() {
 
   const fetchSignalements = useCallback(async (sourceId: string) => {
     try {
-      const signalements = await SignalementsService.getSignalements(undefined, sourceId as string)
-      setSignalements(signalements)
+      const paginatedSignalements = await SignalementsService.getSignalements(
+        undefined,
+        sourceId as string,
+      )
+      setSignalements(paginatedSignalements.data)
     } catch (e) {
       console.error(e)
     }

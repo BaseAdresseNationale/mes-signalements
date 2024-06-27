@@ -4,6 +4,7 @@
 /* eslint-disable */
 export type ExistingToponyme = {
     type: ExistingToponyme.type;
+    banId?: string | null;
     nom: string;
 };
 export namespace ExistingToponyme {

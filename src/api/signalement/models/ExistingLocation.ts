@@ -4,6 +4,7 @@
 /* eslint-disable */
 export type ExistingLocation = {
     type: ExistingLocation.type;
+    banId?: string | null;
 };
 export namespace ExistingLocation {
     export enum type {

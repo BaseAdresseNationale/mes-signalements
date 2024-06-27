@@ -4,6 +4,7 @@
 /* eslint-disable */
 export type ExistingVoie = {
     type: ExistingVoie.type;
+    banId?: string | null;
     nom: string;
 };
 export namespace ExistingVoie {

@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { CreateSignalementDTO } from '../models/CreateSignalementDTO';
+import type { PaginatedSignalementsDTO } from '../models/PaginatedSignalementsDTO';
 import type { Signalement } from '../models/Signalement';
 import type { UpdateSignalementDTO } from '../models/UpdateSignalementDTO';
 import type { CancelablePromise } from '../core/CancelablePromise';
@@ -17,7 +18,7 @@ export class SignalementsService {
      * @param status
      * @param limit
      * @param page
-     * @returns any[]
+     * @returns PaginatedSignalementsDTO
      * @throws ApiError
      */
     public static getSignalements(
@@ -27,7 +28,7 @@ export class SignalementsService {
         status?: 'PENDING' | 'IGNORED' | 'PROCESSED',
         limit?: number,
         page?: number,
-    ): CancelablePromise<any[]> {
+    ): CancelablePromise<PaginatedSignalementsDTO> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/signalements',
@@ -63,17 +64,39 @@ export class SignalementsService {
         });
     }
     /**
+     * Get signalement by id
+     * @param idSignalement
+     * @returns Signalement
+     * @throws ApiError
+     */
+    public static getSignalementById(
+        idSignalement: string,
+    ): CancelablePromise<Signalement> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/signalements/{idSignalement}',
+            path: {
+                'idSignalement': idSignalement,
+            },
+        });
+    }
+    /**
      * Update a given signalement
+     * @param idSignalement
      * @param requestBody
      * @returns Signalement
      * @throws ApiError
      */
     public static updateSignalement(
+        idSignalement: string,
         requestBody: UpdateSignalementDTO,
     ): CancelablePromise<Signalement> {
         return __request(OpenAPI, {
             method: 'PUT',
-            url: '/signalements',
+            url: '/signalements/{idSignalement}',
+            path: {
+                'idSignalement': idSignalement,
+            },
             body: requestBody,
             mediaType: 'application/json',
         });

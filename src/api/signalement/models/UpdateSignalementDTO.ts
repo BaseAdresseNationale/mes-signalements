@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type UpdateSignalementDTO = {
-    id: string;
     status: UpdateSignalementDTO.status;
 };
 export namespace UpdateSignalementDTO {
