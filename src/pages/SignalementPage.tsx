@@ -15,7 +15,6 @@ import { LieuDitCard } from '../composants/adresse/LieuDitCard'
 import useWindowSize from '../hooks/useWindowSize'
 import { useSignalement } from '../hooks/useSignalement'
 import { MapContext } from '../contexts/map.context'
-import { getSignalementPositionColor } from '../utils/signalement.utils'
 import SignalementMap from '../composants/map/SignalementMap'
 import { Marker } from '../composants/map/Marker'
 import { getAdresseLabel } from '../utils/adresse.utils'
@@ -24,7 +23,7 @@ import { useMapContent } from '../hooks/useMapContent'
 export function SignalementPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { isMobile } = useWindowSize()
-  const { mapRef } = useContext(MapContext)
+  const { mapRef, markerColor } = useContext(MapContext)
   const { adresse } = useLoaderData() as {
     adresse: IBANPlateformeResult
   }
@@ -39,7 +38,7 @@ export function SignalementPage() {
 
   // Fly to location
   useEffect(() => {
-    if (!mapRef?.current) {
+    if (!mapRef) {
       return
     }
 
@@ -54,7 +53,7 @@ export function SignalementPage() {
       const numero = adresse as IBANPlateformeNumero
       position = [numero.lon, numero.lat]
     }
-    mapRef.current.flyTo({
+    mapRef.flyTo({
       center: position as [number, number],
       offset: [0, isMobile ? -100 : 0],
       zoom: 20,
@@ -98,7 +97,7 @@ export function SignalementPage() {
                 (adresse as IBANPlateformeNumero).lon,
                 (adresse as IBANPlateformeNumero).lat,
               ]}
-              color={getSignalementPositionColor((adresse as IBANPlateformeNumero).positionType)}
+              color={markerColor}
             />
           )}
         {signalement?.changesRequested?.positions && (
@@ -106,11 +105,12 @@ export function SignalementPage() {
             isEditParcellesMode={isEditParcellesMode}
             signalement={signalement}
             onEditSignalement={onEditSignalement}
+            markerColor={markerColor}
           />
         )}
       </>
     ),
-    [signalement, adresse, isEditParcellesMode],
+    [signalement, adresse, isEditParcellesMode, markerColor],
   )
 
   useMapContent(mapContent)
@@ -143,7 +143,7 @@ export function SignalementPage() {
       {signalement && (
         <SignalementForm
           address={adresse}
-          map={mapRef?.current || null}
+          map={mapRef || null}
           signalement={signalement as Signalement}
           onEditSignalement={onEditSignalement}
           onClose={handleCloseSignalementForm}

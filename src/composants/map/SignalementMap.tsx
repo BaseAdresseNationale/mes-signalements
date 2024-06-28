@@ -2,19 +2,21 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Layer, MapLayerMouseEvent, Source, useMap } from 'react-map-gl/maplibre'
 import { Position, Signalement } from '../../api/signalement'
 import { cadastreLayers, parcelleHoveredLayer } from '../../config/map/layers'
-import { getSignalementPositionColor, positionTypeOptions } from '../../utils/signalement.utils'
+import { positionTypeOptions } from '../../utils/signalement.utils'
 import { Marker } from './Marker'
 
 interface SignalementMapProps {
   signalement: Signalement
   onEditSignalement: (property: keyof Signalement, key: string) => (value: any) => void
   isEditParcellesMode: boolean
+  markerColor: string
 }
 
 function SignalementMap({
   signalement,
   onEditSignalement,
   isEditParcellesMode,
+  markerColor,
 }: SignalementMapProps) {
   const map = useMap()
   const [hoveredParcelle, setHoveredParcelle] = useState<null | string>(null)
@@ -165,7 +167,7 @@ function SignalementMap({
           key={index}
           label={getSignalementPositionLabel(type)}
           coordinates={point.coordinates as [number, number]}
-          color={getSignalementPositionColor(type)}
+          color={markerColor}
           onDragEnd={onMarkerDragEnd(index)}
         />
       ))}

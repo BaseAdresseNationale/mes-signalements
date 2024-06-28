@@ -13,44 +13,36 @@ export const positionTypeOptions = [
   {
     value: Position.type.ENTR_E,
     label: 'Entrée',
-    color: 'var(--background-action-high-blue-france)',
   },
   {
     value: Position.type.D_LIVRANCE_POSTALE,
     label: 'Délivrance postale',
-    color: 'var(--background-action-high-red-marianne)',
   },
   {
     value: Position.type.B_TIMENT,
     label: 'Bâtiment',
-    color: 'var(--background-action-high-green-tilleul-verveine)',
   },
   {
     value: Position.type.CAGE_D_ESCALIER,
     label: 'Cage d’escalier',
-    color: 'var(--background-action-high-green-bourgeon)',
   },
   {
     value: Position.type.LOGEMENT,
     label: 'Logement',
-    color: 'var(--background-action-high-green-menthe)',
   },
   {
     value: Position.type.PARCELLE,
     label: 'Parcelle',
-    color: 'var(--background-action-high-blue-ecume)',
   },
   {
     value: Position.type.SEGMENT,
     label: 'Segment',
-    color: 'var(--background-action-high-purple-glycine)',
   },
   {
     value: Position.type.SERVICE_TECHNIQUE,
     label: 'Service technique',
-    color: 'var(--background-action-high-pink-macaron)',
   },
-  { value: Position.type.INCONNUE, label: 'Inconnu', color: 'black' },
+  { value: Position.type.INCONNUE, label: 'Inconnu' },
 ]
 
 export const getPositionTypeLabel = (positionType: Position.type) => {
@@ -161,10 +153,6 @@ export const getSignalementTypeLabel = (type: Signalement.type) => {
   }
 
   return label
-}
-
-export const getSignalementPositionColor = (positionType: Position.type) => {
-  return positionTypeOptions.find(({ value }) => value === positionType)?.color || 'black'
 }
 
 export function getExistingLocation(

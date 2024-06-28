@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Layer, MapLayerMouseEvent, Source, useMap } from 'react-map-gl/maplibre'
 import { DEFAULT_COLOR_DARK, getBanLayers } from '../../config/map/layers'
 import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
-import { mapStyles } from '../../config/map/styles'
-
-// const banLayers = [adresseCircleLayer, adresseLabelLayer, voieLayer, toponymeLayer]
+import MapContext from '../../contexts/map.context'
 
 export function AdresseSearchMap() {
   const map = useMap()
+  const { markerColor } = useContext(MapContext)
   const { navigate } = useNavigateWithPreservedSearchParams()
   const [banLayers, setBanLayers] = useState(getBanLayers(DEFAULT_COLOR_DARK))
 
+  // Add select handlers to BAN layers
   useEffect(() => {
     if (!map.current) {
       return
@@ -21,14 +21,6 @@ export function AdresseSearchMap() {
         navigate(`/${e.features[0].id}`)
       }
     }
-
-    // Update layers color on style change
-    map?.current.on('styledata', () => {
-      const curStyle = map.current?.getStyle()
-      const layerColor =
-        mapStyles.find(({ id }) => id === curStyle?.name)?.layersColor || DEFAULT_COLOR_DARK
-      setBanLayers(getBanLayers(layerColor))
-    })
 
     banLayers.forEach((layer) => {
       if (map?.current) {
@@ -44,6 +36,11 @@ export function AdresseSearchMap() {
       })
     }
   }, [map, navigate])
+
+  // Update BAN layers on markerColor change
+  useEffect(() => {
+    setBanLayers(getBanLayers(markerColor))
+  }, [markerColor])
 
   return (
     <Source

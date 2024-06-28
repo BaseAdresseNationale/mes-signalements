@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useContext, useMemo, useState } from 'react'
 import { useCustomSource } from '../hooks/useCustomSource'
 import {
   getSignalementColor,
@@ -11,6 +11,7 @@ import { Filters } from '../composants/common/Filters'
 import { Signalement } from '../api/signalement'
 import styled from 'styled-components'
 import { useMapContent } from '../hooks/useMapContent'
+import MapContext from '../contexts/map.context'
 
 const StyledWrapper = styled.div`
   position: relative;
@@ -61,6 +62,7 @@ const filterOptions = [
 ]
 
 export function SourcePage() {
+  const { markerColor } = useContext(MapContext)
   const [currentFilter, setCurrentFilter] = useState<Signalement.status | null>(
     Signalement.status.PENDING,
   )
@@ -101,14 +103,14 @@ export function SourcePage() {
             <Marker
               key={signalement._id as string}
               coordinates={coordinates}
-              color={`var(--background-action-high-${getSignalementColor(signalement.type)}`}
+              color={markerColor}
               popupContent={getSignalementCard(signalement)}
             />
           ) : null
         })}
       </>
     ),
-    [filteredSignalements],
+    [filteredSignalements, markerColor],
   )
 
   useMapContent(mapContent)

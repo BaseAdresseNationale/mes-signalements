@@ -56,7 +56,7 @@ export function MapLayout({ children }: MapLayoutProps) {
   const onMouseEnter = useCallback(() => setCursor('pointer'), [])
   const onMouseLeave = useCallback(() => setCursor(null), [])
 
-  const { mapRef, mapChildren } = useContext(MapContext)
+  const { mapRefCb, mapChildren } = useContext(MapContext)
   const { source: customSource } = useCustomSource()
 
   const { navigate } = useNavigateWithPreservedSearchParams()
@@ -90,7 +90,7 @@ export function MapLayout({ children }: MapLayoutProps) {
       <Header customSource={customSource} toggleShowInfo={() => setShowInfo((state) => !state)} />
       <div className='main-wrapper'>
         <Map
-          ref={mapRef}
+          ref={mapRefCb}
           style={{
             zIndex: 0,
             position: 'absolute',

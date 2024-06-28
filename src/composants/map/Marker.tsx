@@ -37,6 +37,9 @@ export function Marker({ label, coordinates, color, onDragEnd, popupContent }: M
                 e.originalEvent.stopPropagation()
                 setShowPopup(true)
               },
+              style: {
+                cursor: 'pointer',
+              },
             }
           : {})}
       >
