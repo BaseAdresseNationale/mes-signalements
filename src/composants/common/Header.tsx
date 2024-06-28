@@ -1,16 +1,35 @@
 import React from 'react'
 import { Source } from '../../api/signalement'
 import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
+import styled from 'styled-components'
+
+const StyledHeader = styled.header`
+  .fr-header__navbar > .fr-btns-group {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    margin-right: 10px;
+
+    button {
+      margin: 0;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      font-size: 0.6em;
+    }
+  }
+`
 
 interface HeaderProps {
   customSource?: Source
+  toggleShowInfo: () => void
 }
 
-export function Header({ customSource }: HeaderProps) {
+export function Header({ customSource, toggleShowInfo }: HeaderProps) {
   const { navigate } = useNavigateWithPreservedSearchParams()
 
   return (
-    <header role='banner' className='fr-header'>
+    <StyledHeader role='banner' className='fr-header'>
       <div className='fr-header__body'>
         <div className='fr-container'>
           <div className='fr-header__body-row'>
@@ -20,24 +39,28 @@ export function Header({ customSource }: HeaderProps) {
                   <p className='fr-logo' />
                 </div>
                 <div className='fr-header__navbar'>
-                  {customSource && (
-                    <ul className='fr-btns-group'>
+                  <ul className='fr-btns-group'>
+                    {customSource && (
                       <li>
                         <button
+                          title={customSource.nom}
                           className='fr-btn fr-icon-account-circle-fill'
                           onClick={() => navigate('/source')}
-                          style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            fontSize: '0.8em',
-                          }}
                         >
                           {customSource.nom}
                         </button>
                       </li>
-                    </ul>
-                  )}
+                    )}
+                    <li>
+                      <button
+                        title='À propos'
+                        className='fr-btn fr-icon-information-fill'
+                        onClick={toggleShowInfo}
+                      >
+                        À propos
+                      </button>
+                    </li>
+                  </ul>
                 </div>
               </div>
               <div className='fr-header__service'>
@@ -51,8 +74,8 @@ export function Header({ customSource }: HeaderProps) {
             </div>
             <div className='fr-header__tools'>
               <div className='fr-header__tools-links'>
-                {customSource && (
-                  <ul className='fr-btns-group'>
+                <ul className='fr-btns-group'>
+                  {customSource && (
                     <li>
                       <button
                         className='fr-btn fr-icon-account-circle-fill'
@@ -61,13 +84,18 @@ export function Header({ customSource }: HeaderProps) {
                         {customSource.nom}
                       </button>
                     </li>
-                  </ul>
-                )}
+                  )}
+                  <li>
+                    <button className='fr-btn fr-icon-information-fill' onClick={toggleShowInfo}>
+                      À propos
+                    </button>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </header>
+    </StyledHeader>
   )
 }

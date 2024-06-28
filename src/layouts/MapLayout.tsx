@@ -12,6 +12,7 @@ import MapContext from '../contexts/map.context'
 import { interactiveLayers } from '../config/map/layers'
 import { mapStyles } from '../config/map/styles'
 import { StylesSwitch } from '../composants/map/StylesSwitch'
+import { AboutModal } from '../composants/about/AboutModal'
 
 const Layout = styled.div`
   position: relative;
@@ -51,6 +52,7 @@ export function MapLayout({ children }: MapLayoutProps) {
   const drawerRef = useRef<HTMLDivElement>(null)
 
   const [cursor, setCursor] = useState<string | null>(null)
+  const [showInfo, setShowInfo] = useState(false)
   const onMouseEnter = useCallback(() => setCursor('pointer'), [])
   const onMouseLeave = useCallback(() => setCursor(null), [])
 
@@ -85,7 +87,7 @@ export function MapLayout({ children }: MapLayoutProps) {
 
   return (
     <Layout>
-      <Header customSource={customSource} />
+      <Header customSource={customSource} toggleShowInfo={() => setShowInfo((state) => !state)} />
       <div className='main-wrapper'>
         <Map
           ref={mapRef}
@@ -122,6 +124,7 @@ export function MapLayout({ children }: MapLayoutProps) {
           {children}
         </Drawer>
       </div>
+      {showInfo && <AboutModal onClose={() => setShowInfo(false)} />}
     </Layout>
   )
 }

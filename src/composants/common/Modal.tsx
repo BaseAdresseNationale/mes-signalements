@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import styled from 'styled-components'
 import { MOBILE_BREAKPOINT } from '../../hooks/useWindowSize'
 
-const StyledContainer = styled.div`
+const StyledBackDrop = styled.div`
   height: 100vh;
   position: fixed;
   background: rgb(24, 24, 24, 0.7);
@@ -15,46 +15,43 @@ const StyledContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+`
 
-  > .modal {
-    background: white;
+const StyledModal = styled.div`
+  background: white;
+  display: flex;
+  padding: 2em;
+  max-height: 90%;
+  max-width: 90%;
+  height: fit-content;
+  flex-direction: column;
+  overflow: auto;
+
+  > .header {
     display: flex;
-    padding: 2em;
-    border-radius: 5px;
-    max-height: 90%;
-    max-width: 90%;
-    height: fit-content;
-    flex-direction: column;
-    overflow: auto;
+    justify-content: space-between;
+    margin-bottom: 1em;
+    text-align: center;
 
-    > .header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 1em;
-      text-align: center;
+    h3 {
+      margin: 0;
+    }
 
-      h3 {
-        margin: 0;
-      }
+    button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
 
-      button {
+      &:hover {
         background: none;
-        border: none;
-        cursor: pointer;
-        padding: 0;
-        margin: 0;
-
-        &:hover {
-          background: none;
-        }
       }
     }
   }
 
   @media screen and (max-width: ${MOBILE_BREAKPOINT}px) {
-    > .modal {
-      padding: 1em;
-    }
+    padding: 1em;
   }
 `
 
@@ -68,17 +65,22 @@ function Modal({ title, children, onClose }: ModalProps) {
   const rootElement = document.getElementById('root')
 
   return ReactDOM.createPortal(
-    <StyledContainer>
-      <div className='modal'>
+    <StyledBackDrop onClick={onClose}>
+      <StyledModal onClick={(e) => e.stopPropagation()}>
         <div className='header'>
           <h3>{title}</h3>
-          <button type='button' onClick={onClose}>
-            X
+          <button
+            className='fr-btn fr-btn--close fr-btn--tertiary-no-outline'
+            title='Fermer'
+            type='button'
+            onClick={onClose}
+          >
+            Fermer
           </button>
         </div>
         {children}
-      </div>
-    </StyledContainer>,
+      </StyledModal>
+    </StyledBackDrop>,
     rootElement as HTMLElement,
   )
 }
