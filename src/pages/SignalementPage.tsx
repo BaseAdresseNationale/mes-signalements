@@ -89,8 +89,8 @@ export function SignalementPage() {
     () => (
       <>
         {!signalement?.changesRequested?.positions &&
-          (adresse as IBANPlateformeNumero)?.lat &&
-          (adresse as IBANPlateformeNumero)?.lon && (
+          Boolean((adresse as IBANPlateformeNumero)?.lat) &&
+          Boolean((adresse as IBANPlateformeNumero)?.lon) && (
             <Marker
               label={getAdresseLabel(adresse)}
               coordinates={[

@@ -239,7 +239,6 @@ export const getInitialSignalement = (
         nomVoie: address.nomVoie,
         positions: [],
         parcelles: [],
-        ...(changesRequested ? changesRequested : {}),
       }
       initialSignalement.existingLocation = {
         type: ExistingLocation.type.VOIE,
@@ -250,7 +249,6 @@ export const getInitialSignalement = (
       if (address.type === BANPlateformeResultTypeEnum.VOIE) {
         initialSignalement.changesRequested = {
           nom: address.nomVoie,
-          ...(changesRequested ? changesRequested : {}),
         }
       } else if (address.type === BANPlateformeResultTypeEnum.LIEU_DIT) {
         initialSignalement.changesRequested = {
@@ -258,7 +256,6 @@ export const getInitialSignalement = (
           // For the moment we don't allow to change the position of a toponyme
           // positions: address.positions,
           // parcelles: address.parcelles
-          ...(changesRequested ? changesRequested : {}),
         }
       } else {
         initialSignalement.changesRequested = {
@@ -275,7 +272,6 @@ export const getInitialSignalement = (
             }),
           ),
           parcelles: address.parcelles,
-          ...(changesRequested ? changesRequested : {}),
         }
       }
 
@@ -284,12 +280,18 @@ export const getInitialSignalement = (
     case Signalement.type.LOCATION_TO_DELETE:
       initialSignalement.changesRequested = {
         comment: '',
-        ...(changesRequested ? changesRequested : {}),
       }
       initialSignalement.existingLocation = getExistingLocation(address)
       break
     default:
       throw new Error(`Type de signalement inconnu : ${signalementType}`)
+  }
+
+  if (changesRequested) {
+    initialSignalement.changesRequested = {
+      ...initialSignalement.changesRequested,
+      ...changesRequested,
+    }
   }
 
   return initialSignalement as Signalement

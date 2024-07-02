@@ -47,12 +47,16 @@ export default function PositionInput({
         }
       />
       <div className='fr-input-group position-input'>
-        <label className='fr-label'>Longitude</label>
-        <input className='fr-input' disabled value={point.coordinates[0]} />
+        <label htmlFor='longitude' className='fr-label'>
+          Longitude
+        </label>
+        <input name='longitude' className='fr-input' disabled value={point.coordinates[0]} />
       </div>
       <div className='fr-input-group position-input'>
-        <label className='fr-label'>Latitude</label>
-        <input className='fr-input' disabled value={point.coordinates[1]} />
+        <label htmlFor='latitude' className='fr-label'>
+          Latitude
+        </label>
+        <input name='latitude' className='fr-input' disabled value={point.coordinates[1]} />
       </div>
       <button type='button' onClick={onDelete}>
         <span className='icon'>X</span>
