@@ -1,6 +1,5 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import HCaptcha from '@hcaptcha/react-hcaptcha'
-import { useSearchParams } from 'react-router-dom'
 import { StyledForm } from './signalement.styles'
 
 import {
@@ -8,10 +7,13 @@ import {
   Position,
   Signalement,
   SignalementsService,
+  Source,
 } from '../../api/signalement'
 import Modal from '../common/Modal'
 import { getPositionTypeLabel } from '../../utils/signalement.utils'
 import { getAdresseLabel } from '../../utils/adresse.utils'
+import { ChangesRequested } from '../../types/signalement.types'
+import SourceContext from '../../contexts/source.context'
 
 interface SignalementRecapModalProps {
   signalement: Signalement
@@ -29,14 +31,13 @@ export default function SignalementRecapModal({
   onSubmit,
 }: SignalementRecapModalProps) {
   const [submitStatus, setSubmitStatus] = useState<string | null>(null)
-  const [searchParams] = useSearchParams()
+  const { source } = useContext(SourceContext)
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setSubmitStatus('loading')
     try {
-      const sourceId =
-        searchParams.get('sourceId') || process.env.REACT_APP_API_SIGNALEMENT_SOURCE_ID
+      const sourceId = source?.id || process.env.REACT_APP_API_SIGNALEMENT_SOURCE_ID
       await SignalementsService.createSignalement(signalement as CreateSignalementDTO, sourceId)
       setSubmitStatus('success')
       setTimeout(() => {
@@ -48,7 +49,8 @@ export default function SignalementRecapModal({
     }
   }
 
-  const { numero, suffixe, nomVoie, positions, parcelles, nom } = signalement.changesRequested
+  const { numero, suffixe, nomVoie, positions, parcelles, nom } =
+    signalement.changesRequested as ChangesRequested
 
   return (
     <Modal title='Votre demande de signalement' onClose={onClose}>
@@ -196,34 +198,36 @@ export default function SignalementRecapModal({
             </div>
           </section>
         )}
-        <section>
-          <h4>Contact</h4>
-          <p>
-            Vous pouvez nous laisser votre adresse email si vous souhaitez être tenu informé du
-            traitement de votre signalement.
-          </p>
-          <div className='form-row'>
-            <div className='fr-input-group'>
-              <label className='fr-label' htmlFor='email'>
-                Email
-              </label>
-              <input
-                name='email'
-                className='fr-input'
-                type='email'
-                value={signalement.author?.email || ''}
-                onChange={(event) => onEditSignalement('author', 'email')(event.target.value)}
+        {source?.type !== Source.type.PRIVATE && (
+          <section>
+            <h4>Contact</h4>
+            <p>
+              Vous pouvez nous laisser votre adresse email si vous souhaitez être tenu informé du
+              traitement de votre signalement.
+            </p>
+            <div className='form-row'>
+              <div className='fr-input-group'>
+                <label className='fr-label' htmlFor='email'>
+                  Email
+                </label>
+                <input
+                  name='email'
+                  className='fr-input'
+                  type='email'
+                  value={signalement.author?.email || ''}
+                  onChange={(event) => onEditSignalement('author', 'email')(event.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className='captcha-wrapper'>
+              <HCaptcha
+                sitekey={process.env.REACT_APP_HCAPTCHA_SITE_KEY || ''}
+                onVerify={(token) => onEditSignalement('author', 'captchaToken')(token)}
               />
             </div>
-          </div>
-
-          <div className='captcha-wrapper'>
-            <HCaptcha
-              sitekey={process.env.REACT_APP_HCAPTCHA_SITE_KEY || ''}
-              onVerify={(token) => onEditSignalement('author', 'captchaToken')(token)}
-            />
-          </div>
-        </section>
+          </section>
+        )}
 
         {submitStatus === 'success' && (
           <div className='fr-alert fr-alert--success'>

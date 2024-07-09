@@ -12,6 +12,7 @@ import { Signalement } from '../api/signalement'
 import styled from 'styled-components'
 import { useMapContent } from '../hooks/useMapContent'
 import MapContext from '../contexts/map.context'
+import SourceContext from '../contexts/source.context'
 
 const StyledWrapper = styled.div`
   position: relative;
@@ -63,10 +64,11 @@ const filterOptions = [
 
 export function SourcePage() {
   const { markerColor } = useContext(MapContext)
+  const { source } = useContext(SourceContext)
   const [currentFilter, setCurrentFilter] = useState<Signalement.status | null>(
     Signalement.status.PENDING,
   )
-  const { signalements: customSourceSignalements } = useCustomSource()
+  const { signalements: customSourceSignalements } = useCustomSource(source)
   const filteredSignalements = useMemo(
     () =>
       currentFilter
@@ -82,10 +84,10 @@ export function SourcePage() {
           {getSignalementTypeLabel(signalement.type)}
         </p>
         <p>{getSignalementLabel(signalement)}</p>
-        <p>Créé le {new Date(signalement._createdAt).toLocaleDateString()}</p>
+        <p>Créé le {new Date(signalement.createdAt).toLocaleDateString()}</p>
         {signalement.processedBy && (
           <p>
-            Traité le {new Date(signalement._updatedAt).toLocaleDateString()} par{' '}
+            Traité le {new Date(signalement.updatedAt).toLocaleDateString()} par{' '}
             {signalement.processedBy.nom}
           </p>
         )}
@@ -101,7 +103,7 @@ export function SourcePage() {
           const coordinates = getSignalementCoodinates(signalement)
           return coordinates ? (
             <Marker
-              key={signalement._id as string}
+              key={signalement.id as string}
               coordinates={coordinates}
               color={markerColor}
               popupContent={getSignalementCard(signalement)}

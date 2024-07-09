@@ -9,7 +9,7 @@ import {
 } from '../api/ban-plateforme/types'
 import { NumeroCard } from '../composants/adresse/NumeroCard'
 import SignalementForm from '../composants/signalement/SignalementForm'
-import { ChangesRequested, Signalement } from '../api/signalement'
+import { NumeroChangesRequestedDTO, Signalement } from '../api/signalement'
 import { VoieCard } from '../composants/adresse/VoieCard'
 import { LieuDitCard } from '../composants/adresse/LieuDitCard'
 import useWindowSize from '../hooks/useWindowSize'
@@ -19,6 +19,7 @@ import SignalementMap from '../composants/map/SignalementMap'
 import { Marker } from '../composants/map/Marker'
 import { getAdresseLabel } from '../utils/adresse.utils'
 import { useMapContent } from '../hooks/useMapContent'
+import { ChangesRequested } from '../types/signalement.types'
 
 export function SignalementPage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -88,7 +89,7 @@ export function SignalementPage() {
   const mapContent = useMemo(
     () => (
       <>
-        {!signalement?.changesRequested?.positions &&
+        {!(signalement?.changesRequested as NumeroChangesRequestedDTO)?.positions &&
           Boolean((adresse as IBANPlateformeNumero)?.lat) &&
           Boolean((adresse as IBANPlateformeNumero)?.lon) && (
             <Marker
@@ -100,10 +101,10 @@ export function SignalementPage() {
               color={markerColor}
             />
           )}
-        {signalement?.changesRequested?.positions && (
+        {(signalement?.changesRequested as NumeroChangesRequestedDTO)?.positions && (
           <SignalementMap
             isEditParcellesMode={isEditParcellesMode}
-            signalement={signalement}
+            signalement={signalement as Signalement}
             onEditSignalement={onEditSignalement}
             markerColor={markerColor}
           />

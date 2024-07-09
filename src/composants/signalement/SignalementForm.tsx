@@ -6,6 +6,7 @@ import SignalementNumeroDeleteForm from './signalement-numero/SignalementNumeroD
 import { Signalement } from '../../api/signalement'
 import { BANPlateformeResultTypeEnum } from '../../api/ban-plateforme/types'
 import { MapRef } from 'react-map-gl/maplibre'
+import SignalementVoieForm from './signalement-voie/SignalementVoieForm'
 
 interface SignalementFormProps {
   signalement: Signalement
@@ -36,9 +37,19 @@ export default function SignalementForm({
   return (
     <>
       {signalement?.type === Signalement.type.LOCATION_TO_UPDATE &&
-        (address.type === BANPlateformeResultTypeEnum.VOIE ||
-          address.type === BANPlateformeResultTypeEnum.LIEU_DIT) && (
+        address.type === BANPlateformeResultTypeEnum.LIEU_DIT && (
           <SignalementToponymeForm
+            onClose={onClose}
+            onSubmit={handleSubmit}
+            onEditSignalement={onEditSignalement}
+            signalement={signalement}
+            address={address}
+          />
+        )}
+
+      {signalement?.type === Signalement.type.LOCATION_TO_UPDATE &&
+        address.type === BANPlateformeResultTypeEnum.VOIE && (
+          <SignalementVoieForm
             onClose={onClose}
             onSubmit={handleSubmit}
             onEditSignalement={onEditSignalement}
@@ -83,6 +94,7 @@ export default function SignalementForm({
           onEditSignalement={onEditSignalement}
         />
       )}
+
       {showRecapModal && (
         <RecapModal
           onSubmit={onClose}

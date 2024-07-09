@@ -14,6 +14,7 @@ import { SourcePage } from './pages/SourcePage'
 import { MapContextProvider } from './contexts/map.context'
 import { AdresseSearchPage } from './pages/AdresseSearchPage'
 import GlobalStyle from './globalStyles'
+import { SourceContextProvider } from './contexts/source.context'
 
 const API_SIGNALEMENT_URL = process.env.REACT_APP_API_SIGNALEMENT_URL
 
@@ -35,17 +36,21 @@ const router = createHashRouter([
   {
     path: '/',
     element: (
-      <MapLayout>
-        <AdresseSearchPage />
-      </MapLayout>
+      <SourceContextProvider>
+        <MapLayout>
+          <AdresseSearchPage />
+        </MapLayout>
+      </SourceContextProvider>
     ),
   },
   {
     path: '/:code',
     element: (
-      <MapLayout>
-        <SignalementPage />
-      </MapLayout>
+      <SourceContextProvider>
+        <MapLayout>
+          <SignalementPage />
+        </MapLayout>
+      </SourceContextProvider>
     ),
     loader: async ({ params }) => {
       if (!params.code) {
@@ -64,9 +69,11 @@ const router = createHashRouter([
   {
     path: '/source',
     element: (
-      <MapLayout>
-        <SourcePage />
-      </MapLayout>
+      <SourceContextProvider>
+        <MapLayout>
+          <SourcePage />
+        </MapLayout>
+      </SourceContextProvider>
     ),
   },
 ])

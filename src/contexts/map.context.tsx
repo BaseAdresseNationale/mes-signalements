@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useEffect, useState } from 'react'
+import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import { MapRef } from 'react-map-gl/maplibre'
 import { mapStyles } from '../config/map/styles'
 import { DEFAULT_COLOR_DARK } from '../config/map/layers'
@@ -46,13 +46,10 @@ export function MapContextProvider(props: { children: React.ReactNode }) {
     }
   }, [mapRef])
 
-  const value = {
-    mapRef,
-    mapRefCb,
-    mapChildren,
-    setMapChildren,
-    markerColor,
-  }
+  const value = useMemo(
+    () => ({ mapRef, mapRefCb, mapChildren, setMapChildren, markerColor }),
+    [mapRef, mapRefCb, mapChildren, setMapChildren, markerColor],
+  )
 
   return <MapContext.Provider value={value} {...props} />
 }

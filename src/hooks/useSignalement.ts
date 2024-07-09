@@ -1,7 +1,8 @@
 import { useCallback, useState } from 'react'
-import { ChangesRequested, Signalement } from '../api/signalement'
+import { Signalement } from '../api/signalement'
 import { getInitialSignalement } from '../utils/signalement.utils'
 import { IBANPlateformeResult } from '../api/ban-plateforme/types'
+import { ChangesRequested } from '../types/signalement.types'
 
 export interface useSignalementType {
   signalement: Signalement | null
