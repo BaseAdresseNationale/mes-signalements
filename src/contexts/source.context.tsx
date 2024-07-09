@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useEffect, useState } from 'react'
+import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { OpenAPI, Source, SourcesService } from '../api/signalement'
 
@@ -41,7 +41,7 @@ export function SourceContextProvider(props: { children: React.ReactNode }) {
     }
   }, [sourceId, fetchSourceById, fetchSourceByToken])
 
-  const value = { source, fetchSourceByToken }
+  const value = useMemo(() => ({ source, fetchSourceByToken }), [source, fetchSourceByToken])
 
   return <SourceContext.Provider value={value} {...props} />
 }
