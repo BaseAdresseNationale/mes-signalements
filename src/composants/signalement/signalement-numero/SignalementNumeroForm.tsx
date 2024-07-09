@@ -43,7 +43,7 @@ export default function SignalementNumeroForm({
     )
   }, [address, signalement, isCreation])
 
-  const { numero, suffixe, nomVoie, positions, parcelles } =
+  const { numero, suffixe, nomVoie, positions, parcelles, comment } =
     signalement.changesRequested as NumeroChangesRequestedDTO
 
   return (
@@ -72,7 +72,7 @@ export default function SignalementNumeroForm({
               min={1}
               max={9998}
               type='number'
-              value={numero}
+              value={numero || ''}
               onChange={(event) =>
                 onEditSignalement('changesRequested', 'numero')(event.target.value)
               }
@@ -165,6 +165,24 @@ export default function SignalementNumeroForm({
               onChange={(event) =>
                 onEditSignalement('changesRequested', 'nomVoie')(event.target.value)
               }
+            />
+          </div>
+        </div>
+      </section>
+      <section>
+        <div className='form-row'>
+          <div className='fr-input-group'>
+            <label className='fr-label' htmlFor='comment'>
+              Autres informations
+            </label>
+            <textarea
+              className='fr-input'
+              name='comment'
+              value={comment as string}
+              onChange={(event) =>
+                onEditSignalement('changesRequested', 'comment')(event.target.value)
+              }
+              placeholder="Informations complémentaires sur le problème d'adressage (facultatif)"
             />
           </div>
         </div>

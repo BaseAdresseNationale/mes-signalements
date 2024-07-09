@@ -228,19 +228,18 @@ export const getInitialSignalement = (
     author: {
       email: '',
     },
-    changesRequested: {} as any,
+    changesRequested: {} as ChangesRequested,
   }
 
   switch (signalementType) {
     case Signalement.type.LOCATION_TO_CREATE:
       initialSignalement.changesRequested = {
-        numero: null,
         suffixe: '',
         nomVoie: address.nomVoie,
         positions: [],
         parcelles: [],
         comment: '',
-      } as any
+      }
       initialSignalement.existingLocation = {
         type: ExistingLocation.type.VOIE,
         nom: address.nomVoie,

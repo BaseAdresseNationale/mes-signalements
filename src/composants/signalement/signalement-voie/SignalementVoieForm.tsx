@@ -1,10 +1,10 @@
 import { StyledForm } from '../signalement.styles'
-import { Signalement, ToponymeChangesRequestedDTO } from '../../../api/signalement'
+import { Signalement, VoieChangesRequestedDTO } from '../../../api/signalement'
 import { getInitialSignalement } from '../../../utils/signalement.utils'
 import React, { useMemo } from 'react'
 import { getAdresseLabel } from '../../../utils/adresse.utils'
 
-interface SignalementToponymeFormProps {
+interface SignalementVoieFormProps {
   signalement: Signalement
   onEditSignalement: (property: string, key: string) => (event: string) => void
   onClose: () => void
@@ -12,13 +12,13 @@ interface SignalementToponymeFormProps {
   onSubmit: any
 }
 
-export default function SignalementToponymeForm({
+export default function SignalementVoieForm({
   signalement,
   onEditSignalement,
   onClose,
   address,
   onSubmit,
-}: SignalementToponymeFormProps) {
+}: SignalementVoieFormProps) {
   const isSubmitDisabled = useMemo(() => {
     return (
       JSON.stringify(getInitialSignalement(address, signalement.type)) ===
@@ -26,7 +26,7 @@ export default function SignalementToponymeForm({
     )
   }, [address, signalement])
 
-  const { nom, comment } = signalement.changesRequested as ToponymeChangesRequestedDTO
+  const { nom, comment } = signalement.changesRequested as VoieChangesRequestedDTO
 
   return (
     <StyledForm onSubmit={onSubmit}>
@@ -53,47 +53,6 @@ export default function SignalementToponymeForm({
             />
           </div>
         </div>
-        {/* <h6>Positions :</h6>
-        {positions.map(({position, positionType}, index) => (
-          <PositionInput
-            key={index} // eslint-disable-line react/no-array-index-key
-            position={position}
-            positionType={positionType}
-            onEditPositionType={updatedPosition => {
-              const newPositions = [...positions]
-              newPositions[index] = updatedPosition
-              onEditSignalement('changesRequested', 'positions')(newPositions)
-            }}
-            onDelete={() => {
-              onEditSignalement('changesRequested', 'positions')(positions.filter((_, i) => i !== index))
-            }} />
-        ))}
-        <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-          <Button
-            type='button'
-            style={{color: 'white', marginBottom: 10}}
-            onClick={() => onEditSignalement('changesRequested', 'positions')([...positions, {position: {type: 'Point', coordinates: blurPosition(initialPositionCoords)}, positionType: 'entrée'}])}
-          >
-            Ajouter une position
-          </Button>
-        </div>
-        <h6>Parcelles cadastrales :</h6>
-        <div className='parcelles-wrapper'>
-          {parcelles.map(parcelle => (
-            <div key={parcelle}>
-              {parcelle}
-            </div>
-          ))}
-        </div> */}
-        {/* <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-          <Button
-            type='button'
-            style={{color: 'white', marginBottom: 10}}
-            onClick={() => setIsEditParcellesMode(!isEditParcellesMode)}
-          >
-            {isEditParcellesMode ? 'Arrêter de modifier les parcelles' : 'Modifier les parcelles'}
-          </Button>
-        </div> */}
       </section>
       <section>
         <div className='form-row'>
