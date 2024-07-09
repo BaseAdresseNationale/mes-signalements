@@ -4,6 +4,7 @@ import { Position, Signalement } from '../../api/signalement'
 import { cadastreLayers, parcelleHoveredLayer } from '../../config/map/layers'
 import { positionTypeOptions } from '../../utils/signalement.utils'
 import { Marker } from './Marker'
+import { ChangesRequested } from '../../types/signalement.types'
 
 interface SignalementMapProps {
   signalement: Signalement
@@ -20,7 +21,7 @@ function SignalementMap({
 }: SignalementMapProps) {
   const map = useMap()
   const [hoveredParcelle, setHoveredParcelle] = useState<null | string>(null)
-  const { positions, parcelles } = signalement.changesRequested
+  const { positions, parcelles } = signalement.changesRequested as ChangesRequested
 
   const cadastreFiltre = useMemo(
     () =>
@@ -121,7 +122,7 @@ function SignalementMap({
   )
 
   const signalementLabel = useMemo(() => {
-    const { numero, suffixe, nomVoie } = signalement.changesRequested
+    const { numero, suffixe, nomVoie } = signalement.changesRequested as ChangesRequested
 
     return [numero, suffixe, nomVoie].reduce((acc, cur) => {
       return cur ? `${acc} ${cur}` : acc

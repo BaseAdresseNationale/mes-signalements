@@ -82,10 +82,10 @@ export function SourcePage() {
           {getSignalementTypeLabel(signalement.type)}
         </p>
         <p>{getSignalementLabel(signalement)}</p>
-        <p>Créé le {new Date(signalement._createdAt).toLocaleDateString()}</p>
+        <p>Créé le {new Date(signalement.createdAt).toLocaleDateString()}</p>
         {signalement.processedBy && (
           <p>
-            Traité le {new Date(signalement._updatedAt).toLocaleDateString()} par{' '}
+            Traité le {new Date(signalement.updatedAt).toLocaleDateString()} par{' '}
             {signalement.processedBy.nom}
           </p>
         )}
@@ -101,7 +101,7 @@ export function SourcePage() {
           const coordinates = getSignalementCoodinates(signalement)
           return coordinates ? (
             <Marker
-              key={signalement._id as string}
+              key={signalement.id as string}
               coordinates={coordinates}
               color={markerColor}
               popupContent={getSignalementCard(signalement)}

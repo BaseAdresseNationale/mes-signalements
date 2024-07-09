@@ -12,6 +12,7 @@ import {
 import Modal from '../common/Modal'
 import { getPositionTypeLabel } from '../../utils/signalement.utils'
 import { getAdresseLabel } from '../../utils/adresse.utils'
+import { ChangesRequested } from '../../types/signalement.types'
 
 interface SignalementRecapModalProps {
   signalement: Signalement
@@ -48,7 +49,8 @@ export default function SignalementRecapModal({
     }
   }
 
-  const { numero, suffixe, nomVoie, positions, parcelles, nom } = signalement.changesRequested
+  const { numero, suffixe, nomVoie, positions, parcelles, nom } =
+    signalement.changesRequested as ChangesRequested
 
   return (
     <Modal title='Votre demande de signalement' onClose={onClose}>

@@ -1,5 +1,4 @@
 import {
-  ChangesRequested,
   ExistingLocation,
   ExistingNumero,
   ExistingToponyme,
@@ -8,6 +7,7 @@ import {
   Signalement,
 } from '../api/signalement'
 import { BANPlateformeResultTypeEnum } from '../api/ban-plateforme/types'
+import { ChangesRequested } from '../types/signalement.types'
 
 export const positionTypeOptions = [
   {
@@ -55,15 +55,15 @@ export function getSignalementCoodinates(signalement: Signalement): [number, num
       (signalement.existingLocation as ExistingNumero).position.point.coordinates[0],
       (signalement.existingLocation as ExistingNumero).position.point.coordinates[1],
     ]
-  } else if (signalement.changesRequested.positions) {
+  } else if ((signalement.changesRequested as ChangesRequested).positions) {
     return [
-      signalement.changesRequested.positions[0].point.coordinates[0],
-      signalement.changesRequested.positions[0].point.coordinates[1],
+      (signalement.changesRequested as ChangesRequested).positions[0].point.coordinates[0],
+      (signalement.changesRequested as ChangesRequested).positions[0].point.coordinates[1],
     ]
   }
 }
 
-export const getRequestedLocationLabel = (changesRequested: ChangesRequested) => {
+export const getRequestedLocationLabel = (changesRequested: any) => {
   return `${changesRequested.numero} ${
     changesRequested.suffixe ? `${changesRequested.suffixe} ` : ''
   }${changesRequested.nomVoie}`
@@ -228,7 +228,7 @@ export const getInitialSignalement = (
     author: {
       email: '',
     },
-    changesRequested: {},
+    changesRequested: {} as any,
   }
 
   switch (signalementType) {
@@ -239,7 +239,8 @@ export const getInitialSignalement = (
         nomVoie: address.nomVoie,
         positions: [],
         parcelles: [],
-      }
+        comment: '',
+      } as any
       initialSignalement.existingLocation = {
         type: ExistingLocation.type.VOIE,
         nom: address.nomVoie,
@@ -249,10 +250,12 @@ export const getInitialSignalement = (
       if (address.type === BANPlateformeResultTypeEnum.VOIE) {
         initialSignalement.changesRequested = {
           nom: address.nomVoie,
+          comment: '',
         }
       } else if (address.type === BANPlateformeResultTypeEnum.LIEU_DIT) {
         initialSignalement.changesRequested = {
           nom: address.nomVoie,
+          comment: '',
           // For the moment we don't allow to change the position of a toponyme
           // positions: address.positions,
           // parcelles: address.parcelles
@@ -272,6 +275,7 @@ export const getInitialSignalement = (
             }),
           ),
           parcelles: address.parcelles,
+          comment: '',
         }
       }
 

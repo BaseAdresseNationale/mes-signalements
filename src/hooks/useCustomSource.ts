@@ -23,7 +23,7 @@ export function useCustomSource() {
         undefined,
         sourceId as string,
       )
-      setSignalements(paginatedSignalements.data)
+      setSignalements(paginatedSignalements.data as any)
     } catch (e) {
       console.error(e)
     }

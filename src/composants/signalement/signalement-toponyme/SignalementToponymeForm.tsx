@@ -1,5 +1,5 @@
 import { StyledForm } from '../signalement.styles'
-import { Signalement } from '../../../api/signalement'
+import { Signalement, ToponymeChangesRequestedDTO } from '../../../api/signalement'
 import { getInitialSignalement } from '../../../utils/signalement.utils'
 import React, { useMemo } from 'react'
 import { getAdresseLabel } from '../../../utils/adresse.utils'
@@ -26,7 +26,7 @@ export default function SignalementToponymeForm({
     )
   }, [address, signalement])
 
-  const { nom } = signalement.changesRequested
+  const { nom } = signalement.changesRequested as ToponymeChangesRequestedDTO
 
   return (
     <StyledForm onSubmit={onSubmit}>

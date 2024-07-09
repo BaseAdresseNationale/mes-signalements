@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import { StyledForm } from '../signalement.styles'
 import PositionInput from '../../common/PositionInput'
-import { Position, Signalement } from '../../../api/signalement'
+import { NumeroChangesRequestedDTO, Position, Signalement } from '../../../api/signalement'
 import { getInitialSignalement } from '../../../utils/signalement.utils'
 import { blurPosition } from '../../../utils/position.utils'
 import { getAdresseLabel } from '../../../utils/adresse.utils'
@@ -31,7 +31,7 @@ export default function SignalementNumeroForm({
 
   const isSubmitDisabled = useMemo(() => {
     const { changesRequested } = signalement
-    const isDisabled = changesRequested.positions?.length === 0
+    const isDisabled = (changesRequested as NumeroChangesRequestedDTO).positions?.length === 0
     if (isCreation) {
       return isDisabled
     }
@@ -43,7 +43,8 @@ export default function SignalementNumeroForm({
     )
   }, [address, signalement, isCreation])
 
-  const { numero, suffixe, nomVoie, positions, parcelles } = signalement.changesRequested
+  const { numero, suffixe, nomVoie, positions, parcelles } =
+    signalement.changesRequested as NumeroChangesRequestedDTO
 
   return (
     <StyledForm onSubmit={onSubmit}>
@@ -71,7 +72,7 @@ export default function SignalementNumeroForm({
               min={1}
               max={9998}
               type='number'
-              value={numero as number}
+              value={numero}
               onChange={(event) =>
                 onEditSignalement('changesRequested', 'numero')(event.target.value)
               }

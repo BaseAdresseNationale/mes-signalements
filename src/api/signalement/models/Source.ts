@@ -2,19 +2,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { ObjectId } from './ObjectId';
 export type Source = {
-    _id: ObjectId;
-    _createdAt: number;
-    _updatedAt: number;
-    _deletedAt?: number | null;
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt?: string | null;
     nom: string;
-    type: Source.type;
+    type: string;
+    signalements?: Array<string> | null;
 };
-export namespace Source {
-    export enum type {
-        PUBLIC = 'PUBLIC',
-        PRIVATE = 'PRIVATE',
-    }
-}
 

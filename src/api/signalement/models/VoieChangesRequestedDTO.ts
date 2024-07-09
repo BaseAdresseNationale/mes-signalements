@@ -2,10 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type PaginatedSignalementsDTO = {
-    data: Array<any[]>;
-    page: number;
-    limit: number;
-    total: number;
+export type VoieChangesRequestedDTO = {
+    nom: string;
+    comment?: string | null;
 };
 
