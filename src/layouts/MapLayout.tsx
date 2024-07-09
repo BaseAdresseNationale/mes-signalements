@@ -7,12 +7,12 @@ import { useLocation, useNavigation } from 'react-router-dom'
 import { AdresseSearch } from '../composants/adresse/AdresseSearch'
 import Loader from '../composants/common/Loader'
 import useNavigateWithPreservedSearchParams from '../hooks/useNavigateWithPreservedSearchParams'
-import { useCustomSource } from '../hooks/useCustomSource'
 import MapContext from '../contexts/map.context'
 import { interactiveLayers } from '../config/map/layers'
 import { mapStyles } from '../config/map/styles'
 import { StylesSwitch } from '../composants/map/StylesSwitch'
 import { AboutModal } from '../composants/about/AboutModal'
+import SourceContext from '../contexts/source.context'
 
 const Layout = styled.div`
   position: relative;
@@ -57,7 +57,7 @@ export function MapLayout({ children }: MapLayoutProps) {
   const onMouseLeave = useCallback(() => setCursor(null), [])
 
   const { mapRefCb, mapChildren } = useContext(MapContext)
-  const { source: customSource } = useCustomSource()
+  const { source } = useContext(SourceContext)
 
   const { navigate } = useNavigateWithPreservedSearchParams()
   const navigation = useNavigation()
@@ -87,7 +87,7 @@ export function MapLayout({ children }: MapLayoutProps) {
 
   return (
     <Layout>
-      <Header customSource={customSource} toggleShowInfo={() => setShowInfo((state) => !state)} />
+      <Header customSource={source} toggleShowInfo={() => setShowInfo((state) => !state)} />
       <div className='main-wrapper'>
         <Map
           ref={mapRefCb}

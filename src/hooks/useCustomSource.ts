@@ -1,21 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Signalement, SignalementsService, Source, SourcesService } from '../api/signalement'
-import { useSearchParams } from 'react-router-dom'
+import { Signalement, SignalementsService, Source } from '../api/signalement'
 
-export function useCustomSource() {
-  const [searchParams] = useSearchParams()
-  const [sourceId] = useState<string | null>(searchParams.get('sourceId'))
-  const [source, setSource] = useState<Source>()
+export function useCustomSource(source?: Source) {
   const [signalements, setSignalements] = useState<Signalement[]>([])
-
-  const fetchSource = useCallback(async (sourceId: string) => {
-    try {
-      const source = await SourcesService.getSourceById(sourceId)
-      setSource(source)
-    } catch (e) {
-      console.error(e)
-    }
-  }, [])
 
   const fetchSignalements = useCallback(async (sourceId: string) => {
     try {
@@ -30,11 +17,10 @@ export function useCustomSource() {
   }, [])
 
   useEffect(() => {
-    if (sourceId) {
-      fetchSource(sourceId)
-      fetchSignalements(sourceId)
+    if (source) {
+      fetchSignalements(source.id)
     }
-  }, [sourceId, fetchSource, fetchSignalements])
+  }, [source, fetchSignalements])
 
   return {
     source,

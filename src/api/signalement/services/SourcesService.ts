@@ -58,4 +58,21 @@ export class SourcesService {
             },
         });
     }
+    /**
+     * Get source by token
+     * @param token
+     * @returns Source
+     * @throws ApiError
+     */
+    public static getSourceByToken(
+        token: string,
+    ): CancelablePromise<Source> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/sources/token/{token}',
+            path: {
+                'token': token,
+            },
+        });
+    }
 }

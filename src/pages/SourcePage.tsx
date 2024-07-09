@@ -12,6 +12,7 @@ import { Signalement } from '../api/signalement'
 import styled from 'styled-components'
 import { useMapContent } from '../hooks/useMapContent'
 import MapContext from '../contexts/map.context'
+import SourceContext from '../contexts/source.context'
 
 const StyledWrapper = styled.div`
   position: relative;
@@ -63,10 +64,11 @@ const filterOptions = [
 
 export function SourcePage() {
   const { markerColor } = useContext(MapContext)
+  const { source } = useContext(SourceContext)
   const [currentFilter, setCurrentFilter] = useState<Signalement.status | null>(
     Signalement.status.PENDING,
   )
-  const { signalements: customSourceSignalements } = useCustomSource()
+  const { signalements: customSourceSignalements } = useCustomSource(source)
   const filteredSignalements = useMemo(
     () =>
       currentFilter

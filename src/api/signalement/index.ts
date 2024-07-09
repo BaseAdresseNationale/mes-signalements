@@ -25,7 +25,7 @@ export { Position } from './models/Position';
 export type { PositionCoordinatesDTO } from './models/PositionCoordinatesDTO';
 export { PositionDTO } from './models/PositionDTO';
 export { Signalement } from './models/Signalement';
-export type { Source } from './models/Source';
+export { Source } from './models/Source';
 export type { ToponymeChangesRequestedDTO } from './models/ToponymeChangesRequestedDTO';
 export { UpdateSignalementDTO } from './models/UpdateSignalementDTO';
 export type { VoieChangesRequestedDTO } from './models/VoieChangesRequestedDTO';

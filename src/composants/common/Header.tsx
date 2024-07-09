@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Source } from '../../api/signalement'
 import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
 import styled from 'styled-components'
+import { AuthentificationModal } from '../authentification/AuthentificationModal'
 
 const StyledHeader = styled.header`
   .fr-header__navbar > .fr-btns-group {
@@ -27,75 +28,94 @@ interface HeaderProps {
 
 export function Header({ customSource, toggleShowInfo }: HeaderProps) {
   const { navigate } = useNavigateWithPreservedSearchParams()
+  const [showConnectionModal, setShowConnectionModal] = useState(false)
 
   return (
-    <StyledHeader role='banner' className='fr-header'>
-      <div className='fr-header__body'>
-        <div className='fr-container'>
-          <div className='fr-header__body-row'>
-            <div className='fr-header__brand fr-enlarge-link'>
-              <div className='fr-header__brand-top'>
-                <div className='fr-header__logo'>
-                  <p className='fr-logo' />
-                </div>
-                <div className='fr-header__navbar'>
-                  <ul className='fr-btns-group'>
-                    {customSource && (
+    <>
+      <StyledHeader role='banner' className='fr-header'>
+        <div className='fr-header__body'>
+          <div className='fr-container'>
+            <div className='fr-header__body-row'>
+              <div className='fr-header__brand fr-enlarge-link'>
+                <div className='fr-header__brand-top'>
+                  <div className='fr-header__logo'>
+                    <p className='fr-logo' />
+                  </div>
+                  <div className='fr-header__navbar'>
+                    <ul className='fr-btns-group'>
+                      <li>
+                        {customSource ? (
+                          <button
+                            className='fr-btn fr-icon-account-circle-fill'
+                            onClick={() => navigate('/source')}
+                          >
+                            {customSource.nom}
+                          </button>
+                        ) : (
+                          <button
+                            className='fr-btn fr-icon-account-circle-line'
+                            onClick={() => setShowConnectionModal(true)}
+                          >
+                            Se connecter
+                          </button>
+                        )}
+                      </li>
                       <li>
                         <button
-                          title={customSource.nom}
+                          title='À propos'
+                          className='fr-btn fr-icon-information-fill'
+                          onClick={toggleShowInfo}
+                        >
+                          À propos
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div className='fr-header__service'>
+                  <a href='/' title='Accueil - Mes Signalements - DINUM)'>
+                    <p className='fr-header__service-title'>Mes Signalements</p>
+                  </a>
+                  <p className='fr-header__service-tagline'>
+                    Signaler un problème dans la Base Adresse Nationale
+                  </p>
+                </div>
+              </div>
+              <div className='fr-header__tools'>
+                <div className='fr-header__tools-links'>
+                  <ul className='fr-btns-group'>
+                    <li>
+                      {customSource ? (
+                        <button
                           className='fr-btn fr-icon-account-circle-fill'
                           onClick={() => navigate('/source')}
                         >
                           {customSource.nom}
                         </button>
-                      </li>
-                    )}
+                      ) : (
+                        <button
+                          className='fr-btn fr-icon-account-circle-line'
+                          onClick={() => setShowConnectionModal(true)}
+                        >
+                          Se connecter
+                        </button>
+                      )}
+                    </li>
                     <li>
-                      <button
-                        title='À propos'
-                        className='fr-btn fr-icon-information-fill'
-                        onClick={toggleShowInfo}
-                      >
+                      <button className='fr-btn fr-icon-information-fill' onClick={toggleShowInfo}>
                         À propos
                       </button>
                     </li>
                   </ul>
                 </div>
               </div>
-              <div className='fr-header__service'>
-                <a href='/' title='Accueil - Mes Signalements - DINUM)'>
-                  <p className='fr-header__service-title'>Mes Signalements</p>
-                </a>
-                <p className='fr-header__service-tagline'>
-                  Signaler un problème dans la Base Adresse Nationale
-                </p>
-              </div>
-            </div>
-            <div className='fr-header__tools'>
-              <div className='fr-header__tools-links'>
-                <ul className='fr-btns-group'>
-                  {customSource && (
-                    <li>
-                      <button
-                        className='fr-btn fr-icon-account-circle-fill'
-                        onClick={() => navigate('/source')}
-                      >
-                        {customSource.nom}
-                      </button>
-                    </li>
-                  )}
-                  <li>
-                    <button className='fr-btn fr-icon-information-fill' onClick={toggleShowInfo}>
-                      À propos
-                    </button>
-                  </li>
-                </ul>
-              </div>
             </div>
           </div>
         </div>
-      </div>
-    </StyledHeader>
+      </StyledHeader>
+      {showConnectionModal && (
+        <AuthentificationModal onClose={() => setShowConnectionModal(false)} />
+      )}
+    </>
   )
 }

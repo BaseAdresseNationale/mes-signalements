@@ -8,7 +8,13 @@ export type Source = {
     updatedAt: string;
     deletedAt?: string | null;
     nom: string;
-    type: string;
+    type: Source.type;
     signalements?: Array<string> | null;
 };
+export namespace Source {
+    export enum type {
+        PUBLIC = 'PUBLIC',
+        PRIVATE = 'PRIVATE',
+    }
+}
 
