@@ -1,5 +1,4 @@
 import React, { useContext, useState } from 'react'
-import HCaptcha from '@hcaptcha/react-hcaptcha'
 import { StyledForm } from './signalement.styles'
 
 import {
@@ -14,6 +13,7 @@ import { getPositionTypeLabel } from '../../utils/signalement.utils'
 import { getAdresseLabel } from '../../utils/adresse.utils'
 import { ChangesRequested } from '../../types/signalement.types'
 import SourceContext from '../../contexts/source.context'
+import { useFriendlyCaptcha } from '../../hooks/useFriendlyCaptcha'
 
 interface SignalementRecapModalProps {
   signalement: Signalement
@@ -32,6 +32,11 @@ export default function SignalementRecapModal({
 }: SignalementRecapModalProps) {
   const [submitStatus, setSubmitStatus] = useState<string | null>(null)
   const { source } = useContext(SourceContext)
+  const { CaptchaWidget } = useFriendlyCaptcha({
+    siteKey: process.env.REACT_APP_FRIENDLY_CAPTCHA_SITE_KEY || '',
+    showAttribution: false,
+    language: 'fr',
+  })
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -221,14 +226,12 @@ export default function SignalementRecapModal({
             </div>
 
             <div className='captcha-wrapper'>
-              <HCaptcha
-                sitekey={process.env.REACT_APP_HCAPTCHA_SITE_KEY || ''}
-                onVerify={(token) => onEditSignalement('author', 'captchaToken')(token)}
+              <CaptchaWidget
+                solvedHandler={(token) => onEditSignalement('author', 'captchaToken')(token)}
               />
             </div>
           </section>
         )}
-
         {submitStatus === 'success' && (
           <div className='fr-alert fr-alert--success'>
             <p>Votre signalement a bien été envoyée.</p>
