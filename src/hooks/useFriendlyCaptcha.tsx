@@ -70,8 +70,8 @@ function FC_PUZZLE_EP(endpoint: FriendCaptchaEndpoint): string {
 }
 
 function hasUppercase(str: string): boolean {
-  for (let i = 0; i < str.length; i++) {
-    if (str[i] !== str[i].toLowerCase()) {
+  for (const letter of str) {
+    if (letter !== letter.toLowerCase()) {
       return true
     }
   }
@@ -224,10 +224,8 @@ function useFriendlyCaptcha({
     if (captchaWidget.current !== null) {
       captchaWidget.current?.reset()
       setCaptchaStatus({ solution: null, error: null })
-    } else {
-      if (debug) {
-        console.log("Couldn't reset widget, as widget wasn't instantiated yet.")
-      }
+    } else if (debug) {
+      console.log("Couldn't reset widget, as widget wasn't instantiated yet.")
     }
   }, [])
 
