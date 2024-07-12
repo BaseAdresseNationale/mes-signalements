@@ -30,9 +30,8 @@ export default function SignalementToponymeForm({
 
   return (
     <StyledForm onSubmit={onSubmit}>
-      <h4>Signalement d&apos;un problème d&apos;adressage</h4>
+      <h4>Demande de modification du lieu-dit : </h4>
       <section>
-        <h5>Lieu concernée</h5>
         <div className='form-row'>{getAdresseLabel(address)}</div>
         <div className='form-row'>{address.commune.nom}</div>
       </section>
@@ -91,7 +90,7 @@ export default function SignalementToponymeForm({
             style={{color: 'white', marginBottom: 10}}
             onClick={() => setIsEditParcellesMode(!isEditParcellesMode)}
           >
-            {isEditParcellesMode ? 'Arrêter de modifier les parcelles' : 'Modifier les parcelles'}
+            {isEditParcellesMode ? 'Masquer le cadastre' : 'Modifier les parcelles'}
           </Button>
         </div> */}
       </section>

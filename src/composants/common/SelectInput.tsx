@@ -9,6 +9,7 @@ interface SelectInputProps {
   isDisabled?: boolean
   handleChange: (value: string) => void
   isMultiple?: boolean
+  style?: React.CSSProperties
 }
 
 function SelectInput({
@@ -20,9 +21,13 @@ function SelectInput({
   isDisabled,
   handleChange,
   isMultiple,
+  style,
 }: SelectInputProps) {
   return (
-    <div className={`fr-select-group ${isDisabled ? 'fr-select-group--disabled' : ''}`}>
+    <div
+      className={`fr-select-group ${isDisabled ? 'fr-select-group--disabled' : ''}`}
+      style={style}
+    >
       <label className='fr-label' htmlFor={`select-${label}`}>
         {label}
         {hint && <span className='fr-hint-text'>{hint}</span>}

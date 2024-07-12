@@ -48,18 +48,22 @@ export default function SignalementNumeroForm({
 
   return (
     <StyledForm onSubmit={onSubmit}>
-      <h4>Signalement d&apos;un problème d&apos;adressage</h4>
-      {!isCreation && (
-        <section>
-          <h5>Adresse concernée</h5>
-          <div className='form-row'>{getAdresseLabel(address)}</div>
-          <div className='form-row'>
-            {address.codePostal} {address.commune.nom}
-          </div>
-        </section>
+      {isCreation ? (
+        <h4>Demande de création d&apos;une adresse</h4>
+      ) : (
+        <>
+          <h4>Demande de modification pour l&apos;adresse : </h4>
+          <section>
+            <div className='form-row'>{getAdresseLabel(address)}</div>
+            <div className='form-row'>
+              {address.codePostal} {address.commune.nom}
+            </div>
+          </section>
+        </>
       )}
+
       <section>
-        <h5>{isCreation ? "Demande de création d'un numéro" : 'Modifications demandées'}</h5>
+        {!isCreation && <h5>Modifications demandées</h5>}
         <div className='form-row'>
           <div className='fr-input-group'>
             <label className='fr-label' htmlFor='numero'>
@@ -94,7 +98,6 @@ export default function SignalementNumeroForm({
           </div>
         </div>
         <h6>Positions :</h6>
-        <legend>Déplacez les marqueurs sur la carte pour éditer les positions.</legend>
         {positions?.map(({ point, type }, index) => (
           <PositionInput
             key={index} // eslint-disable-line react/no-array-index-key
@@ -148,7 +151,7 @@ export default function SignalementNumeroForm({
             style={{ color: 'white', marginBottom: 10 }}
             onClick={() => setIsEditParcellesMode(!isEditParcellesMode)}
           >
-            {isEditParcellesMode ? 'Arrêter de modifier les parcelles' : 'Modifier les parcelles'}
+            {isEditParcellesMode ? 'Masquer le cadastre' : 'Modifier les parcelles'}
           </button>
         </div>
         <div className='form-row'>

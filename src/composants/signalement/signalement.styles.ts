@@ -93,7 +93,7 @@ export const StyledForm = styled.form`
   }
 
   h6 {
-    margin: 1em 0 0 0;
+    margin: 1em 0 0.5em 0;
   }
 
   legend {

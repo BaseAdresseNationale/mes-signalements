@@ -30,9 +30,8 @@ export default function SignalementVoieForm({
 
   return (
     <StyledForm onSubmit={onSubmit}>
-      <h4>Signalement d&apos;un problème d&apos;adressage</h4>
+      <h4>Demande de modification de la voie : </h4>
       <section>
-        <h5>Lieu concernée</h5>
         <div className='form-row'>{getAdresseLabel(address)}</div>
         <div className='form-row'>{address.commune.nom}</div>
       </section>

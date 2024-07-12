@@ -8,15 +8,23 @@ const StyledContainer = styled.div`
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
+  margin-bottom: 1rem;
 
   > button {
-    margin-top: 30px;
-    align-self: center;
+    margin-left: 5px;
+    flex-shrink: 0;
   }
 
   > .position-input {
-    max-width: 100px;
     margin-left: 5px;
+
+    > .fr-input {
+      font-size: 0.8rem;
+      cursor: default;
+      width: 90px;
+      color: var(--text-disabled-grey);
+      box-shadow: inset 0 -2px 0 0 var(--border-disabled-grey);
+    }
   }
 `
 
@@ -45,21 +53,32 @@ export default function PositionInput({
             type: type as Position.type,
           })
         }
+        style={{ marginBottom: 0 }}
       />
-      <div className='fr-input-group position-input'>
-        <label htmlFor='longitude' className='fr-label'>
-          Longitude
-        </label>
-        <input name='longitude' className='fr-input' disabled value={point.coordinates[0]} />
+      <div className='fr-input-group position-input' style={{ marginBottom: 0 }}>
+        <div className='fr-label'>Longitude</div>
+        <div
+          data-tooltip='Pour éditer la position, déplacez le marqueur sur la carte'
+          className='fr-input'
+        >
+          <span>{point.coordinates[0].toFixed(5)}</span>
+        </div>
       </div>
-      <div className='fr-input-group position-input'>
-        <label htmlFor='latitude' className='fr-label'>
-          Latitude
-        </label>
-        <input name='latitude' className='fr-input' disabled value={point.coordinates[1]} />
+      <div className='fr-input-group position-input' style={{ marginBottom: 0 }}>
+        <div className='fr-label'>Latitude</div>
+        <div
+          data-tooltip='Pour éditer la position, déplacez le marqueur sur la carte'
+          className='fr-input'
+        >
+          {point.coordinates[1].toFixed(5)}
+        </div>
       </div>
-      <button type='button' onClick={onDelete}>
-        <span className='icon'>X</span>
+      <button
+        className='fr-btn  fr-icon-delete-line fr-btn--tertiary-no-outline'
+        title='Supprimer la position'
+        onClick={onDelete}
+      >
+        Supprimer la position
       </button>
     </StyledContainer>
   )
