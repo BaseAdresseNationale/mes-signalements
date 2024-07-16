@@ -1,14 +1,20 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Layer, MapLayerMouseEvent, Source, useMap } from 'react-map-gl/maplibre'
 import { DEFAULT_COLOR_DARK, getBanLayers } from '../../config/map/layers'
 import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
 import MapContext from '../../contexts/map.context'
 
-export function AdresseSearchMap() {
+interface AdresseSearchMapProps {
+  layers?: string[]
+  filter?: any
+}
+
+export function AdresseSearchMap({ layers, filter }: AdresseSearchMapProps) {
   const map = useMap()
   const { markerColor } = useContext(MapContext)
   const { navigate } = useNavigateWithPreservedSearchParams()
-  const [banLayers, setBanLayers] = useState(getBanLayers(DEFAULT_COLOR_DARK))
+  const [banLayers, setBanLayers] = useState(getBanLayers(DEFAULT_COLOR_DARK, layers, filter))
+  const hoveredStateId = useRef<{ id: string; source: string; sourceLayer: string } | null>(null)
 
   // Add select handlers to BAN layers
   useEffect(() => {
@@ -22,9 +28,51 @@ export function AdresseSearchMap() {
       }
     }
 
+    const handleMouseMove = (e: MapLayerMouseEvent) => {
+      if (!map.current || !e.features) {
+        return
+      }
+
+      if (e.features.length > 0) {
+        if (hoveredStateId.current) {
+          map.current.setFeatureState(
+            {
+              ...hoveredStateId.current,
+            },
+            { hover: false },
+          )
+        }
+        hoveredStateId.current = {
+          id: e.features[0].id as string,
+          source: e.features[0].source as string,
+          sourceLayer: e.features[0].sourceLayer as string,
+        }
+        map.current.setFeatureState(
+          {
+            ...hoveredStateId.current,
+          },
+          { hover: true },
+        )
+      }
+    }
+
+    const handleMouseLeave = () => {
+      if (hoveredStateId.current && map.current) {
+        map.current.setFeatureState(
+          {
+            ...hoveredStateId.current,
+          },
+          { hover: false },
+        )
+        hoveredStateId.current = null
+      }
+    }
+
     banLayers.forEach((layer) => {
       if (map?.current) {
         map.current.on('click', layer.id, handleSelect)
+        map.current.on('mousemove', layer.id, handleMouseMove)
+        map.current.on('mouseleave', layer.id, handleMouseLeave)
       }
     })
 
@@ -32,15 +80,17 @@ export function AdresseSearchMap() {
       banLayers.forEach((layer) => {
         if (map?.current) {
           map.current.off('click', layer.id, handleSelect)
+          map.current.off('mousemove', layer.id, handleMouseMove)
+          map.current.off('mouseleave', layer.id, handleMouseLeave)
         }
       })
     }
   }, [map, navigate])
 
-  // Update BAN layers on markerColor change
+  // Update BAN layers on markerColor change or requested layers
   useEffect(() => {
-    setBanLayers(getBanLayers(markerColor))
-  }, [markerColor])
+    setBanLayers(getBanLayers(markerColor, layers, filter))
+  }, [markerColor, layers, filter])
 
   return (
     <Source

@@ -44,6 +44,9 @@ export default function SignalementForm({
             onEditSignalement={onEditSignalement}
             signalement={signalement}
             address={address}
+            isEditParcellesMode={isEditParcellesMode}
+            setIsEditParcellesMode={setIsEditParcellesMode}
+            initialPositionCoords={[map?.getCenter()?.lng || 0, map?.getCenter()?.lat || 0]}
           />
         )}
 

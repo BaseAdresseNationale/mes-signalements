@@ -162,11 +162,13 @@ export function getExistingLocation(
     case BANPlateformeResultTypeEnum.VOIE:
       return {
         type: ExistingLocation.type.VOIE,
+        banId: address.banId,
         nom: address.nomVoie,
       } as ExistingVoie
     case BANPlateformeResultTypeEnum.LIEU_DIT:
       return {
         type: ExistingLocation.type.TOPONYME,
+        banId: address.banId,
         nom: address.nomVoie,
         position: {
           point: {
@@ -180,6 +182,7 @@ export function getExistingLocation(
     case BANPlateformeResultTypeEnum.NUMERO:
       return {
         type: ExistingLocation.type.NUMERO,
+        banId: address.banId,
         numero: address.numero,
         suffixe: address.suffixe,
         position: {
@@ -255,9 +258,13 @@ export const getInitialSignalement = (
         initialSignalement.changesRequested = {
           nom: address.nomVoie,
           comment: '',
-          // For the moment we don't allow to change the position of a toponyme
-          // positions: address.positions,
-          // parcelles: address.parcelles
+          positions: [
+            {
+              point: address.position,
+              type: Position.type.SEGMENT,
+            },
+          ],
+          parcelles: address.parcelles,
         }
       } else {
         initialSignalement.changesRequested = {

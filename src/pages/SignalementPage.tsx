@@ -20,6 +20,7 @@ import { Marker } from '../composants/map/Marker'
 import { getAdresseLabel } from '../utils/adresse.utils'
 import { useMapContent } from '../hooks/useMapContent'
 import { ChangesRequested } from '../types/signalement.types'
+import { AdresseSearchMap } from '../composants/map/AdresseSearchMap'
 
 export function SignalementPage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -86,8 +87,8 @@ export function SignalementPage() {
   }
 
   // Map content
-  const mapContent = useMemo(
-    () => (
+  const mapContent = useMemo(() => {
+    return (
       <>
         {!(signalement?.changesRequested as NumeroChangesRequestedDTO)?.positions &&
           Boolean((adresse as IBANPlateformeNumero)?.lat) &&
@@ -109,10 +110,16 @@ export function SignalementPage() {
             markerColor={markerColor}
           />
         )}
+        {(adresse.type === BANPlateformeResultTypeEnum.VOIE ||
+          adresse.type === BANPlateformeResultTypeEnum.LIEU_DIT) && (
+          <AdresseSearchMap
+            layers={['adresse', 'adresse-label']}
+            filter={['in', adresse.id, ['get', 'id']]}
+          />
+        )}
       </>
-    ),
-    [signalement, adresse, isEditParcellesMode, markerColor],
-  )
+    )
+  }, [signalement, adresse, isEditParcellesMode, markerColor])
 
   useMapContent(mapContent)
 

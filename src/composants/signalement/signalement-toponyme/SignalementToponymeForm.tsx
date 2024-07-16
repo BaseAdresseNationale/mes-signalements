@@ -1,15 +1,21 @@
 import { StyledForm } from '../signalement.styles'
-import { Signalement, ToponymeChangesRequestedDTO } from '../../../api/signalement'
+import { Position, Signalement, ToponymeChangesRequestedDTO } from '../../../api/signalement'
 import { getInitialSignalement } from '../../../utils/signalement.utils'
 import React, { useMemo } from 'react'
 import { getAdresseLabel } from '../../../utils/adresse.utils'
+import { IBANPlateformeLieuDit } from '../../../api/ban-plateforme/types'
+import PositionInput from '../../common/PositionInput'
+import { blurPosition } from '../../../utils/position.utils'
 
 interface SignalementToponymeFormProps {
   signalement: Signalement
-  onEditSignalement: (property: string, key: string) => (event: string) => void
+  onEditSignalement: (property: string, key: string) => (value: any) => void
   onClose: () => void
-  address: any
-  onSubmit: any
+  address: IBANPlateformeLieuDit
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
+  setIsEditParcellesMode: (isEditParcellesMode: boolean) => void
+  isEditParcellesMode: boolean
+  initialPositionCoords: number[]
 }
 
 export default function SignalementToponymeForm({
@@ -18,6 +24,9 @@ export default function SignalementToponymeForm({
   onClose,
   address,
   onSubmit,
+  setIsEditParcellesMode,
+  isEditParcellesMode,
+  initialPositionCoords,
 }: SignalementToponymeFormProps) {
   const isSubmitDisabled = useMemo(() => {
     return (
@@ -26,7 +35,8 @@ export default function SignalementToponymeForm({
     )
   }, [address, signalement])
 
-  const { nom, comment } = signalement.changesRequested as ToponymeChangesRequestedDTO
+  const { nom, positions, parcelles, comment } =
+    signalement.changesRequested as ToponymeChangesRequestedDTO
 
   return (
     <StyledForm onSubmit={onSubmit}>
@@ -52,47 +62,63 @@ export default function SignalementToponymeForm({
             />
           </div>
         </div>
-        {/* <h6>Positions :</h6>
-        {positions.map(({position, positionType}, index) => (
+        <h6>Positions :</h6>
+        {positions?.map(({ point, type }, index) => (
           <PositionInput
             key={index} // eslint-disable-line react/no-array-index-key
-            position={position}
-            positionType={positionType}
-            onEditPositionType={updatedPosition => {
+            point={point}
+            type={type}
+            onEditPositionType={(updatedPosition) => {
               const newPositions = [...positions]
               newPositions[index] = updatedPosition
               onEditSignalement('changesRequested', 'positions')(newPositions)
             }}
             onDelete={() => {
-              onEditSignalement('changesRequested', 'positions')(positions.filter((_, i) => i !== index))
-            }} />
+              onEditSignalement(
+                'changesRequested',
+                'positions',
+              )(positions.filter((_, i) => i !== index))
+            }}
+          />
         ))}
-        <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-          <Button
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <button
             type='button'
-            style={{color: 'white', marginBottom: 10}}
-            onClick={() => onEditSignalement('changesRequested', 'positions')([...positions, {position: {type: 'Point', coordinates: blurPosition(initialPositionCoords)}, positionType: 'entrée'}])}
+            className='fr-btn'
+            style={{ color: 'white', marginBottom: 10 }}
+            onClick={() =>
+              onEditSignalement(
+                'changesRequested',
+                'positions',
+              )([
+                ...(positions as Position[]),
+                {
+                  point: {
+                    type: 'Point',
+                    coordinates: blurPosition(initialPositionCoords),
+                  },
+                  type: Position.type.SEGMENT,
+                },
+              ])
+            }
           >
             Ajouter une position
-          </Button>
+          </button>
         </div>
         <h6>Parcelles cadastrales :</h6>
         <div className='parcelles-wrapper'>
-          {parcelles.map(parcelle => (
-            <div key={parcelle}>
-              {parcelle}
-            </div>
-          ))}
-        </div> */}
-        {/* <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-          <Button
+          {parcelles?.map((parcelle) => <div key={parcelle}>{parcelle}</div>)}
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <button
+            className='fr-btn'
             type='button'
-            style={{color: 'white', marginBottom: 10}}
+            style={{ color: 'white', marginBottom: 10 }}
             onClick={() => setIsEditParcellesMode(!isEditParcellesMode)}
           >
             {isEditParcellesMode ? 'Masquer le cadastre' : 'Modifier les parcelles'}
-          </Button>
-        </div> */}
+          </button>
+        </div>
       </section>
       <section>
         <div className='form-row'>

@@ -134,7 +134,7 @@ function SignalementMap({
       const positionTypeLabel = positionTypeOptions.find(
         ({ value }) => value === positionType,
       )?.label
-      return `${signalementLabel} - ${positionTypeLabel}`
+      return signalementLabel ? `${signalementLabel} - ${positionTypeLabel}` : positionTypeLabel
     },
     [signalementLabel],
   )

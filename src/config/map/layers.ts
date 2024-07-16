@@ -21,12 +21,15 @@ export const getAdresseCircleLayer = (color = DEFAULT_COLOR_DARK) => ({
   minzoom: NUMEROS_POINT_MIN,
   paint: {
     'circle-color': color,
+    'circle-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0.5],
     'circle-radius': {
       stops: [
         [12, 0.8],
         [17, 6],
       ],
     },
+    'circle-stroke-width': 2,
+    'circle-stroke-color': '#fff',
   },
 })
 
@@ -38,6 +41,8 @@ export const getAdresseLabelLayer = (color = DEFAULT_COLOR_DARK) => ({
   minzoom: NUMEROS_MIN,
   paint: {
     'text-color': color,
+    'text-halo-color': '#fff',
+    'text-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0.5],
   },
   layout: {
     'text-font': ['Noto Sans Bold'],
@@ -68,6 +73,7 @@ export const getVoieLayer = (color = DEFAULT_COLOR_DARK) => ({
   maxzoom: VOIE_MAX,
   paint: {
     'text-color': color,
+    'text-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0.5],
   },
   layout: {
     'text-font': ['Noto Sans Bold'],
@@ -85,6 +91,7 @@ export const getToponymeLayer = (color = DEFAULT_COLOR_DARK) => ({
   maxzoom: TOPONYME_MAX,
   paint: {
     'text-color': color,
+    'text-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0.5],
   },
   layout: {
     'text-font': ['Noto Sans Bold'],
@@ -129,12 +136,25 @@ export const interactiveLayers = [
   parcelleHoveredLayer,
 ]
 
-export const getBanLayers = (color: string) => [
-  getAdresseCircleLayer(color),
-  getAdresseLabelLayer(color),
-  getVoieLayer(color),
-  getToponymeLayer(color),
-]
+export const getBanLayers = (color: string, layers: string[] = [], filter?: any) => {
+  const allBANLayers = [
+    getAdresseCircleLayer(color),
+    getAdresseLabelLayer(color),
+    getVoieLayer(color),
+    getToponymeLayer(color),
+  ]
+
+  const selectedLayers = layers.length
+    ? allBANLayers.filter(({ id }) => layers.includes(id))
+    : allBANLayers
+
+  return filter
+    ? selectedLayers.map((layer) => ({
+        ...layer,
+        filter,
+      }))
+    : selectedLayers
+}
 
 export const cadastreLayers = [
   {

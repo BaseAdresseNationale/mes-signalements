@@ -5,12 +5,13 @@ import { NumeroChangesRequestedDTO, Position, Signalement } from '../../../api/s
 import { getInitialSignalement } from '../../../utils/signalement.utils'
 import { blurPosition } from '../../../utils/position.utils'
 import { getAdresseLabel } from '../../../utils/adresse.utils'
+import { IBANPlateformeNumero, IBANPlateformeVoie } from '../../../api/ban-plateforme/types'
 
 interface SignalementNumeroFormProps {
   signalement: Signalement
   onEditSignalement: (property: string, key: string) => (value: any) => void
   onClose: () => void
-  address?: any
+  address?: IBANPlateformeNumero | IBANPlateformeVoie
   setIsEditParcellesMode: (isEditParcellesMode: boolean) => void
   isEditParcellesMode: boolean
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void

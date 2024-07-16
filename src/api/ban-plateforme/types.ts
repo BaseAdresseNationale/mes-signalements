@@ -56,6 +56,7 @@ export interface IBANPlateformeVoie extends IBANPlateformeResult {
   commune: IBANPlateformeCommune
   nomVoie: string
   displayBBox: [number, number, number, number]
+  codePostal: string
 }
 
 export interface IBANPlateformeLieuDit extends IBANPlateformeResult {

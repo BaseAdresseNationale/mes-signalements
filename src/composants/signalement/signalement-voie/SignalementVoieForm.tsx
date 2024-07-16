@@ -3,13 +3,14 @@ import { Signalement, VoieChangesRequestedDTO } from '../../../api/signalement'
 import { getInitialSignalement } from '../../../utils/signalement.utils'
 import React, { useMemo } from 'react'
 import { getAdresseLabel } from '../../../utils/adresse.utils'
+import { IBANPlateformeVoie } from '../../../api/ban-plateforme/types'
 
 interface SignalementVoieFormProps {
   signalement: Signalement
   onEditSignalement: (property: string, key: string) => (event: string) => void
   onClose: () => void
-  address: any
-  onSubmit: any
+  address: IBANPlateformeVoie
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
 }
 
 export default function SignalementVoieForm({

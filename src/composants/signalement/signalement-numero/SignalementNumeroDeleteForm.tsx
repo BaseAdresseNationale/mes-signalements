@@ -3,12 +3,13 @@ import { getInitialSignalement } from '../../../utils/signalement.utils'
 import { StyledForm } from '../signalement.styles'
 import { Signalement } from '../../../api/signalement'
 import { getAdresseLabel } from '../../../utils/adresse.utils'
+import { IBANPlateformeNumero } from '../../../api/ban-plateforme/types'
 
 interface SignalementNumeroDeleteFormProps {
   signalement: Signalement
   onEditSignalement: (property: string, key: string) => (event: string) => void
   onClose: () => void
-  address: any
+  address: IBANPlateformeNumero
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
 }
 
