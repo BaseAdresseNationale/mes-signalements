@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import Map, { NavigationControl } from 'react-map-gl/maplibre'
+import Map, { Layer, NavigationControl, Source } from 'react-map-gl/maplibre'
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { Header } from '../composants/common/Header'
 import { Drawer } from '../composants/common/Drawer'
@@ -8,12 +8,13 @@ import { AdresseSearch } from '../composants/adresse/AdresseSearch'
 import Loader from '../composants/common/Loader'
 import useNavigateWithPreservedSearchParams from '../hooks/useNavigateWithPreservedSearchParams'
 import MapContext from '../contexts/map.context'
-import { interactiveLayers } from '../config/map/layers'
+import { interactiveLayers, staticCadastreLayers } from '../config/map/layers'
 import { mapStyles } from '../config/map/styles'
 import { StylesSwitch } from '../composants/map/StylesSwitch'
 import { AboutModal } from '../composants/about/AboutModal'
 import SourceContext from '../contexts/source.context'
 import { MaplibreStyleDefinition } from '../types/maplibre.types'
+import { CadastreToggle } from '../composants/map/CadastreToggle'
 
 const Layout = styled.div`
   position: relative;
@@ -57,7 +58,7 @@ export function MapLayout({ children }: MapLayoutProps) {
   const onMouseEnter = useCallback(() => setCursor('pointer'), [])
   const onMouseLeave = useCallback(() => setCursor(null), [])
 
-  const { mapRefCb, mapChildren } = useContext(MapContext)
+  const { mapRefCb, mapChildren, showCadastre, setShowCadastre } = useContext(MapContext)
   const { source } = useContext(SourceContext)
 
   const { navigate } = useNavigateWithPreservedSearchParams()
@@ -111,8 +112,32 @@ export function MapLayout({ children }: MapLayoutProps) {
           interactiveLayerIds={interactiveLayers.map((layer) => layer.id)}
           {...(cursor ? { cursor } : {})}
         >
+          <Source
+            id='cadastre'
+            type='vector'
+            url='https://openmaptiles.geo.data.gouv.fr/data/cadastre.json'
+          >
+            {staticCadastreLayers.map((cadastreLayer) => {
+              return (
+                <Layer
+                  key={cadastreLayer.id}
+                  {...(cadastreLayer as any)}
+                  layout={{
+                    ...cadastreLayer.layout,
+                    visibility: showCadastre ? 'visible' : 'none',
+                  }}
+                />
+              )
+            })}
+          </Source>
           {mapChildren}
           <NavigationControl position='top-right' />
+          <CadastreToggle
+            layers={staticCadastreLayers.map((layer) => layer.id)}
+            showCadastre={showCadastre}
+            setShowCadastre={setShowCadastre}
+            position='top-right'
+          />
           <StylesSwitch
             styles={mapStyles as [MaplibreStyleDefinition, MaplibreStyleDefinition]}
             position='bottom-right'

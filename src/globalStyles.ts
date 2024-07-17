@@ -100,6 +100,16 @@ const GlobalStyle = createGlobalStyle`
     }
   }
 }
+
+.maplibregl-ctrl.maplibregl-ctrl-group {
+  > button.active {
+    background-color: #000091;
+    border-radius: 5px;
+    > img {
+      filter: invert(1);
+    }
+  }
+}
 `
 
 export default GlobalStyle

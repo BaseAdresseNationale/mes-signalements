@@ -108,6 +108,22 @@ export const getToponymeLayer = (color = DEFAULT_COLOR_DARK) => ({
   },
 })
 
+export const parcellesHighlightedLayer = {
+  id: 'parcelle-highlighted',
+  type: 'fill',
+  source: 'cadastre',
+  'source-layer': 'parcelles',
+  filter: ['==', ['get', 'id'], ''],
+  minzoom: PARCELLES_MINZOOM,
+  layout: {
+    visibility: 'none',
+  },
+  paint: {
+    'fill-color': '#0053b3',
+    'fill-opacity': 0.5,
+  },
+}
+
 export const parcelleHoveredLayer = {
   id: 'parcelle-hovered',
   type: 'fill',
@@ -156,7 +172,7 @@ export const getBanLayers = (color: string, layers: string[] = [], filter?: any)
     : selectedLayers
 }
 
-export const cadastreLayers = [
+export const staticCadastreLayers = [
   {
     id: 'batiments-fill',
     type: 'fill',
@@ -204,21 +220,6 @@ export const cadastreLayers = [
           [17, 2],
         ],
       },
-    },
-  },
-  {
-    id: 'parcelle-highlighted',
-    type: 'fill',
-    source: 'cadastre',
-    'source-layer': 'parcelles',
-    filter: ['==', ['get', 'id'], ''],
-    minzoom: PARCELLES_MINZOOM,
-    layout: {
-      visibility: 'none',
-    },
-    paint: {
-      'fill-color': '#0053b3',
-      'fill-opacity': 0.5,
     },
   },
   {

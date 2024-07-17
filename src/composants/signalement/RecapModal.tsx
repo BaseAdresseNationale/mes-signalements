@@ -17,7 +17,7 @@ import { useFriendlyCaptcha } from '../../hooks/useFriendlyCaptcha'
 
 interface SignalementRecapModalProps {
   signalement: Signalement
-  onEditSignalement: (property: string, key: string) => (event: string) => void
+  onEditSignalement: (property: keyof Signalement, key: string) => (event: string) => void
   onClose: () => void
   address: any
   onSubmit: () => void

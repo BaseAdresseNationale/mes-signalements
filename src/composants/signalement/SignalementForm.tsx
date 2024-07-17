@@ -11,11 +11,9 @@ import SignalementVoieForm from './signalement-voie/SignalementVoieForm'
 interface SignalementFormProps {
   signalement: Signalement
   map: MapRef | null
-  onEditSignalement: any
-  onClose: any
+  onEditSignalement: (property: keyof Signalement, key: string) => (value: any) => void
+  onClose: () => void
   address: any
-  setIsEditParcellesMode: any
-  isEditParcellesMode: boolean
 }
 
 export default function SignalementForm({
@@ -24,8 +22,6 @@ export default function SignalementForm({
   onEditSignalement,
   onClose,
   address,
-  setIsEditParcellesMode,
-  isEditParcellesMode,
 }: SignalementFormProps) {
   const [showRecapModal, setShowRecapModal] = useState(false)
 
@@ -44,8 +40,6 @@ export default function SignalementForm({
             onEditSignalement={onEditSignalement}
             signalement={signalement}
             address={address}
-            isEditParcellesMode={isEditParcellesMode}
-            setIsEditParcellesMode={setIsEditParcellesMode}
             initialPositionCoords={[map?.getCenter()?.lng || 0, map?.getCenter()?.lat || 0]}
           />
         )}
@@ -64,12 +58,10 @@ export default function SignalementForm({
       {signalement?.type === Signalement.type.LOCATION_TO_CREATE &&
         address.type === BANPlateformeResultTypeEnum.VOIE && (
           <SignalementNumeroForm
-            setIsEditParcellesMode={setIsEditParcellesMode}
             onClose={onClose}
             onSubmit={handleSubmit}
             onEditSignalement={onEditSignalement}
             signalement={signalement}
-            isEditParcellesMode={isEditParcellesMode}
             initialPositionCoords={[map?.getCenter()?.lng || 0, map?.getCenter()?.lat || 0]}
           />
         )}
@@ -77,12 +69,10 @@ export default function SignalementForm({
       {signalement?.type === Signalement.type.LOCATION_TO_UPDATE &&
         address.type === BANPlateformeResultTypeEnum.NUMERO && (
           <SignalementNumeroForm
-            setIsEditParcellesMode={setIsEditParcellesMode}
             onClose={onClose}
             onSubmit={handleSubmit}
             onEditSignalement={onEditSignalement}
             signalement={signalement}
-            isEditParcellesMode={isEditParcellesMode}
             address={address}
             initialPositionCoords={[address.lon, address.lat]}
           />

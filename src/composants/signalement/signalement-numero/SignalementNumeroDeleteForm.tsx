@@ -7,7 +7,7 @@ import { IBANPlateformeNumero } from '../../../api/ban-plateforme/types'
 
 interface SignalementNumeroDeleteFormProps {
   signalement: Signalement
-  onEditSignalement: (property: string, key: string) => (event: string) => void
+  onEditSignalement: (property: keyof Signalement, key: string) => (event: string) => void
   onClose: () => void
   address: IBANPlateformeNumero
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void

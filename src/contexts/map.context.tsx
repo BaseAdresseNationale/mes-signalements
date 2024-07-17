@@ -9,6 +9,10 @@ interface MapContextValue {
   mapChildren: React.ReactNode | null
   setMapChildren: (children: React.ReactNode) => void
   markerColor: string
+  showCadastre: boolean
+  setShowCadastre: React.Dispatch<React.SetStateAction<boolean>>
+  editParcelles: boolean
+  setEditParcelles: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const MapContext = createContext<MapContextValue>({
@@ -17,6 +21,10 @@ export const MapContext = createContext<MapContextValue>({
   mapChildren: null,
   setMapChildren: () => {},
   markerColor: DEFAULT_COLOR_DARK,
+  showCadastre: false,
+  setShowCadastre: () => {},
+  editParcelles: false,
+  setEditParcelles: () => {},
 })
 
 export function MapContextProvider(props: { children: React.ReactNode }) {
@@ -28,6 +36,8 @@ export function MapContextProvider(props: { children: React.ReactNode }) {
   }, [])
   const [markerColor, setMarkerColor] = useState(DEFAULT_COLOR_DARK)
   const [mapChildren, setMapChildren] = useState<React.ReactNode>(null)
+  const [showCadastre, setShowCadastre] = useState(false)
+  const [editParcelles, setEditParcelles] = useState(false)
 
   useEffect(() => {
     if (!mapRef) return
@@ -46,9 +56,46 @@ export function MapContextProvider(props: { children: React.ReactNode }) {
     }
   }, [mapRef])
 
+  // Update cadastre toggle button
+  useEffect(() => {
+    const cadastreToggleBtn = document.getElementById('cadastre-toggle')
+    if (cadastreToggleBtn) {
+      cadastreToggleBtn.title = showCadastre ? 'Masquer le cadastre' : 'Afficher le cadastre'
+      showCadastre
+        ? cadastreToggleBtn.classList.add('active')
+        : cadastreToggleBtn.classList.remove('active')
+    }
+  }, [showCadastre])
+
+  useEffect(() => {
+    if (!showCadastre && editParcelles) {
+      setEditParcelles(false)
+    }
+  }, [showCadastre, editParcelles])
+
   const value = useMemo(
-    () => ({ mapRef, mapRefCb, mapChildren, setMapChildren, markerColor }),
-    [mapRef, mapRefCb, mapChildren, setMapChildren, markerColor],
+    () => ({
+      mapRef,
+      mapRefCb,
+      mapChildren,
+      setMapChildren,
+      markerColor,
+      showCadastre,
+      setShowCadastre,
+      editParcelles,
+      setEditParcelles,
+    }),
+    [
+      mapRef,
+      mapRefCb,
+      mapChildren,
+      setMapChildren,
+      markerColor,
+      showCadastre,
+      setShowCadastre,
+      editParcelles,
+      setEditParcelles,
+    ],
   )
 
   return <MapContext.Provider value={value} {...props} />

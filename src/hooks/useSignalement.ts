@@ -13,13 +13,10 @@ export interface useSignalementType {
   ) => void
   deleteSignalement: () => void
   onEditSignalement: (property: keyof Signalement, key: string) => (value: any) => void
-  isEditParcellesMode: boolean
-  setIsEditParcellesMode: (isEditParcellesMode: boolean) => void
 }
 
 export function useSignalement(): useSignalementType {
   const [signalement, setSignalement] = useState<Signalement | null>(null)
-  const [isEditParcellesMode, setIsEditParcellesMode] = useState(false)
 
   const createSignalement = useCallback(
     (
@@ -58,7 +55,5 @@ export function useSignalement(): useSignalementType {
     createSignalement,
     deleteSignalement,
     onEditSignalement,
-    isEditParcellesMode,
-    setIsEditParcellesMode,
   }
 }

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Layer, MapLayerMouseEvent, Source, useMap } from 'react-map-gl/maplibre'
 import { Position, Signalement } from '../../api/signalement'
-import { cadastreLayers, parcelleHoveredLayer } from '../../config/map/layers'
+import { parcelleHoveredLayer, parcellesHighlightedLayer } from '../../config/map/layers'
 import { positionTypeOptions } from '../../utils/signalement.utils'
 import { Marker } from './Marker'
 import { ChangesRequested } from '../../types/signalement.types'
@@ -146,22 +146,21 @@ function SignalementMap({
         type='vector'
         url='https://openmaptiles.geo.data.gouv.fr/data/cadastre.json'
       >
-        {[...cadastreLayers, parcelleHoveredLayer].map((cadastreLayer) => {
-          if (cadastreLayer.id === 'parcelle-highlighted') {
-            ;(cadastreLayer as any).filter = cadastreFiltre
-          }
-
-          return (
-            <Layer
-              key={cadastreLayer.id}
-              {...(cadastreLayer as any)}
-              layout={{
-                ...cadastreLayer.layout,
-                visibility: isEditParcellesMode ? 'visible' : 'none',
-              }}
-            />
-          )
-        })}
+        <Layer
+          {...(parcelleHoveredLayer as any)}
+          layout={{
+            ...parcelleHoveredLayer.layout,
+            visibility: isEditParcellesMode ? 'visible' : 'none',
+          }}
+        />
+        <Layer
+          {...(parcellesHighlightedLayer as any)}
+          layout={{
+            ...parcellesHighlightedLayer.layout,
+            visibility: isEditParcellesMode ? 'visible' : 'none',
+          }}
+          filter={cadastreFiltre}
+        />
       </Source>
       {positions?.map(({ point, type }, index) => (
         <Marker

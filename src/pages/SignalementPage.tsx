@@ -25,18 +25,11 @@ import { AdresseSearchMap } from '../composants/map/AdresseSearchMap'
 export function SignalementPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { isMobile } = useWindowSize()
-  const { mapRef, markerColor } = useContext(MapContext)
+  const { mapRef, markerColor, editParcelles } = useContext(MapContext)
   const { adresse } = useLoaderData() as {
     adresse: IBANPlateformeResult
   }
-  const {
-    signalement,
-    createSignalement,
-    deleteSignalement,
-    onEditSignalement,
-    isEditParcellesMode,
-    setIsEditParcellesMode,
-  } = useSignalement()
+  const { signalement, createSignalement, deleteSignalement, onEditSignalement } = useSignalement()
 
   // Fly to location
   useEffect(() => {
@@ -104,7 +97,7 @@ export function SignalementPage() {
           )}
         {(signalement?.changesRequested as NumeroChangesRequestedDTO)?.positions && (
           <SignalementMap
-            isEditParcellesMode={isEditParcellesMode}
+            isEditParcellesMode={editParcelles}
             signalement={signalement as Signalement}
             onEditSignalement={onEditSignalement}
             markerColor={markerColor}
@@ -119,7 +112,7 @@ export function SignalementPage() {
         )}
       </>
     )
-  }, [signalement, adresse, isEditParcellesMode, markerColor])
+  }, [signalement, adresse, editParcelles, markerColor])
 
   useMapContent(mapContent)
 
@@ -155,8 +148,6 @@ export function SignalementPage() {
           signalement={signalement as Signalement}
           onEditSignalement={onEditSignalement}
           onClose={handleCloseSignalementForm}
-          setIsEditParcellesMode={setIsEditParcellesMode}
-          isEditParcellesMode={isEditParcellesMode}
         />
       )}
     </>

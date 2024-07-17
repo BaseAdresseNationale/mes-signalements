@@ -5,7 +5,6 @@ export const mapStyles: MaplibreStyleDefinition[] = [
   {
     id: 'Bright',
     title: 'Plan',
-    icon: 'maplibregl-ctrl-plan',
     uri: '/styles/osm-bright.json',
     layersColor: DEFAULT_COLOR_DARK,
     previewImage: '/images/preview-plan.jpg',
@@ -13,7 +12,6 @@ export const mapStyles: MaplibreStyleDefinition[] = [
   {
     id: 'Ortho',
     title: 'Satellite',
-    icon: 'maplibregl-ctrl-satellite',
     uri: '/styles/ortho.json',
     layersColor: DEFAULT_COLOR_LIGHT,
     previewImage: '/images/preview-satellite.jpg',

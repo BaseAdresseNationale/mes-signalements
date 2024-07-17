@@ -1,20 +1,19 @@
 import { StyledForm } from '../signalement.styles'
 import { Position, Signalement, ToponymeChangesRequestedDTO } from '../../../api/signalement'
 import { getInitialSignalement } from '../../../utils/signalement.utils'
-import React, { useMemo } from 'react'
+import React, { useContext, useMemo } from 'react'
 import { getAdresseLabel } from '../../../utils/adresse.utils'
 import { IBANPlateformeLieuDit } from '../../../api/ban-plateforme/types'
 import PositionInput from '../../common/PositionInput'
 import { blurPosition } from '../../../utils/position.utils'
+import MapContext from '../../../contexts/map.context'
 
 interface SignalementToponymeFormProps {
   signalement: Signalement
-  onEditSignalement: (property: string, key: string) => (value: any) => void
+  onEditSignalement: (property: keyof Signalement, key: string) => (value: any) => void
   onClose: () => void
   address: IBANPlateformeLieuDit
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
-  setIsEditParcellesMode: (isEditParcellesMode: boolean) => void
-  isEditParcellesMode: boolean
   initialPositionCoords: number[]
 }
 
@@ -24,10 +23,9 @@ export default function SignalementToponymeForm({
   onClose,
   address,
   onSubmit,
-  setIsEditParcellesMode,
-  isEditParcellesMode,
   initialPositionCoords,
 }: SignalementToponymeFormProps) {
+  const { showCadastre, setShowCadastre, setEditParcelles, editParcelles } = useContext(MapContext)
   const isSubmitDisabled = useMemo(() => {
     return (
       JSON.stringify(getInitialSignalement(address, signalement.type)) ===
@@ -37,6 +35,18 @@ export default function SignalementToponymeForm({
 
   const { nom, positions, parcelles, comment } =
     signalement.changesRequested as ToponymeChangesRequestedDTO
+
+  const enableParcellesEdition = () => {
+    if (!showCadastre) {
+      setShowCadastre(true)
+    }
+    setEditParcelles(true)
+  }
+
+  const disableParcellesEdition = () => {
+    setEditParcelles(false)
+    setShowCadastre(false)
+  }
 
   return (
     <StyledForm onSubmit={onSubmit}>
@@ -114,9 +124,9 @@ export default function SignalementToponymeForm({
             className='fr-btn'
             type='button'
             style={{ color: 'white', marginBottom: 10 }}
-            onClick={() => setIsEditParcellesMode(!isEditParcellesMode)}
+            onClick={editParcelles ? disableParcellesEdition : enableParcellesEdition}
           >
-            {isEditParcellesMode ? 'Masquer le cadastre' : 'Modifier les parcelles'}
+            {editParcelles ? 'Masquer le cadastre' : 'Modifier les parcelles'}
           </button>
         </div>
       </section>

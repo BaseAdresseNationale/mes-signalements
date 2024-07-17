@@ -1,4 +1,4 @@
-import { IControl, MapInstance, useControl } from 'react-map-gl/maplibre'
+import { ControlPosition, IControl, MapInstance, useControl } from 'react-map-gl/maplibre'
 import { MaplibreStyleDefinition } from '../../types/maplibre.types'
 
 export class MapboxStyleSwitcherControl implements IControl {
@@ -63,13 +63,13 @@ export class MapboxStyleSwitcherControl implements IControl {
 
 export type StylesSwitchProps = {
   styles: [MaplibreStyleDefinition, MaplibreStyleDefinition]
-  position?: string
+  position?: ControlPosition
 }
 
 export function StylesSwitch(props: StylesSwitchProps) {
   const { styles } = props
-  useControl(() => new MapboxStyleSwitcherControl(styles) as any, {
-    position: props.position as any,
+  useControl(() => new MapboxStyleSwitcherControl(styles), {
+    position: props.position,
   })
 
   return null

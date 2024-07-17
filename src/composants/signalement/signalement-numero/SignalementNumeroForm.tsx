@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useContext, useMemo } from 'react'
 import { StyledForm } from '../signalement.styles'
 import PositionInput from '../../common/PositionInput'
 import { NumeroChangesRequestedDTO, Position, Signalement } from '../../../api/signalement'
@@ -6,14 +6,13 @@ import { getInitialSignalement } from '../../../utils/signalement.utils'
 import { blurPosition } from '../../../utils/position.utils'
 import { getAdresseLabel } from '../../../utils/adresse.utils'
 import { IBANPlateformeNumero, IBANPlateformeVoie } from '../../../api/ban-plateforme/types'
+import MapContext from '../../../contexts/map.context'
 
 interface SignalementNumeroFormProps {
   signalement: Signalement
-  onEditSignalement: (property: string, key: string) => (value: any) => void
+  onEditSignalement: (property: keyof Signalement, key: string) => (value: any) => void
   onClose: () => void
   address?: IBANPlateformeNumero | IBANPlateformeVoie
-  setIsEditParcellesMode: (isEditParcellesMode: boolean) => void
-  isEditParcellesMode: boolean
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
   initialPositionCoords: number[]
 }
@@ -23,11 +22,11 @@ export default function SignalementNumeroForm({
   onEditSignalement,
   onClose,
   address,
-  setIsEditParcellesMode,
-  isEditParcellesMode,
   onSubmit,
   initialPositionCoords,
 }: SignalementNumeroFormProps) {
+  const { setShowCadastre, showCadastre, editParcelles, setEditParcelles } = useContext(MapContext)
+
   const isCreation = !address
 
   const isSubmitDisabled = useMemo(() => {
@@ -46,6 +45,18 @@ export default function SignalementNumeroForm({
 
   const { numero, suffixe, nomVoie, positions, parcelles, comment } =
     signalement.changesRequested as NumeroChangesRequestedDTO
+
+  const enableParcellesEdition = () => {
+    if (!showCadastre) {
+      setShowCadastre(true)
+    }
+    setEditParcelles(true)
+  }
+
+  const disableParcellesEdition = () => {
+    setEditParcelles(false)
+    setShowCadastre(false)
+  }
 
   return (
     <StyledForm onSubmit={onSubmit}>
@@ -150,9 +161,9 @@ export default function SignalementNumeroForm({
             className='fr-btn'
             type='button'
             style={{ color: 'white', marginBottom: 10 }}
-            onClick={() => setIsEditParcellesMode(!isEditParcellesMode)}
+            onClick={editParcelles ? disableParcellesEdition : enableParcellesEdition}
           >
-            {isEditParcellesMode ? 'Masquer le cadastre' : 'Modifier les parcelles'}
+            {editParcelles ? 'Masquer le cadastre' : 'Modifier les parcelles'}
           </button>
         </div>
         <div className='form-row'>
