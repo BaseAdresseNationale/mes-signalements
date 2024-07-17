@@ -13,6 +13,7 @@ import { mapStyles } from '../config/map/styles'
 import { StylesSwitch } from '../composants/map/StylesSwitch'
 import { AboutModal } from '../composants/about/AboutModal'
 import SourceContext from '../contexts/source.context'
+import { MaplibreStyleDefinition } from '../types/maplibre.types'
 
 const Layout = styled.div`
   position: relative;
@@ -112,7 +113,10 @@ export function MapLayout({ children }: MapLayoutProps) {
         >
           {mapChildren}
           <NavigationControl position='top-right' />
-          <StylesSwitch styles={mapStyles} position='top-right' />
+          <StylesSwitch
+            styles={mapStyles as [MaplibreStyleDefinition, MaplibreStyleDefinition]}
+            position='bottom-right'
+          />
         </Map>
         <AdresseSearch ref={searchRef} />
         <Drawer ref={drawerRef} onClose={handleCloseDrawer}>
