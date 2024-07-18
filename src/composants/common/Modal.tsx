@@ -25,7 +25,7 @@ const StyledModal = styled.div`
   max-width: 90%;
   height: fit-content;
   flex-direction: column;
-  overflow: auto;
+  /* overflow: auto; */
 
   > .header {
     display: flex;

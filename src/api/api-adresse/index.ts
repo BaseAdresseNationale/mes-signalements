@@ -1,7 +1,9 @@
-import { APIAdresseResult } from './types'
+import { APIAdressePropertyType, APIAdresseResult } from './types'
 
 type SearchOptions = {
   q: string
+  type?: APIAdressePropertyType
+  citycode?: string
   limit?: number
   lng?: number
   lat?: number
@@ -14,7 +16,7 @@ if (!API_ADRESSE_URL) {
 }
 
 export async function search(options: SearchOptions): Promise<APIAdresseResult> {
-  const { q, limit, lng, lat } = options
+  const { q, limit, lng, lat, type, citycode } = options
   let url = `${API_ADRESSE_URL}/search/?q=${encodeURIComponent(q)}`
 
   if (lng && lat) {
@@ -23,6 +25,14 @@ export async function search(options: SearchOptions): Promise<APIAdresseResult> 
 
   if (limit) {
     url += `&limit=${limit}`
+  }
+
+  if (type) {
+    url += `&type=${type}`
+  }
+
+  if (citycode) {
+    url += `&citycode=${citycode}`
   }
 
   const response = await fetch(url)

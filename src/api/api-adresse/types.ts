@@ -2,6 +2,7 @@ export enum APIAdressePropertyType {
   HOUSE_NUMBER = 'housenumber',
   STREET = 'street',
   LOCALITY = 'locality',
+  MUNICIPALITY = 'municipality',
 }
 
 export type APIAdresseResult = {

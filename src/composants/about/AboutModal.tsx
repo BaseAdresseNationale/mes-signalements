@@ -3,6 +3,7 @@ import Modal from '../common/Modal'
 import styled from 'styled-components'
 
 const StyledWrapper = styled.div`
+  overflow: auto;
   h2 {
     font-size: 20px;
     margin-bottom: 10px;

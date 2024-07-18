@@ -3,8 +3,7 @@ import { StyledAutocomplete } from './Autocomplete.styles'
 
 interface AutocompleteProps<T> {
   fetchResults: (search: string) => Promise<T[]>
-  renderResultList: (results: Array<T & { onClick: () => void }>) => React.ReactNode
-  onSelect: (result: T) => void
+  renderResultList: (results: Array<T>, onBlur: () => void) => React.ReactNode
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>
 }
 
@@ -12,7 +11,6 @@ const Autocomplete = <T extends { code: string }>({
   fetchResults,
   renderResultList,
   inputProps,
-  onSelect,
 }: AutocompleteProps<T>) => {
   const searchTimeoutRef = useRef({} as NodeJS.Timeout)
   const [hasFocus, setHasFocus] = useState(false)
@@ -31,7 +29,7 @@ const Autocomplete = <T extends { code: string }>({
     }
 
     fetch()
-  }, [search, fetchResults])
+  }, [search])
 
   const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value.length <= 4) {
@@ -42,11 +40,6 @@ const Autocomplete = <T extends { code: string }>({
     searchTimeoutRef.current = setTimeout(() => {
       setSearch(e.target.value)
     }, 500)
-  }
-
-  const onSelectResult = (result: T) => {
-    onSelect(result)
-    setHasFocus(false)
   }
 
   return (
@@ -73,14 +66,7 @@ const Autocomplete = <T extends { code: string }>({
       </div>
       {hasFocus && (
         <div className='results'>
-          {results.length > 0 &&
-            renderResultList(
-              results.map((result) => ({
-                ...result,
-                onClick: () => onSelectResult(result),
-                onTouchStart: () => onSelectResult(result),
-              })),
-            )}
+          {results.length > 0 && renderResultList(results, () => setHasFocus(false))}
           {results.length === 0 && search.length >= 4 && <p>Aucun résultat</p>}
           {results.length === 0 && search.length > 0 && search.length < 4 && (
             <p>Votre recherche doit comporter au moins 4 caractères</p>

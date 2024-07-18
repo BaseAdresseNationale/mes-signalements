@@ -3,9 +3,21 @@ import { APIAdressePropertyType } from '../../api/api-adresse/types'
 import { search } from '../../api/api-adresse'
 import Autocomplete from '../common/Autocomplete'
 import { ANIMATION_DURATION } from '../../layouts/MapLayout'
-import React, { forwardRef } from 'react'
+import React, { forwardRef, useMemo, useState } from 'react'
 import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
 import { MOBILE_BREAKPOINT } from '../../hooks/useWindowSize'
+import { AdvancedSearchModal } from './AdvancedSearchModal'
+import { StyledResultList } from '../common/Autocomplete/Autocomplete.styles'
+
+const placeHolders = [
+  '10 rue Paulin Viry, Pocé-Sur-Cisse',
+  '2 chemin de la Croix, Saint-Georges-sur-Cher',
+  '1 rue de la Mairie, Saint-Aignan',
+  '25 bis rue de la République, Tours',
+  '12 rue Nationale, Amboise',
+  '2 rue de la Mairie, Bléré',
+  "1 rue d'Azay, Montlouis-sur-Loire",
+]
 
 const StyledSearch = styled.div<{ $animationDuration: number }>`
   position: absolute;
@@ -20,6 +32,10 @@ const StyledSearch = styled.div<{ $animationDuration: number }>`
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   transition: ${({ $animationDuration }) => `top ${$animationDuration}ms ease-in-out`};
+
+  p {
+    margin-bottom: 4px;
+  }
 
   input {
     width: 400px;
@@ -45,26 +61,6 @@ const StyledSearch = styled.div<{ $animationDuration: number }>`
   }
 `
 
-const StyledResultList = styled.div`
-  display: flex;
-  flex-direction: column;
-  > div {
-    padding: 5px;
-    > label {
-      font-weight: bold;
-    }
-    > button {
-      width: 100%;
-      text-align: left;
-      padding: 5px 10px;
-      cursor: pointer;
-      &:hover {
-        background-color: #eee;
-      }
-    }
-  }
-`
-
 interface IAdresseResult {
   code: string
   nom: string
@@ -72,7 +68,12 @@ interface IAdresseResult {
 }
 
 function _AdresseSearch(props: any, ref: React.ForwardedRef<HTMLDivElement>) {
+  const [showAdvancedSearch, setShowAdvancedSearch] = useState(false)
   const { navigate } = useNavigateWithPreservedSearchParams()
+  const placeholder = useMemo(
+    () => placeHolders[Math.floor(Math.random() * placeHolders.length)],
+    [],
+  )
 
   const fetchAdresses = async (query: string): Promise<IAdresseResult[]> => {
     const results = await search({ q: query, limit: 10 })
@@ -86,13 +87,13 @@ function _AdresseSearch(props: any, ref: React.ForwardedRef<HTMLDivElement>) {
 
   return (
     <StyledSearch ref={ref} $animationDuration={ANIMATION_DURATION}>
+      <p>Rechercher une adresse, une voie ou un lieu-dit :</p>
       <Autocomplete
         inputProps={{
-          placeholder: '20 avenue de Ségur, Paris',
+          placeholder,
         }}
         fetchResults={fetchAdresses}
-        onSelect={(adresse) => navigate(`/${adresse.code}`)}
-        renderResultList={(results) => {
+        renderResultList={(results, onBlur) => {
           const houseNumbers = results.filter(
             ({ type }) => type === APIAdressePropertyType.HOUSE_NUMBER,
           )
@@ -108,19 +109,44 @@ function _AdresseSearch(props: any, ref: React.ForwardedRef<HTMLDivElement>) {
           return (
             <StyledResultList>
               {filteredResults.map(({ name, results }) => (
-                <div key={name}>
+                <div key={name} className='result-item'>
                   <label>{name}</label>
                   {results.map((result) => (
-                    <button tabIndex={0} onClick={result.onClick} key={result.code} type='button'>
+                    <button
+                      tabIndex={0}
+                      onClick={() => {
+                        navigate(`/${result.code}`)
+                        onBlur()
+                      }}
+                      key={result.code}
+                      type='button'
+                    >
                       {result.nom}
                     </button>
                   ))}
                 </div>
               ))}
+              <div className='sticky-button'>
+                <button
+                  onClick={() => {
+                    setShowAdvancedSearch(true)
+                    onBlur()
+                  }}
+                  onTouchStart={() => {
+                    setShowAdvancedSearch(true)
+                    onBlur()
+                  }}
+                  type='button'
+                  className='fr-link fr-icon-arrow-right-line fr-link--icon-right'
+                >
+                  Je ne trouve pas mon adresse
+                </button>
+              </div>
             </StyledResultList>
           )
         }}
       />
+      {showAdvancedSearch && <AdvancedSearchModal onClose={() => setShowAdvancedSearch(false)} />}
     </StyledSearch>
   )
 }

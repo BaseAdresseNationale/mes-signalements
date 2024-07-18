@@ -29,6 +29,10 @@ export const StyledForm = styled.form`
     justify-content: space-between;
     margin-top: 1em;
 
+    @media screen and (max-width: ${MOBILE_BREAKPOINT}px) {
+      flex-direction: column;
+    }
+
     > div {
       width: 100%;
       padding: 1em;
