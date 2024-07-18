@@ -25,7 +25,7 @@ import { AdresseSearchMap } from '../composants/map/AdresseSearchMap'
 export function SignalementPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { isMobile } = useWindowSize()
-  const { mapRef, markerColor, editParcelles } = useContext(MapContext)
+  const { mapRef, editParcelles } = useContext(MapContext)
   const { adresse } = useLoaderData() as {
     adresse: IBANPlateformeResult
   }
@@ -92,7 +92,6 @@ export function SignalementPage() {
                 (adresse as IBANPlateformeNumero).lon,
                 (adresse as IBANPlateformeNumero).lat,
               ]}
-              color={markerColor}
             />
           )}
         {(signalement?.changesRequested as NumeroChangesRequestedDTO)?.positions && (
@@ -100,7 +99,6 @@ export function SignalementPage() {
             isEditParcellesMode={editParcelles}
             signalement={signalement as Signalement}
             onEditSignalement={onEditSignalement}
-            markerColor={markerColor}
           />
         )}
         {(adresse.type === BANPlateformeResultTypeEnum.VOIE ||
@@ -112,7 +110,7 @@ export function SignalementPage() {
         )}
       </>
     )
-  }, [signalement, adresse, editParcelles, markerColor])
+  }, [signalement, adresse, editParcelles])
 
   useMapContent(mapContent)
 

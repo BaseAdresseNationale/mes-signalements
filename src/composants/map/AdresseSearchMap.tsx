@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Layer, MapLayerMouseEvent, Source, useMap } from 'react-map-gl/maplibre'
-import { DEFAULT_COLOR_DARK, getBanLayers } from '../../config/map/layers'
+import { getBanLayers } from '../../config/map/layers'
 import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
-import MapContext from '../../contexts/map.context'
 
 interface AdresseSearchMapProps {
   layers?: string[]
@@ -11,9 +10,8 @@ interface AdresseSearchMapProps {
 
 export function AdresseSearchMap({ layers, filter }: AdresseSearchMapProps) {
   const map = useMap()
-  const { markerColor } = useContext(MapContext)
   const { navigate } = useNavigateWithPreservedSearchParams()
-  const [banLayers, setBanLayers] = useState(getBanLayers(DEFAULT_COLOR_DARK, layers, filter))
+  const [banLayers] = useState(getBanLayers(layers, filter))
   const hoveredStateId = useRef<{ id: string; source: string; sourceLayer: string } | null>(null)
 
   // Add select handlers to BAN layers
@@ -86,11 +84,6 @@ export function AdresseSearchMap({ layers, filter }: AdresseSearchMapProps) {
       })
     }
   }, [map, navigate])
-
-  // Update BAN layers on markerColor change or requested layers
-  useEffect(() => {
-    setBanLayers(getBanLayers(markerColor, layers, filter))
-  }, [markerColor, layers, filter])
 
   return (
     <Source

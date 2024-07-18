@@ -1,14 +1,11 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import { MapRef } from 'react-map-gl/maplibre'
-import { mapStyles } from '../config/map/styles'
-import { DEFAULT_COLOR_DARK } from '../config/map/layers'
 
 interface MapContextValue {
   mapRef: MapRef | null
   mapRefCb: (instance: MapRef | null) => void
   mapChildren: React.ReactNode | null
   setMapChildren: (children: React.ReactNode) => void
-  markerColor: string
   showCadastre: boolean
   setShowCadastre: React.Dispatch<React.SetStateAction<boolean>>
   editParcelles: boolean
@@ -20,7 +17,6 @@ export const MapContext = createContext<MapContextValue>({
   mapRefCb: () => {},
   mapChildren: null,
   setMapChildren: () => {},
-  markerColor: DEFAULT_COLOR_DARK,
   showCadastre: false,
   setShowCadastre: () => {},
   editParcelles: false,
@@ -34,27 +30,9 @@ export function MapContextProvider(props: { children: React.ReactNode }) {
       setMapRef(node)
     }
   }, [])
-  const [markerColor, setMarkerColor] = useState(DEFAULT_COLOR_DARK)
   const [mapChildren, setMapChildren] = useState<React.ReactNode>(null)
   const [showCadastre, setShowCadastre] = useState(false)
   const [editParcelles, setEditParcelles] = useState(false)
-
-  useEffect(() => {
-    if (!mapRef) return
-
-    const markerColorListener = () => {
-      const curStyle = mapRef.getStyle()
-      const layerColor =
-        mapStyles.find(({ id }) => id === curStyle?.name)?.layersColor || DEFAULT_COLOR_DARK
-      setMarkerColor(layerColor)
-    }
-
-    mapRef.on('styledata', markerColorListener)
-
-    return () => {
-      mapRef.off('styledata', markerColorListener)
-    }
-  }, [mapRef])
 
   // Update cadastre toggle button
   useEffect(() => {
@@ -79,7 +57,6 @@ export function MapContextProvider(props: { children: React.ReactNode }) {
       mapRefCb,
       mapChildren,
       setMapChildren,
-      markerColor,
       showCadastre,
       setShowCadastre,
       editParcelles,
@@ -90,7 +67,6 @@ export function MapContextProvider(props: { children: React.ReactNode }) {
       mapRefCb,
       mapChildren,
       setMapChildren,
-      markerColor,
       showCadastre,
       setShowCadastre,
       editParcelles,

@@ -13,15 +13,15 @@ const VOIE_MAX = 24
 
 export const PARCELLES_MINZOOM = 14
 
-export const getAdresseCircleLayer = (color = DEFAULT_COLOR_DARK) => ({
+export const adresseCircleLayer = {
   id: 'adresse',
   source: 'base-adresse-nationale',
   'source-layer': 'adresses',
   type: 'circle',
   minzoom: NUMEROS_POINT_MIN,
   paint: {
-    'circle-color': color,
-    'circle-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0.5],
+    'circle-color': DEFAULT_COLOR_DARK,
+    'circle-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0.6],
     'circle-radius': {
       stops: [
         [12, 0.8],
@@ -29,20 +29,21 @@ export const getAdresseCircleLayer = (color = DEFAULT_COLOR_DARK) => ({
       ],
     },
     'circle-stroke-width': 2,
-    'circle-stroke-color': '#fff',
+    'circle-stroke-color': DEFAULT_COLOR_LIGHT,
   },
-})
+}
 
-export const getAdresseLabelLayer = (color = DEFAULT_COLOR_DARK) => ({
+export const adresseLabelLayer = {
   id: 'adresse-label',
   source: 'base-adresse-nationale',
   'source-layer': 'adresses',
   type: 'symbol',
   minzoom: NUMEROS_MIN,
   paint: {
-    'text-color': color,
-    'text-halo-color': '#fff',
-    'text-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0.5],
+    'text-color': DEFAULT_COLOR_DARK,
+    'text-halo-color': DEFAULT_COLOR_LIGHT,
+    'text-halo-width': 2,
+    'text-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0.6],
   },
   layout: {
     'text-font': ['Noto Sans Bold'],
@@ -62,9 +63,9 @@ export const getAdresseLabelLayer = (color = DEFAULT_COLOR_DARK) => ({
     'text-variable-anchor': ['bottom'],
     'text-radial-offset': 1,
   },
-})
+}
 
-export const getVoieLayer = (color = DEFAULT_COLOR_DARK) => ({
+export const voieLayer = {
   id: 'voie',
   source: 'base-adresse-nationale',
   'source-layer': 'toponymes',
@@ -72,17 +73,20 @@ export const getVoieLayer = (color = DEFAULT_COLOR_DARK) => ({
   minzoom: VOIE_MIN,
   maxzoom: VOIE_MAX,
   paint: {
-    'text-color': color,
-    'text-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0.5],
+    'text-color': DEFAULT_COLOR_DARK,
+    'text-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0.8],
+    'text-halo-color': DEFAULT_COLOR_LIGHT,
+    'text-halo-width': 2,
+    'text-translate-anchor': 'map',
   },
   layout: {
     'text-font': ['Noto Sans Bold'],
     'text-size': ['step', ['get', 'nbNumeros'], 8, 20, 10, 50, 14, 100, 16],
     'text-field': ['get', 'nomVoie'],
   },
-})
+}
 
-export const getToponymeLayer = (color = DEFAULT_COLOR_DARK) => ({
+export const toponymeLayer = {
   id: 'toponyme',
   source: 'base-adresse-nationale',
   'source-layer': 'toponymes',
@@ -90,8 +94,11 @@ export const getToponymeLayer = (color = DEFAULT_COLOR_DARK) => ({
   minzoom: TOPONYME_MIN,
   maxzoom: TOPONYME_MAX,
   paint: {
-    'text-color': color,
-    'text-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0.5],
+    'text-color': DEFAULT_COLOR_DARK,
+    'text-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0.8],
+    'text-halo-color': DEFAULT_COLOR_LIGHT,
+    'text-halo-width': 2,
+    'text-translate-anchor': 'map',
   },
   layout: {
     'text-font': ['Noto Sans Bold'],
@@ -105,8 +112,9 @@ export const getToponymeLayer = (color = DEFAULT_COLOR_DARK) => ({
     'text-ignore-placement': false,
     'text-variable-anchor': ['bottom', 'top', 'right', 'left'],
     'text-radial-offset': 0.1,
+    'text-allow-overlap': false,
   },
-})
+}
 
 export const parcellesHighlightedLayer = {
   id: 'parcelle-highlighted',
@@ -145,20 +153,15 @@ export const parcelleHoveredLayer = {
 }
 
 export const interactiveLayers = [
-  getAdresseCircleLayer(),
-  getAdresseLabelLayer(),
-  getVoieLayer(),
-  getToponymeLayer(),
+  adresseCircleLayer,
+  adresseLabelLayer,
+  voieLayer,
+  toponymeLayer,
   parcelleHoveredLayer,
 ]
 
-export const getBanLayers = (color: string, layers: string[] = [], filter?: any) => {
-  const allBANLayers = [
-    getAdresseCircleLayer(color),
-    getAdresseLabelLayer(color),
-    getVoieLayer(color),
-    getToponymeLayer(color),
-  ]
+export const getBanLayers = (layers: string[] = [], filter?: any) => {
+  const allBANLayers = [adresseCircleLayer, adresseLabelLayer, voieLayer, toponymeLayer]
 
   const selectedLayers = layers.length
     ? allBANLayers.filter(({ id }) => layers.includes(id))

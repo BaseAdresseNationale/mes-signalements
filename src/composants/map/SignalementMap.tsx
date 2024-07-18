@@ -10,14 +10,12 @@ interface SignalementMapProps {
   signalement: Signalement
   onEditSignalement: (property: keyof Signalement, key: string) => (value: any) => void
   isEditParcellesMode: boolean
-  markerColor: string
 }
 
 function SignalementMap({
   signalement,
   onEditSignalement,
   isEditParcellesMode,
-  markerColor,
 }: SignalementMapProps) {
   const map = useMap()
   const [hoveredParcelle, setHoveredParcelle] = useState<null | string>(null)
@@ -167,7 +165,6 @@ function SignalementMap({
           key={index}
           label={getSignalementPositionLabel(type)}
           coordinates={point.coordinates as [number, number]}
-          color={markerColor}
           onDragEnd={onMarkerDragEnd(index)}
         />
       ))}
