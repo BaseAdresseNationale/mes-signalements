@@ -9,15 +9,17 @@ import {
 } from '../api/ban-plateforme/types'
 import { NumeroCard } from '../composants/adresse/NumeroCard'
 import SignalementForm from '../composants/signalement/SignalementForm'
-import { NumeroChangesRequestedDTO, Signalement } from '../api/signalement'
+import {
+  NumeroChangesRequestedDTO,
+  Signalement,
+  ToponymeChangesRequestedDTO,
+} from '../api/signalement'
 import { VoieCard } from '../composants/adresse/VoieCard'
 import { LieuDitCard } from '../composants/adresse/LieuDitCard'
 import useWindowSize from '../hooks/useWindowSize'
 import { useSignalement } from '../hooks/useSignalement'
 import { MapContext } from '../contexts/map.context'
 import SignalementMap from '../composants/map/SignalementMap'
-import { Marker } from '../composants/map/Marker'
-import { getAdresseLabel } from '../utils/adresse.utils'
 import { useMapContent } from '../hooks/useMapContent'
 import { ChangesRequested } from '../types/signalement.types'
 import { AdresseSearchMap } from '../composants/map/AdresseSearchMap'
@@ -83,29 +85,28 @@ export function SignalementPage() {
   const mapContent = useMemo(() => {
     return (
       <>
-        {!(signalement?.changesRequested as NumeroChangesRequestedDTO)?.positions &&
-          Boolean((adresse as IBANPlateformeNumero)?.lat) &&
-          Boolean((adresse as IBANPlateformeNumero)?.lon) && (
-            <Marker
-              label={getAdresseLabel(adresse)}
-              coordinates={[
-                (adresse as IBANPlateformeNumero).lon,
-                (adresse as IBANPlateformeNumero).lat,
-              ]}
-            />
-          )}
-        {(signalement?.changesRequested as NumeroChangesRequestedDTO)?.positions && (
+        {(signalement?.changesRequested as NumeroChangesRequestedDTO | ToponymeChangesRequestedDTO)
+          ?.positions ? (
           <SignalementMap
             isEditParcellesMode={editParcelles}
             signalement={signalement as Signalement}
             onEditSignalement={onEditSignalement}
           />
-        )}
-        {(adresse.type === BANPlateformeResultTypeEnum.VOIE ||
-          adresse.type === BANPlateformeResultTypeEnum.LIEU_DIT) && (
+        ) : (
           <AdresseSearchMap
             layers={['adresse', 'adresse-label']}
-            filter={['in', adresse.id, ['get', 'id']]}
+            filter={
+              adresse.type === BANPlateformeResultTypeEnum.LIEU_DIT
+                ? [
+                    'in',
+                    ['get', 'id'],
+                    [
+                      'literal',
+                      (adresse as IBANPlateformeLieuDit).numeros.map((numero) => numero.id),
+                    ],
+                  ]
+                : ['in', adresse.id, ['get', 'id']]
+            }
           />
         )}
       </>

@@ -42,7 +42,7 @@ export const positionTypeOptions = [
     value: Position.type.SERVICE_TECHNIQUE,
     label: 'Service technique',
   },
-  { value: Position.type.INCONNUE, label: 'Inconnu' },
+  { value: Position.type.INCONNU, label: 'Inconnu' },
 ]
 
 export const getPositionTypeLabel = (positionType: Position.type) => {
@@ -239,6 +239,7 @@ export const getInitialSignalement = (
       initialSignalement.changesRequested = {
         suffixe: '',
         nomVoie: address.nomVoie,
+        nomComplement: '',
         positions: [],
         parcelles: [],
         comment: '',
@@ -271,6 +272,7 @@ export const getInitialSignalement = (
           numero: address.numero,
           suffixe: address.suffixe || '',
           nomVoie: address.voie.nomVoie,
+          nomComplement: address.lieuDitComplementNom || '',
           positions: address.positions.map(
             ({ position, positionType }: { position: any; positionType: Position.type }) => ({
               point: {

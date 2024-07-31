@@ -145,12 +145,13 @@ export function MapLayout({ children }: MapLayoutProps) {
         </Map>
         <AdresseSearch ref={searchRef} />
         <Drawer ref={drawerRef} onClose={handleCloseDrawer}>
-          {navigation.state === 'loading' && (
+          {navigation.state === 'loading' ? (
             <div className='loader-wrapper'>
               <Loader />
             </div>
+          ) : (
+            children
           )}
-          {children}
         </Drawer>
       </div>
       {showInfo && <AboutModal onClose={() => setShowInfo(false)} />}

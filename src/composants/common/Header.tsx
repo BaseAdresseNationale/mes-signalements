@@ -74,7 +74,10 @@ export function Header({ customSource, toggleShowInfo }: HeaderProps) {
                 </div>
                 <div className='fr-header__service'>
                   <a href='/' title='Accueil - Mes Signalements - DINUM)'>
-                    <p className='fr-header__service-title'>Mes Signalements</p>
+                    <p className='fr-header__service-title'>
+                      Mes Signalements{' '}
+                      <span className='fr-badge fr-badge--info fr-badge--no-icon'>Beta</span>
+                    </p>
                   </a>
                   <p className='fr-header__service-tagline'>
                     Signaler un problème dans la Base Adresse Nationale

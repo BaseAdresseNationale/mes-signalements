@@ -62,6 +62,7 @@ export default function SignalementForm({
             onSubmit={handleSubmit}
             onEditSignalement={onEditSignalement}
             signalement={signalement}
+            address={address}
             initialPositionCoords={[map?.getCenter()?.lng || 0, map?.getCenter()?.lat || 0]}
           />
         )}

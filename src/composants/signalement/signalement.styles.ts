@@ -9,14 +9,14 @@ export const SignalementTypeWrapper = styled.div`
 
 export const StyledForm = styled.form`
   position: relative;
-  padding: 20px;
   display: flex;
   flex-direction: column;
   max-width: unset !important;
   margin: unset !important;
   overflow: scroll;
 
-  input {
+  input,
+  textarea {
     outline: none;
   }
 
@@ -29,13 +29,16 @@ export const StyledForm = styled.form`
     justify-content: space-between;
     margin-top: 1em;
 
-    @media screen and (max-width: ${MOBILE_BREAKPOINT}px) {
-      flex-direction: column;
-    }
-
     > div {
       width: 100%;
-      padding: 1em;
+    }
+
+    @media screen and (max-width: ${MOBILE_BREAKPOINT}px) {
+      flex-direction: column;
+
+      > div:not(:first-of-type) > h5 {
+        margin-top: 1em;
+      }
     }
   }
 
@@ -51,6 +54,7 @@ export const StyledForm = styled.form`
   }
 
   .form-row {
+    margin-bottom: 1em;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -72,21 +76,8 @@ export const StyledForm = styled.form`
     display: flex;
     margin-top: 1em;
 
-    > :last-child {
+    > :not(:first-child) {
       margin-left: 1em;
-    }
-  }
-
-  .parcelles-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    width: 100%;
-    > div {
-      margin-right: 1em;
-      margin-bottom: 1em;
-      padding: 0.5em;
-      background-color: #f5f5f5;
-      border-radius: 5px;
     }
   }
 
@@ -106,5 +97,19 @@ export const StyledForm = styled.form`
 
   @media screen and (max-width: ${MOBILE_BREAKPOINT}px) {
     padding: 0;
+  }
+
+  @media print {
+    section {
+      display: none;
+
+      &:has(> .signalement-recap) {
+        display: block;
+      }
+    }
+
+    button {
+      display: none;
+    }
   }
 `

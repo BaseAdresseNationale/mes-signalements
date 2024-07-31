@@ -3,6 +3,7 @@ import { IBANPlateformeResult, IBANPlateformeVoie } from '../../api/ban-platefor
 import { Signalement } from '../../api/signalement'
 import { Card } from '../common/Card'
 import { getAdresseLabel } from '../../utils/adresse.utils'
+import { ListNumeros } from './ListNumeros'
 
 interface VoieCardProps {
   adresse: IBANPlateformeVoie
@@ -12,10 +13,7 @@ interface VoieCardProps {
 export function VoieCard({ adresse, createSignalement }: VoieCardProps) {
   return (
     <Card>
-      <h1>{getAdresseLabel(adresse)}</h1>
-      <h2>
-        {adresse.commune.nom} - {adresse.commune.code}
-      </h2>
+      <h2 style={{ lineHeight: 'normal' }}>{getAdresseLabel(adresse)}</h2>
       <ul>
         <li>
           Région : <b>{adresse.commune.region.nom}</b>
@@ -33,15 +31,17 @@ export function VoieCard({ adresse, createSignalement }: VoieCardProps) {
         className='fr-btn'
         onClick={() => createSignalement(Signalement.type.LOCATION_TO_UPDATE, adresse)}
       >
-        Demander une modification
+        Modifier le nom de la voie
       </button>
+
+      <ListNumeros adresse={adresse} />
 
       <button
         type='button'
         className='fr-btn'
         onClick={() => createSignalement(Signalement.type.LOCATION_TO_CREATE, adresse)}
       >
-        Signaler un numéro manquant
+        Ajouter un numéro manquant
       </button>
     </Card>
   )

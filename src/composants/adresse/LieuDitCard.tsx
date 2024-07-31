@@ -3,6 +3,7 @@ import { IBANPlateformeLieuDit, IBANPlateformeResult } from '../../api/ban-plate
 import { Signalement } from '../../api/signalement'
 import { Card } from '../common/Card'
 import { getAdresseLabel } from '../../utils/adresse.utils'
+import { ListNumeros } from './ListNumeros'
 
 interface LieuDitCardProps {
   adresse: IBANPlateformeLieuDit
@@ -35,6 +36,8 @@ export function LieuDitCard({ adresse, createSignalement }: LieuDitCardProps) {
       >
         Demander une modification
       </button>
+
+      <ListNumeros adresse={adresse} />
     </Card>
   )
 }

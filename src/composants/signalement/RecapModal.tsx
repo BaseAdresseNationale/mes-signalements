@@ -3,7 +3,6 @@ import { StyledForm } from './signalement.styles'
 
 import {
   CreateSignalementDTO,
-  Position,
   Signalement,
   SignalementsService,
   Source,
@@ -14,12 +13,18 @@ import { getAdresseLabel } from '../../utils/adresse.utils'
 import { ChangesRequested } from '../../types/signalement.types'
 import SourceContext from '../../contexts/source.context'
 import { useFriendlyCaptcha } from '../../hooks/useFriendlyCaptcha'
+import {
+  BANPlateformeResultTypeEnum,
+  IBANPlateformeLieuDit,
+  IBANPlateformeNumero,
+  IBANPlateformeVoie,
+} from '../../api/ban-plateforme/types'
 
 interface SignalementRecapModalProps {
   signalement: Signalement
   onEditSignalement: (property: keyof Signalement, key: string) => (event: string) => void
   onClose: () => void
-  address: any
+  address: IBANPlateformeNumero | IBANPlateformeVoie | IBANPlateformeLieuDit
   onSubmit: () => void
 }
 
@@ -54,7 +59,7 @@ export default function SignalementRecapModal({
     }
   }
 
-  const { numero, suffixe, nomVoie, positions, parcelles, nom } =
+  const { numero, suffixe, nomVoie, nomComplement, positions, parcelles, nom } =
     signalement.changesRequested as ChangesRequested
 
   return (
@@ -62,19 +67,15 @@ export default function SignalementRecapModal({
       <StyledForm onSubmit={handleSubmit}>
         {signalement.type === Signalement.type.LOCATION_TO_UPDATE && (
           <section>
-            <h4>Récapitulatif</h4>
             <div className='signalement-recap'>
               <div>
                 <h5>Lieu concerné</h5>
                 <p>{getAdresseLabel(address)}</p>
-                {address.positions && (
+                {(address as IBANPlateformeNumero | IBANPlateformeLieuDit).positions && (
                   <>
                     <h6>Positions : </h6>
-                    {address.positions.map(
-                      (
-                        { position, positionType }: { position: any; positionType: Position.type },
-                        index: number,
-                      ) => {
+                    {(address as IBANPlateformeNumero | IBANPlateformeLieuDit).positions.map(
+                      ({ position, positionType }, index) => {
                         return (
                           <React.Fragment key={index}>
                             <b>{getPositionTypeLabel(positionType)}</b> : {position.coordinates[0]},{' '}
@@ -86,19 +87,39 @@ export default function SignalementRecapModal({
                     )}
                   </>
                 )}
-                {address.parcelles && (
+                {(address as IBANPlateformeNumero | IBANPlateformeLieuDit).parcelles.length > 0 && (
                   <>
                     <h6>Parcelles : </h6>
-                    {address.parcelles.map((parcelle: string, index: number) => (
-                      <div key={index}>{parcelle}</div>
-                    ))}
+                    {(address as IBANPlateformeNumero | IBANPlateformeLieuDit).parcelles.map(
+                      (parcelle, index) => (
+                        <div key={index}>{parcelle}</div>
+                      ),
+                    )}
                   </>
                 )}
               </div>
               <div>
                 <h5>Modifications demandées</h5>
                 <p>
-                  {numero} {suffixe} {nomVoie} {nom}
+                  {address.type === BANPlateformeResultTypeEnum.NUMERO ? (
+                    <>
+                      {numero} {suffixe} {nomVoie}{' '}
+                      {nomComplement && (
+                        <>
+                          <br />
+                          {nomComplement}
+                          <br />
+                          {address.codePostal} {address.commune.nom}
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {nom}
+                      <br />
+                      {address.codePostal} {address.commune.nom}
+                    </>
+                  )}
                 </p>
                 {positions && (
                   <>
@@ -114,7 +135,7 @@ export default function SignalementRecapModal({
                     })}
                   </>
                 )}
-                {parcelles && (
+                {parcelles?.length > 0 && (
                   <>
                     <h6>Parcelles : </h6>
                     {parcelles.map((parcelle, index) => (
@@ -122,13 +143,18 @@ export default function SignalementRecapModal({
                     ))}
                   </>
                 )}
+                {signalement.changesRequested.comment && (
+                  <div>
+                    <h6>Autres informations</h6>
+                    <p>{signalement.changesRequested.comment}</p>
+                  </div>
+                )}
               </div>
             </div>
           </section>
         )}
         {signalement.type === Signalement.type.LOCATION_TO_CREATE && (
           <section>
-            <h4>Récapitulatif</h4>
             <div className='signalement-recap'>
               <div>
                 <h5>Votre demande de création</h5>
@@ -149,7 +175,7 @@ export default function SignalementRecapModal({
                     })}
                   </>
                 )}
-                {parcelles && (
+                {parcelles?.length > 0 && (
                   <>
                     <h6>Parcelles : </h6>
                     {parcelles.map((parcelle, index) => (
@@ -158,24 +184,27 @@ export default function SignalementRecapModal({
                   </>
                 )}
               </div>
+              {signalement.changesRequested.comment && (
+                <div>
+                  <h6>Autres informations</h6>
+                  <p>{signalement.changesRequested.comment}</p>
+                </div>
+              )}
             </div>
           </section>
         )}
+
         {signalement.type === Signalement.type.LOCATION_TO_DELETE && (
           <section>
-            <h4>Récapitulatif</h4>
             <div className='signalement-recap'>
               <div>
                 <h5>Lieu concerné</h5>
                 <p>{getAdresseLabel(address)}</p>
-                {address.positions && (
+                {(address as IBANPlateformeNumero | IBANPlateformeLieuDit).positions && (
                   <>
                     <h6>Positions : </h6>
-                    {address.positions.map(
-                      (
-                        { position, positionType }: { position: any; positionType: Position.type },
-                        index: number,
-                      ) => {
+                    {(address as IBANPlateformeNumero | IBANPlateformeLieuDit).positions.map(
+                      ({ position, positionType }, index) => {
                         return (
                           <React.Fragment key={index}>
                             <b>{getPositionTypeLabel(positionType)}</b> : {position.coordinates[0]},{' '}
@@ -187,12 +216,14 @@ export default function SignalementRecapModal({
                     )}
                   </>
                 )}
-                {address.parcelles && (
+                {(address as IBANPlateformeNumero | IBANPlateformeLieuDit).parcelles.length > 0 && (
                   <>
                     <h6>Parcelles : </h6>
-                    {address.parcelles.map((parcelle: string, index: number) => (
-                      <div key={index}>{parcelle}</div>
-                    ))}
+                    {(address as IBANPlateformeNumero | IBANPlateformeLieuDit).parcelles.map(
+                      (parcelle, index) => (
+                        <div key={index}>{parcelle}</div>
+                      ),
+                    )}
                   </>
                 )}
               </div>
@@ -203,6 +234,14 @@ export default function SignalementRecapModal({
             </div>
           </section>
         )}
+        <button
+          className='fr-btn fr-btn--tertiary'
+          type='button'
+          onClick={() => window.print()}
+          style={{ marginTop: '0.5rem' }}
+        >
+          Imprimer le récapitulatif
+        </button>
         {source?.type !== Source.type.PRIVATE && (
           <section>
             <h4>Contact</h4>
@@ -249,12 +288,12 @@ export default function SignalementRecapModal({
           <button
             className='fr-btn'
             disabled={submitStatus === 'loading' || submitStatus === 'success'}
-            style={{ color: 'white' }}
             type='submit'
           >
             Envoyer le signalement
           </button>
-          <button className='fr-btn' type='button' onClick={onClose}>
+
+          <button className='fr-btn fr-btn--tertiary' type='button' onClick={onClose}>
             Annuler
           </button>
         </div>
