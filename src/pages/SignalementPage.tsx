@@ -92,13 +92,25 @@ export function SignalementPage() {
           ] as FilterSpecification)
         : (['in', adresse.id, ['get', 'id']] as FilterSpecification)
 
-    setAdresseSearchMapLayersOptions({
-      adresse: { filter },
-      'adresse-label': { filter },
-      voie: { layout: { visibility: 'none' } },
-      toponyme: { layout: { visibility: 'none' } },
-    })
-  }, [setAdresseSearchMapLayersOptions, adresse])
+    if (
+      (signalement?.changesRequested as NumeroChangesRequestedDTO | ToponymeChangesRequestedDTO)
+        ?.positions
+    ) {
+      setAdresseSearchMapLayersOptions({
+        adresse: { layout: { visibility: 'none' } },
+        'adresse-label': { layout: { visibility: 'none' } },
+        voie: { layout: { visibility: 'none' } },
+        toponyme: { layout: { visibility: 'none' } },
+      })
+    } else {
+      setAdresseSearchMapLayersOptions({
+        adresse: { filter },
+        'adresse-label': { filter },
+        voie: { layout: { visibility: 'none' } },
+        toponyme: { layout: { visibility: 'none' } },
+      })
+    }
+  }, [setAdresseSearchMapLayersOptions, adresse, signalement])
 
   // Map content
   const mapContent = useMemo(() => {
