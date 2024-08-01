@@ -21,7 +21,7 @@ interface ParcelleInputProps {
   parcelles: string[]
 }
 
-export default function ParcelleInput({ parcelles }: ParcelleInputProps) {
+export default function ParcelleInput({ parcelles }: Readonly<ParcelleInputProps>) {
   const { setShowCadastre, showCadastre, editParcelles, setEditParcelles } = useContext(MapContext)
 
   const enableParcellesEdition = () => {

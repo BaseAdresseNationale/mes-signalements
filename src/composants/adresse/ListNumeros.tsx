@@ -49,7 +49,7 @@ const StyledListNumeros = styled.div`
   }
 `
 
-export function ListNumeros({ adresse }: ListNumerosProps) {
+export function ListNumeros({ adresse }: Readonly<ListNumerosProps>) {
   const [search, setSearch] = useState('')
   const { navigate } = useNavigateWithPreservedSearchParams()
   const filteredNumeros = useMemo(() => {
@@ -95,8 +95,8 @@ export function ListNumeros({ adresse }: ListNumerosProps) {
                         </tr>
                       </thead>
                       <tbody>
-                        {filteredNumeros.map(({ id, numero, suffixe, certifie }, index) => (
-                          <tr onClick={() => navigate(`/${id}`)} className='numero-row' key={index}>
+                        {filteredNumeros.map(({ id, numero, suffixe, certifie }) => (
+                          <tr onClick={() => navigate(`/${id}`)} className='numero-row' key={id}>
                             <td>{suffixe ? `${numero} ${suffixe}` : numero}</td>
                             <td>{certifie ? '✅' : '❌'}</td>
                           </tr>

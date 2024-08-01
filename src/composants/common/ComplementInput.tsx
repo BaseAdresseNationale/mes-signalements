@@ -27,7 +27,11 @@ interface ComplementInputProps {
   value: string
 }
 
-export default function ComplementInput({ address, onChange, value }: ComplementInputProps) {
+export default function ComplementInput({
+  address,
+  onChange,
+  value,
+}: Readonly<ComplementInputProps>) {
   const fetchAPIAdresse = useCallback(async (search: string) => {
     try {
       const data = await searchAPIAdresse({

@@ -38,10 +38,6 @@ export function getAdresseLabel(address: IBANPlateformeResult) {
         </>
       )
     default:
-      throw new Error(
-        `Impossible de créer un signalement pour le type : ${
-          (address as IBANPlateformeResult).type
-        }`,
-      )
+      throw new Error(`Impossible de créer un signalement pour le type : ${address.type}`)
   }
 }

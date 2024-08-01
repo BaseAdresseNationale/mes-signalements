@@ -110,7 +110,7 @@ export default function SignalementNumeroForm({
         </div>
         <ComplementInputProps
           address={address}
-          value={nomComplement || ''}
+          value={nomComplement ?? ''}
           onChange={(event) => onEditSignalement('changesRequested', 'nomComplement')(event)}
         />
         <PositionInput

@@ -7,7 +7,7 @@ interface AdresseSearchMapProps {
   options: Record<string, Partial<LayerProps>>
 }
 
-export function AdresseSearchMap({ options }: AdresseSearchMapProps) {
+export function AdresseSearchMap({ options }: Readonly<AdresseSearchMapProps>) {
   const map = useMap()
   const { navigate } = useNavigateWithPreservedSearchParams()
   const hoveredStateId = useRef<{ id: string; source: string; sourceLayer: string } | null>(null)

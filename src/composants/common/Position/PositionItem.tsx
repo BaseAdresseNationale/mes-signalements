@@ -44,7 +44,7 @@ export default function PositionItem({
   type,
   onDelete,
   onEditPositionType,
-}: PositionItemProps) {
+}: Readonly<PositionItemProps>) {
   return (
     <StyledContainer>
       <SelectInput

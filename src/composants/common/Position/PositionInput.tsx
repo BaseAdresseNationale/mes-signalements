@@ -24,13 +24,13 @@ export default function PositionInput({
   initialPositionCoords,
   onChange,
   defaultPositionType = Position.type.ENTR_E,
-}: PositionInputProps) {
+}: Readonly<PositionInputProps>) {
   return (
     <StyledContainer>
       <p>Positions*</p>
       {positions?.map(({ point, type }, index) => (
         <PositionItem
-          key={index} // eslint-disable-line react/no-array-index-key
+          key={point.coordinates.toString()}
           point={point}
           type={type}
           onEditPositionType={(updatedPosition) => {
@@ -50,7 +50,7 @@ export default function PositionInput({
           style={{ color: 'white', marginBottom: 10 }}
           onClick={() =>
             onChange([
-              ...(positions as Position[]),
+              ...positions,
               {
                 point: {
                   type: 'Point',
