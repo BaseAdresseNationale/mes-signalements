@@ -10,6 +10,8 @@ export interface IBANPlateformeResult {
   id: string
   type: BANPlateformeResultTypeEnum
   banId?: string
+  commune: IBANPlateformeCommune
+  codePostal: string
 }
 
 export interface IBANPlateformeCommune {
@@ -42,10 +44,9 @@ export interface IBANPlateformeNumero extends IBANPlateformeResult {
     id: string
     nomVoie: string
   }
-  commune: IBANPlateformeCommune
+
   lieuDitComplementNom: string
   certifie: boolean
-  codePostal: string
   lat: number
   lon: number
   positionType: Position.type
@@ -53,17 +54,15 @@ export interface IBANPlateformeNumero extends IBANPlateformeResult {
 
 export interface IBANPlateformeVoie extends IBANPlateformeResult {
   type: BANPlateformeResultTypeEnum.VOIE
-  commune: IBANPlateformeCommune
   nomVoie: string
   displayBBox: [number, number, number, number]
-  codePostal: string
   numeros: IBANPlateformeNumero[]
 }
 
 export interface IBANPlateformeLieuDit extends IBANPlateformeResult {
   type: BANPlateformeResultTypeEnum.LIEU_DIT
   positions: {
-    positionType: string
+    positionType: Position.type
     position: {
       type: string
       coordinates: [number, number]
@@ -71,6 +70,6 @@ export interface IBANPlateformeLieuDit extends IBANPlateformeResult {
   }[]
   nomVoie: string
   parcelles: string[]
-  commune: IBANPlateformeCommune
   displayBBox: [number, number, number, number]
+  numeros: IBANPlateformeNumero[]
 }

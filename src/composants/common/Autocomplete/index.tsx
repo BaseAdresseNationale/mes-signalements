@@ -60,7 +60,7 @@ const Autocomplete = <T extends { code: string }>({
           name='autocomplete-search'
           {...inputProps}
         />
-        <button className='fr-btn' title='Rechercher' disabled={inputProps?.disabled}>
+        <button type='button' className='fr-btn' title='Rechercher' disabled={inputProps?.disabled}>
           Rechercher
         </button>
       </div>

@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react'
-import { MapRef } from 'react-map-gl/maplibre'
+import { LayerProps, MapRef } from 'react-map-gl/maplibre'
 
 interface MapContextValue {
   mapRef: MapRef | null
@@ -10,6 +10,10 @@ interface MapContextValue {
   setShowCadastre: React.Dispatch<React.SetStateAction<boolean>>
   editParcelles: boolean
   setEditParcelles: React.Dispatch<React.SetStateAction<boolean>>
+  adresseSearchMapLayersOptions: Record<string, Partial<LayerProps>>
+  setAdresseSearchMapLayersOptions: React.Dispatch<
+    React.SetStateAction<Record<string, Partial<LayerProps>>>
+  >
 }
 
 export const MapContext = createContext<MapContextValue>({
@@ -21,6 +25,13 @@ export const MapContext = createContext<MapContextValue>({
   setShowCadastre: () => {},
   editParcelles: false,
   setEditParcelles: () => {},
+  adresseSearchMapLayersOptions: {
+    adresse: {},
+    'adresse-label': {},
+    voie: {},
+    toponyme: {},
+  },
+  setAdresseSearchMapLayersOptions: () => {},
 })
 
 export function MapContextProvider(props: { children: React.ReactNode }) {
@@ -33,6 +44,14 @@ export function MapContextProvider(props: { children: React.ReactNode }) {
   const [mapChildren, setMapChildren] = useState<React.ReactNode>(null)
   const [showCadastre, setShowCadastre] = useState(false)
   const [editParcelles, setEditParcelles] = useState(false)
+  const [adresseSearchMapLayersOptions, setAdresseSearchMapLayersOptions] = useState<
+    Record<string, Partial<LayerProps>>
+  >({
+    adresse: {},
+    'adresse-label': {},
+    voie: {},
+    toponyme: {},
+  })
 
   // Update cadastre toggle button
   useEffect(() => {
@@ -61,6 +80,8 @@ export function MapContextProvider(props: { children: React.ReactNode }) {
       setShowCadastre,
       editParcelles,
       setEditParcelles,
+      adresseSearchMapLayersOptions,
+      setAdresseSearchMapLayersOptions,
     }),
     [
       mapRef,
@@ -71,6 +92,8 @@ export function MapContextProvider(props: { children: React.ReactNode }) {
       setShowCadastre,
       editParcelles,
       setEditParcelles,
+      adresseSearchMapLayersOptions,
+      setAdresseSearchMapLayersOptions,
     ],
   )
 

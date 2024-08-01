@@ -31,13 +31,11 @@ export default function SignalementVoieForm({
 
   return (
     <StyledForm onSubmit={onSubmit}>
-      <h4>Demande de modification de la voie : </h4>
+      <h4>Demande de modification de la voie</h4>
       <section>
         <div className='form-row'>{getAdresseLabel(address)}</div>
-        <div className='form-row'>{address.commune.nom}</div>
       </section>
       <section>
-        <h5>Modifications demandées</h5>
         <div className='form-row'>
           <div className='fr-input-group'>
             <label className='fr-label' htmlFor='nom'>

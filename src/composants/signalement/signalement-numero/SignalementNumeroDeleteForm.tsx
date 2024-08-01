@@ -33,10 +33,7 @@ export default function SignalementNumeroDeleteForm({
       <h4>Demande de suppression d&apos;un numéro</h4>
       <section>
         <h5>Adresse concernée</h5>
-        <div className='form-row'>{getAdresseLabel(address)}</div>
-        <div className='form-row'>
-          {address.codePostal} {address.commune.nom}
-        </div>
+        <div>{getAdresseLabel(address)}</div>
       </section>
       <section>
         <div className='form-row'>

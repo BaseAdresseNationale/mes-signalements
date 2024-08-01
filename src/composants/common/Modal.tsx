@@ -25,7 +25,6 @@ const StyledModal = styled.div`
   max-width: 90%;
   height: fit-content;
   flex-direction: column;
-  /* overflow: auto; */
 
   > .header {
     display: flex;
@@ -52,6 +51,20 @@ const StyledModal = styled.div`
 
   @media screen and (max-width: ${MOBILE_BREAKPOINT}px) {
     padding: 1em;
+  }
+
+  @media print {
+    padding: 1em;
+    height: 100%;
+    width: 100%;
+    max-width: unset;
+    max-height: unset;
+
+    > .header {
+      button {
+        display: none;
+      }
+    }
   }
 `
 

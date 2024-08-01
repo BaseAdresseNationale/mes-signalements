@@ -16,24 +16,13 @@ if (!API_ADRESSE_URL) {
 }
 
 export async function search(options: SearchOptions): Promise<APIAdresseResult> {
-  const { q, limit, lng, lat, type, citycode } = options
-  let url = `${API_ADRESSE_URL}/search/?q=${encodeURIComponent(q)}`
+  const url = new URL(`${API_ADRESSE_URL}/search`)
 
-  if (lng && lat) {
-    url += `&lng=${lng}&lat=${lat}`
-  }
-
-  if (limit) {
-    url += `&limit=${limit}`
-  }
-
-  if (type) {
-    url += `&type=${type}`
-  }
-
-  if (citycode) {
-    url += `&citycode=${citycode}`
-  }
+  Object.entries(options).forEach(([key, value]) => {
+    if (value) {
+      url.searchParams.append(key, value.toString())
+    }
+  })
 
   const response = await fetch(url)
 

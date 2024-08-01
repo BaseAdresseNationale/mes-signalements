@@ -1,17 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Layer, MapLayerMouseEvent, Source, useMap } from 'react-map-gl/maplibre'
-import { getBanLayers } from '../../config/map/layers'
+import React, { useEffect, useRef } from 'react'
+import { Layer, LayerProps, MapLayerMouseEvent, Source, useMap } from 'react-map-gl/maplibre'
+import { allBANLayers } from '../../config/map/layers'
 import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
 
 interface AdresseSearchMapProps {
-  layers?: string[]
-  filter?: any
+  options: Record<string, Partial<LayerProps>>
 }
 
-export function AdresseSearchMap({ layers, filter }: AdresseSearchMapProps) {
+export function AdresseSearchMap({ options }: Readonly<AdresseSearchMapProps>) {
   const map = useMap()
   const { navigate } = useNavigateWithPreservedSearchParams()
-  const [banLayers] = useState(getBanLayers(layers, filter))
   const hoveredStateId = useRef<{ id: string; source: string; sourceLayer: string } | null>(null)
 
   // Add select handlers to BAN layers
@@ -66,7 +64,7 @@ export function AdresseSearchMap({ layers, filter }: AdresseSearchMapProps) {
       }
     }
 
-    banLayers.forEach((layer) => {
+    allBANLayers.forEach((layer) => {
       if (map?.current) {
         map.current.on('click', layer.id, handleSelect)
         map.current.on('mousemove', layer.id, handleMouseMove)
@@ -75,7 +73,7 @@ export function AdresseSearchMap({ layers, filter }: AdresseSearchMapProps) {
     })
 
     return () => {
-      banLayers.forEach((layer) => {
+      allBANLayers.forEach((layer) => {
         if (map?.current) {
           map.current.off('click', layer.id, handleSelect)
           map.current.off('mousemove', layer.id, handleMouseMove)
@@ -94,8 +92,8 @@ export function AdresseSearchMap({ layers, filter }: AdresseSearchMapProps) {
       maxzoom={14}
       promoteId='id'
     >
-      {banLayers.map((layer) => (
-        <Layer key={layer.id} {...(layer as any)} />
+      {allBANLayers.map((layer) => (
+        <Layer key={layer.id} {...(layer as any)} {...options[layer.id]} />
       ))}
     </Source>
   )

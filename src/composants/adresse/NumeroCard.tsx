@@ -12,10 +12,7 @@ interface NumeroCardProps {
 export function NumeroCard({ adresse, createSignalement }: NumeroCardProps) {
   return (
     <Card>
-      <h1>{getAdresseLabel(adresse)}</h1>
-      <h2>
-        {adresse.commune.nom} - {adresse.commune.code}
-      </h2>
+      <h2 style={{ lineHeight: 'normal' }}>{getAdresseLabel(adresse)}</h2>
       <ul>
         <li>
           Région : <b>{adresse.commune.region.nom}</b>
@@ -61,7 +58,7 @@ export function NumeroCard({ adresse, createSignalement }: NumeroCardProps) {
         className='fr-btn'
         onClick={() => createSignalement(Signalement.type.LOCATION_TO_UPDATE, adresse)}
       >
-        Demander une modification
+        Modifier l&apos;adresse
       </button>
       <button
         type='button'

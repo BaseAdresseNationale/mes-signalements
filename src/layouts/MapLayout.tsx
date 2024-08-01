@@ -15,6 +15,7 @@ import { AboutModal } from '../composants/about/AboutModal'
 import SourceContext from '../contexts/source.context'
 import { MaplibreStyleDefinition } from '../types/maplibre.types'
 import { CadastreToggle } from '../composants/map/CadastreToggle'
+import { AdresseSearchMap } from '../composants/map/AdresseSearchMap'
 
 const Layout = styled.div`
   position: relative;
@@ -58,7 +59,8 @@ export function MapLayout({ children }: MapLayoutProps) {
   const onMouseEnter = useCallback(() => setCursor('pointer'), [])
   const onMouseLeave = useCallback(() => setCursor(null), [])
 
-  const { mapRefCb, mapChildren, showCadastre, setShowCadastre } = useContext(MapContext)
+  const { mapRefCb, mapChildren, showCadastre, setShowCadastre, adresseSearchMapLayersOptions } =
+    useContext(MapContext)
   const { source } = useContext(SourceContext)
 
   const { navigate } = useNavigateWithPreservedSearchParams()
@@ -130,6 +132,7 @@ export function MapLayout({ children }: MapLayoutProps) {
               )
             })}
           </Source>
+          <AdresseSearchMap options={adresseSearchMapLayersOptions} />
           {mapChildren}
           <NavigationControl position='top-right' />
           <CadastreToggle
@@ -145,12 +148,13 @@ export function MapLayout({ children }: MapLayoutProps) {
         </Map>
         <AdresseSearch ref={searchRef} />
         <Drawer ref={drawerRef} onClose={handleCloseDrawer}>
-          {navigation.state === 'loading' && (
+          {navigation.state === 'loading' ? (
             <div className='loader-wrapper'>
               <Loader />
             </div>
+          ) : (
+            children
           )}
-          {children}
         </Drawer>
       </div>
       {showInfo && <AboutModal onClose={() => setShowInfo(false)} />}

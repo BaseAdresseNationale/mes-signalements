@@ -1,12 +1,11 @@
 import { StyledForm } from '../signalement.styles'
 import { Position, Signalement, ToponymeChangesRequestedDTO } from '../../../api/signalement'
 import { getInitialSignalement } from '../../../utils/signalement.utils'
-import React, { useContext, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { getAdresseLabel } from '../../../utils/adresse.utils'
 import { IBANPlateformeLieuDit } from '../../../api/ban-plateforme/types'
-import PositionInput from '../../common/PositionInput'
-import { blurPosition } from '../../../utils/position.utils'
-import MapContext from '../../../contexts/map.context'
+import PositionInput from '../../common/Position/PositionInput'
+import ParcelleInput from '../../common/ParcelleInput'
 
 interface SignalementToponymeFormProps {
   signalement: Signalement
@@ -25,7 +24,6 @@ export default function SignalementToponymeForm({
   onSubmit,
   initialPositionCoords,
 }: SignalementToponymeFormProps) {
-  const { showCadastre, setShowCadastre, setEditParcelles, editParcelles } = useContext(MapContext)
   const isSubmitDisabled = useMemo(() => {
     return (
       JSON.stringify(getInitialSignalement(address, signalement.type)) ===
@@ -36,31 +34,18 @@ export default function SignalementToponymeForm({
   const { nom, positions, parcelles, comment } =
     signalement.changesRequested as ToponymeChangesRequestedDTO
 
-  const enableParcellesEdition = () => {
-    if (!showCadastre) {
-      setShowCadastre(true)
-    }
-    setEditParcelles(true)
-  }
-
-  const disableParcellesEdition = () => {
-    setEditParcelles(false)
-    setShowCadastre(false)
-  }
-
   return (
     <StyledForm onSubmit={onSubmit}>
-      <h4>Demande de modification du lieu-dit : </h4>
+      <h4>Demande de modification du lieu-dit</h4>
       <section>
-        <div className='form-row'>{getAdresseLabel(address)}</div>
-        <div className='form-row'>{address.commune.nom}</div>
+        <div>{getAdresseLabel(address)}</div>
       </section>
       <section>
         <h5>Modifications demandées</h5>
         <div className='form-row'>
           <div className='fr-input-group'>
             <label className='fr-label' htmlFor='nom'>
-              Nom
+              Nom*
             </label>
             <input
               name='nom'
@@ -72,63 +57,13 @@ export default function SignalementToponymeForm({
             />
           </div>
         </div>
-        <h6>Positions :</h6>
-        {positions?.map(({ point, type }, index) => (
-          <PositionInput
-            key={index} // eslint-disable-line react/no-array-index-key
-            point={point}
-            type={type}
-            onEditPositionType={(updatedPosition) => {
-              const newPositions = [...positions]
-              newPositions[index] = updatedPosition
-              onEditSignalement('changesRequested', 'positions')(newPositions)
-            }}
-            onDelete={() => {
-              onEditSignalement(
-                'changesRequested',
-                'positions',
-              )(positions.filter((_, i) => i !== index))
-            }}
-          />
-        ))}
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <button
-            type='button'
-            className='fr-btn'
-            style={{ color: 'white', marginBottom: 10 }}
-            onClick={() =>
-              onEditSignalement(
-                'changesRequested',
-                'positions',
-              )([
-                ...(positions as Position[]),
-                {
-                  point: {
-                    type: 'Point',
-                    coordinates: blurPosition(initialPositionCoords),
-                  },
-                  type: Position.type.SEGMENT,
-                },
-              ])
-            }
-          >
-            Ajouter une position
-          </button>
-        </div>
-        <h6>Parcelles cadastrales :</h6>
-        <div className='parcelles-wrapper'>
-          {parcelles?.map((parcelle) => <div key={parcelle}>{parcelle}</div>)}
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <button
-            className='fr-btn'
-            type='button'
-            style={{ color: 'white', marginBottom: 10 }}
-            onClick={editParcelles ? disableParcellesEdition : enableParcellesEdition}
-          >
-            {editParcelles ? 'Masquer le cadastre' : 'Modifier les parcelles'}
-          </button>
-        </div>
+        <PositionInput
+          positions={positions}
+          onChange={onEditSignalement('changesRequested', 'positions')}
+          initialPositionCoords={initialPositionCoords}
+          defaultPositionType={Position.type.SEGMENT}
+        />
+        <ParcelleInput parcelles={parcelles} />
       </section>
       <section>
         <div className='form-row'>

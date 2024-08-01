@@ -9,23 +9,25 @@ import {
 } from '../api/ban-plateforme/types'
 import { NumeroCard } from '../composants/adresse/NumeroCard'
 import SignalementForm from '../composants/signalement/SignalementForm'
-import { NumeroChangesRequestedDTO, Signalement } from '../api/signalement'
+import {
+  NumeroChangesRequestedDTO,
+  Signalement,
+  ToponymeChangesRequestedDTO,
+} from '../api/signalement'
 import { VoieCard } from '../composants/adresse/VoieCard'
 import { LieuDitCard } from '../composants/adresse/LieuDitCard'
 import useWindowSize from '../hooks/useWindowSize'
 import { useSignalement } from '../hooks/useSignalement'
 import { MapContext } from '../contexts/map.context'
 import SignalementMap from '../composants/map/SignalementMap'
-import { Marker } from '../composants/map/Marker'
-import { getAdresseLabel } from '../utils/adresse.utils'
 import { useMapContent } from '../hooks/useMapContent'
 import { ChangesRequested } from '../types/signalement.types'
-import { AdresseSearchMap } from '../composants/map/AdresseSearchMap'
+import { FilterSpecification } from 'maplibre-gl'
 
 export function SignalementPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { isMobile } = useWindowSize()
-  const { mapRef, editParcelles } = useContext(MapContext)
+  const { mapRef, editParcelles, setAdresseSearchMapLayersOptions } = useContext(MapContext)
   const { adresse } = useLoaderData() as {
     adresse: IBANPlateformeResult
   }
@@ -79,38 +81,50 @@ export function SignalementPage() {
     deleteSignalement()
   }
 
+  // Only show the adresses related to the current toponyme
+  useEffect(() => {
+    const filter =
+      adresse.type === BANPlateformeResultTypeEnum.LIEU_DIT
+        ? ([
+            'in',
+            ['get', 'id'],
+            ['literal', (adresse as IBANPlateformeLieuDit).numeros.map((numero) => numero.id)],
+          ] as FilterSpecification)
+        : (['in', adresse.id, ['get', 'id']] as FilterSpecification)
+
+    if (
+      (signalement?.changesRequested as NumeroChangesRequestedDTO | ToponymeChangesRequestedDTO)
+        ?.positions
+    ) {
+      setAdresseSearchMapLayersOptions({
+        adresse: { layout: { visibility: 'none' } },
+        'adresse-label': { layout: { visibility: 'none' } },
+        voie: { layout: { visibility: 'none' } },
+        toponyme: { layout: { visibility: 'none' } },
+      })
+    } else {
+      setAdresseSearchMapLayersOptions({
+        adresse: { filter },
+        'adresse-label': { filter },
+        voie: { layout: { visibility: 'none' } },
+        toponyme: { layout: { visibility: 'none' } },
+      })
+    }
+  }, [setAdresseSearchMapLayersOptions, adresse, signalement])
+
   // Map content
   const mapContent = useMemo(() => {
     return (
-      <>
-        {!(signalement?.changesRequested as NumeroChangesRequestedDTO)?.positions &&
-          Boolean((adresse as IBANPlateformeNumero)?.lat) &&
-          Boolean((adresse as IBANPlateformeNumero)?.lon) && (
-            <Marker
-              label={getAdresseLabel(adresse)}
-              coordinates={[
-                (adresse as IBANPlateformeNumero).lon,
-                (adresse as IBANPlateformeNumero).lat,
-              ]}
-            />
-          )}
-        {(signalement?.changesRequested as NumeroChangesRequestedDTO)?.positions && (
-          <SignalementMap
-            isEditParcellesMode={editParcelles}
-            signalement={signalement as Signalement}
-            onEditSignalement={onEditSignalement}
-          />
-        )}
-        {(adresse.type === BANPlateformeResultTypeEnum.VOIE ||
-          adresse.type === BANPlateformeResultTypeEnum.LIEU_DIT) && (
-          <AdresseSearchMap
-            layers={['adresse', 'adresse-label']}
-            filter={['in', adresse.id, ['get', 'id']]}
-          />
-        )}
-      </>
+      (signalement?.changesRequested as NumeroChangesRequestedDTO | ToponymeChangesRequestedDTO)
+        ?.positions && (
+        <SignalementMap
+          isEditParcellesMode={editParcelles}
+          signalement={signalement as Signalement}
+          onEditSignalement={onEditSignalement}
+        />
+      )
     )
-  }, [signalement, adresse, editParcelles])
+  }, [signalement, editParcelles])
 
   useMapContent(mapContent)
 

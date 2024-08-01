@@ -1,14 +1,18 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Point, Position } from '../../api/signalement'
-import SelectInput from '../common/SelectInput'
-import { positionTypeOptions } from '../../utils/signalement.utils'
+import { Point, Position } from '../../../api/signalement'
+import SelectInput from '../../common/SelectInput'
+import { positionTypeOptions } from '../../../utils/signalement.utils'
 
 const StyledContainer = styled.div`
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   margin-bottom: 1rem;
+
+  .fr-label {
+    font-size: 0.9rem;
+  }
 
   > button {
     margin-left: 5px;
@@ -28,19 +32,19 @@ const StyledContainer = styled.div`
   }
 `
 
-interface PositionInputProps {
+interface PositionItemProps {
   point: Point
   type: Position.type
   onDelete: () => void
   onEditPositionType: ({ point, type }: { point: Point; type: Position.type }) => void
 }
 
-export default function PositionInput({
+export default function PositionItem({
   point,
   type,
   onDelete,
   onEditPositionType,
-}: PositionInputProps) {
+}: Readonly<PositionItemProps>) {
   return (
     <StyledContainer>
       <SelectInput
@@ -74,6 +78,7 @@ export default function PositionInput({
         </div>
       </div>
       <button
+        type='button'
         className='fr-btn  fr-icon-delete-line fr-btn--tertiary-no-outline'
         title='Supprimer la position'
         onClick={onDelete}

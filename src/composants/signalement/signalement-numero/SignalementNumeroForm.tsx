@@ -1,18 +1,18 @@
-import React, { useContext, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { StyledForm } from '../signalement.styles'
-import PositionInput from '../../common/PositionInput'
-import { NumeroChangesRequestedDTO, Position, Signalement } from '../../../api/signalement'
+import PositionInput from '../../common/Position/PositionInput'
+import { NumeroChangesRequestedDTO, Signalement } from '../../../api/signalement'
 import { getInitialSignalement } from '../../../utils/signalement.utils'
-import { blurPosition } from '../../../utils/position.utils'
-import { getAdresseLabel } from '../../../utils/adresse.utils'
 import { IBANPlateformeNumero, IBANPlateformeVoie } from '../../../api/ban-plateforme/types'
-import MapContext from '../../../contexts/map.context'
+import ComplementInputProps from '../../common/ComplementInput'
+import ParcelleInput from '../../common/ParcelleInput'
+import { getAdresseLabel } from '../../../utils/adresse.utils'
 
 interface SignalementNumeroFormProps {
   signalement: Signalement
   onEditSignalement: (property: keyof Signalement, key: string) => (value: any) => void
   onClose: () => void
-  address?: IBANPlateformeNumero | IBANPlateformeVoie
+  address: IBANPlateformeNumero | IBANPlateformeVoie
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
   initialPositionCoords: number[]
 }
@@ -25,8 +25,6 @@ export default function SignalementNumeroForm({
   onSubmit,
   initialPositionCoords,
 }: SignalementNumeroFormProps) {
-  const { setShowCadastre, showCadastre, editParcelles, setEditParcelles } = useContext(MapContext)
-
   const isCreation = !address
 
   const isSubmitDisabled = useMemo(() => {
@@ -43,40 +41,24 @@ export default function SignalementNumeroForm({
     )
   }, [address, signalement, isCreation])
 
-  const { numero, suffixe, nomVoie, positions, parcelles, comment } =
+  const { numero, suffixe, nomVoie, nomComplement, positions, parcelles, comment } =
     signalement.changesRequested as NumeroChangesRequestedDTO
-
-  const enableParcellesEdition = () => {
-    if (!showCadastre) {
-      setShowCadastre(true)
-    }
-    setEditParcelles(true)
-  }
-
-  const disableParcellesEdition = () => {
-    setEditParcelles(false)
-    setShowCadastre(false)
-  }
 
   return (
     <StyledForm onSubmit={onSubmit}>
       {isCreation ? (
-        <h4>Demande de création d&apos;une adresse</h4>
+        <h5>Demande de création d&apos;une adresse</h5>
       ) : (
         <>
-          <h4>Demande de modification pour l&apos;adresse : </h4>
+          <h5>Demande de modification pour l&apos;adresse</h5>
           <section>
-            <div className='form-row'>{getAdresseLabel(address)}</div>
-            <div className='form-row'>
-              {address.codePostal} {address.commune.nom}
-            </div>
+            <div>{getAdresseLabel(address)}</div>
           </section>
         </>
       )}
-
       <section>
         {!isCreation && <h5>Modifications demandées</h5>}
-        <div className='form-row'>
+        <div className='form-row' style={{ marginBottom: 0 }}>
           <div className='fr-input-group'>
             <label className='fr-label' htmlFor='numero'>
               Numéro*
@@ -109,63 +91,6 @@ export default function SignalementNumeroForm({
             />
           </div>
         </div>
-        <h6>Positions :</h6>
-        {positions?.map(({ point, type }, index) => (
-          <PositionInput
-            key={index} // eslint-disable-line react/no-array-index-key
-            point={point}
-            type={type}
-            onEditPositionType={(updatedPosition) => {
-              const newPositions = [...positions]
-              newPositions[index] = updatedPosition
-              onEditSignalement('changesRequested', 'positions')(newPositions)
-            }}
-            onDelete={() => {
-              onEditSignalement(
-                'changesRequested',
-                'positions',
-              )(positions.filter((_, i) => i !== index))
-            }}
-          />
-        ))}
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <button
-            type='button'
-            className='fr-btn'
-            style={{ color: 'white', marginBottom: 10 }}
-            onClick={() =>
-              onEditSignalement(
-                'changesRequested',
-                'positions',
-              )([
-                ...(positions as Position[]),
-                {
-                  point: {
-                    type: 'Point',
-                    coordinates: blurPosition(initialPositionCoords),
-                  },
-                  type: Position.type.ENTR_E,
-                },
-              ])
-            }
-          >
-            Ajouter une position
-          </button>
-        </div>
-        <h6>Parcelles cadastrales :</h6>
-        <div className='parcelles-wrapper'>
-          {parcelles?.map((parcelle) => <div key={parcelle}>{parcelle}</div>)}
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <button
-            className='fr-btn'
-            type='button'
-            style={{ color: 'white', marginBottom: 10 }}
-            onClick={editParcelles ? disableParcellesEdition : enableParcellesEdition}
-          >
-            {editParcelles ? 'Masquer le cadastre' : 'Modifier les parcelles'}
-          </button>
-        </div>
         <div className='form-row'>
           <div className='fr-input-group'>
             <label className='fr-label' htmlFor='nomVoie'>
@@ -183,6 +108,17 @@ export default function SignalementNumeroForm({
             />
           </div>
         </div>
+        <ComplementInputProps
+          address={address}
+          value={nomComplement ?? ''}
+          onChange={(event) => onEditSignalement('changesRequested', 'nomComplement')(event)}
+        />
+        <PositionInput
+          positions={positions}
+          onChange={onEditSignalement('changesRequested', 'positions')}
+          initialPositionCoords={initialPositionCoords}
+        />
+        <ParcelleInput parcelles={parcelles} />
       </section>
       <section>
         <div className='form-row'>
