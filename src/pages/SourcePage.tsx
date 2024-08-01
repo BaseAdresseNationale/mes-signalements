@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useCustomSource } from '../hooks/useCustomSource'
 import {
   getSignalementColor,
@@ -12,6 +12,7 @@ import { Signalement } from '../api/signalement'
 import styled from 'styled-components'
 import { useMapContent } from '../hooks/useMapContent'
 import SourceContext from '../contexts/source.context'
+import MapContext from '../contexts/map.context'
 
 const StyledWrapper = styled.div`
   position: relative;
@@ -63,6 +64,7 @@ const filterOptions = [
 
 export function SourcePage() {
   const { source } = useContext(SourceContext)
+  const { setAdresseSearchMapLayersOptions } = useContext(MapContext)
   const [currentFilter, setCurrentFilter] = useState<Signalement.status | null>(
     Signalement.status.PENDING,
   )
@@ -92,6 +94,16 @@ export function SourcePage() {
       </StyledSignalementCard>
     )
   }
+
+  // Hide map search layers
+  useEffect(() => {
+    setAdresseSearchMapLayersOptions({
+      adresse: { layout: { visibility: 'none' } },
+      'adresse-label': { layout: { visibility: 'none' } },
+      voie: { layout: { visibility: 'none' } },
+      toponyme: { layout: { visibility: 'none' } },
+    })
+  }, [setAdresseSearchMapLayersOptions])
 
   // Map content
   const mapContent = useMemo(

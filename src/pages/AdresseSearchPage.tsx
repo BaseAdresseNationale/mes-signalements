@@ -1,9 +1,17 @@
-import React, { useMemo } from 'react'
-import { useMapContent } from '../hooks/useMapContent'
-import { AdresseSearchMap } from '../composants/map/AdresseSearchMap'
+import { useContext, useEffect } from 'react'
+import MapContext from '../contexts/map.context'
 
 export function AdresseSearchPage() {
-  useMapContent(useMemo(() => <AdresseSearchMap />, []))
+  const { setAdresseSearchMapLayersOptions } = useContext(MapContext)
+
+  useEffect(() => {
+    setAdresseSearchMapLayersOptions({
+      adresse: {},
+      'adresse-label': {},
+      voie: {},
+      toponyme: {},
+    })
+  }, [setAdresseSearchMapLayersOptions])
 
   return null
 }

@@ -1,5 +1,5 @@
 import { StyledForm } from '../signalement.styles'
-import { Signalement, ToponymeChangesRequestedDTO } from '../../../api/signalement'
+import { Position, Signalement, ToponymeChangesRequestedDTO } from '../../../api/signalement'
 import { getInitialSignalement } from '../../../utils/signalement.utils'
 import React, { useMemo } from 'react'
 import { getAdresseLabel } from '../../../utils/adresse.utils'
@@ -38,15 +38,14 @@ export default function SignalementToponymeForm({
     <StyledForm onSubmit={onSubmit}>
       <h4>Demande de modification du lieu-dit</h4>
       <section>
-        <div className='form-row'>{getAdresseLabel(address)}</div>
-        <div className='form-row'>{address.commune.nom}</div>
+        <div>{getAdresseLabel(address)}</div>
       </section>
       <section>
         <h5>Modifications demandées</h5>
         <div className='form-row'>
           <div className='fr-input-group'>
             <label className='fr-label' htmlFor='nom'>
-              Nom
+              Nom*
             </label>
             <input
               name='nom'
@@ -62,6 +61,7 @@ export default function SignalementToponymeForm({
           positions={positions}
           onChange={onEditSignalement('changesRequested', 'positions')}
           initialPositionCoords={initialPositionCoords}
+          defaultPositionType={Position.type.SEGMENT}
         />
         <ParcelleInput parcelles={parcelles} />
       </section>

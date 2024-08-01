@@ -16,12 +16,14 @@ interface PositionInputProps {
   positions: Position[]
   initialPositionCoords: number[]
   onChange: (positions: Position[]) => void
+  defaultPositionType?: Position.type
 }
 
 export default function PositionInput({
   positions,
   initialPositionCoords,
   onChange,
+  defaultPositionType = Position.type.ENTR_E,
 }: PositionInputProps) {
   return (
     <StyledContainer>
@@ -54,7 +56,7 @@ export default function PositionInput({
                   type: 'Point',
                   coordinates: blurPosition(initialPositionCoords),
                 },
-                type: Position.type.SEGMENT,
+                type: defaultPositionType,
               },
             ])
           }

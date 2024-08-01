@@ -160,20 +160,7 @@ export const interactiveLayers = [
   parcelleHoveredLayer,
 ]
 
-export const getBanLayers = (layers: string[] = [], filter?: any) => {
-  const allBANLayers = [adresseCircleLayer, adresseLabelLayer, voieLayer, toponymeLayer]
-
-  const selectedLayers = layers.length
-    ? allBANLayers.filter(({ id }) => layers.includes(id))
-    : allBANLayers
-
-  return filter
-    ? selectedLayers.map((layer) => ({
-        ...layer,
-        filter,
-      }))
-    : selectedLayers
-}
+export const allBANLayers = [adresseCircleLayer, adresseLabelLayer, voieLayer, toponymeLayer]
 
 export const staticCadastreLayers = [
   {

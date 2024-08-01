@@ -14,7 +14,6 @@ import { ChangesRequested } from '../../types/signalement.types'
 import SourceContext from '../../contexts/source.context'
 import { useFriendlyCaptcha } from '../../hooks/useFriendlyCaptcha'
 import {
-  BANPlateformeResultTypeEnum,
   IBANPlateformeLieuDit,
   IBANPlateformeNumero,
   IBANPlateformeVoie,
@@ -43,6 +42,19 @@ export default function SignalementRecapModal({
     language: 'fr',
   })
 
+  const getModalTitle = () => {
+    switch (signalement.type) {
+      case Signalement.type.LOCATION_TO_UPDATE:
+        return 'Demande de modification'
+      case Signalement.type.LOCATION_TO_CREATE:
+        return 'Demande de création'
+      case Signalement.type.LOCATION_TO_DELETE:
+        return 'Demande de suppression'
+      default:
+        return 'Demande de signalement'
+    }
+  }
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setSubmitStatus('loading')
@@ -62,8 +74,30 @@ export default function SignalementRecapModal({
   const { numero, suffixe, nomVoie, nomComplement, positions, parcelles, nom } =
     signalement.changesRequested as ChangesRequested
 
+  const getChangesRequestedLabel = () => {
+    return numero ? (
+      <>
+        {numero} {suffixe} {nomVoie}{' '}
+        {nomComplement && (
+          <>
+            <br />
+            {nomComplement}
+            <br />
+            {address.codePostal} {address.commune.nom}
+          </>
+        )}
+      </>
+    ) : (
+      <>
+        {nom}
+        <br />
+        {address.codePostal} {address.commune.nom}
+      </>
+    )
+  }
+
   return (
-    <Modal title='Votre demande de signalement' onClose={onClose}>
+    <Modal title={getModalTitle()} onClose={onClose}>
       <StyledForm onSubmit={handleSubmit}>
         {signalement.type === Signalement.type.LOCATION_TO_UPDATE && (
           <section>
@@ -87,7 +121,8 @@ export default function SignalementRecapModal({
                     )}
                   </>
                 )}
-                {(address as IBANPlateformeNumero | IBANPlateformeLieuDit).parcelles.length > 0 && (
+                {(address as IBANPlateformeNumero | IBANPlateformeLieuDit).parcelles?.length >
+                  0 && (
                   <>
                     <h6>Parcelles : </h6>
                     {(address as IBANPlateformeNumero | IBANPlateformeLieuDit).parcelles.map(
@@ -100,27 +135,7 @@ export default function SignalementRecapModal({
               </div>
               <div>
                 <h5>Modifications demandées</h5>
-                <p>
-                  {address.type === BANPlateformeResultTypeEnum.NUMERO ? (
-                    <>
-                      {numero} {suffixe} {nomVoie}{' '}
-                      {nomComplement && (
-                        <>
-                          <br />
-                          {nomComplement}
-                          <br />
-                          {address.codePostal} {address.commune.nom}
-                        </>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      {nom}
-                      <br />
-                      {address.codePostal} {address.commune.nom}
-                    </>
-                  )}
-                </p>
+                <p>{getChangesRequestedLabel()}</p>
                 {positions && (
                   <>
                     <h6>Positions : </h6>
@@ -157,10 +172,7 @@ export default function SignalementRecapModal({
           <section>
             <div className='signalement-recap'>
               <div>
-                <h5>Votre demande de création</h5>
-                <p>
-                  {numero} {suffixe} {nomVoie} {nom}
-                </p>
+                <p>{getChangesRequestedLabel()}</p>
                 {positions && (
                   <>
                     <h6>Positions : </h6>
@@ -183,13 +195,13 @@ export default function SignalementRecapModal({
                     ))}
                   </>
                 )}
+                {signalement.changesRequested.comment && (
+                  <div>
+                    <h6>Autres informations</h6>
+                    <p>{signalement.changesRequested.comment}</p>
+                  </div>
+                )}
               </div>
-              {signalement.changesRequested.comment && (
-                <div>
-                  <h6>Autres informations</h6>
-                  <p>{signalement.changesRequested.comment}</p>
-                </div>
-              )}
             </div>
           </section>
         )}
@@ -216,7 +228,8 @@ export default function SignalementRecapModal({
                     )}
                   </>
                 )}
-                {(address as IBANPlateformeNumero | IBANPlateformeLieuDit).parcelles.length > 0 && (
+                {(address as IBANPlateformeNumero | IBANPlateformeLieuDit).parcelles?.length >
+                  0 && (
                   <>
                     <h6>Parcelles : </h6>
                     {(address as IBANPlateformeNumero | IBANPlateformeLieuDit).parcelles.map(
