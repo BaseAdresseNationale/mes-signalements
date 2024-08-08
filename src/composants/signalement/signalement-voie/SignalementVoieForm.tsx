@@ -1,7 +1,6 @@
 import { StyledForm } from '../signalement.styles'
 import { Signalement, VoieChangesRequestedDTO } from '../../../api/signalement'
-import { getInitialSignalement } from '../../../utils/signalement.utils'
-import React, { useMemo } from 'react'
+import React from 'react'
 import { getAdresseLabel } from '../../../utils/adresse.utils'
 import { IBANPlateformeVoie } from '../../../api/ban-plateforme/types'
 
@@ -11,6 +10,7 @@ interface SignalementVoieFormProps {
   onClose: () => void
   address: IBANPlateformeVoie
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
+  hasSignalementChanged: boolean
 }
 
 export default function SignalementVoieForm({
@@ -19,14 +19,8 @@ export default function SignalementVoieForm({
   onClose,
   address,
   onSubmit,
+  hasSignalementChanged,
 }: SignalementVoieFormProps) {
-  const isSubmitDisabled = useMemo(() => {
-    return (
-      JSON.stringify(getInitialSignalement(address, signalement.type)) ===
-      JSON.stringify(signalement)
-    )
-  }, [address, signalement])
-
   const { nom, comment } = signalement.changesRequested as VoieChangesRequestedDTO
 
   return (
@@ -73,7 +67,7 @@ export default function SignalementVoieForm({
       <div className='form-controls'>
         <button
           className='fr-btn'
-          disabled={isSubmitDisabled}
+          disabled={!hasSignalementChanged}
           style={{ color: 'white' }}
           type='submit'
         >

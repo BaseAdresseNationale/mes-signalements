@@ -72,8 +72,19 @@ export const StyledForm = styled.form`
     margin-top: 15px;
   }
 
+  .send-date {
+    margin-top: 2em;
+    display: none;
+  }
+
   .form-controls {
+    z-index: 10;
+    position: sticky;
+    bottom: 0;
     display: flex;
+    background-color: white;
+    justify-content: center;
+    padding-top: 10px;
     margin-top: 1em;
 
     > :not(:first-child) {
@@ -106,6 +117,14 @@ export const StyledForm = styled.form`
       &:has(> .signalement-recap) {
         display: block;
       }
+    }
+
+    .send-date {
+      display: block;
+    }
+
+    .fr-alert {
+      display: none;
     }
 
     button {

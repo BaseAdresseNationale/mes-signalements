@@ -2,6 +2,14 @@ import { createGlobalStyle } from 'styled-components'
 
 // Global styles to override styles
 const GlobalStyle = createGlobalStyle`
+/* Trick to display the CSS pseudo classes background colors in the print preview */
+@media print {
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
 
 /**
  * Tooltip Styles

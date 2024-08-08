@@ -15,6 +15,10 @@ const StyledBackDrop = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+
+  @media print {
+    background: transparent;
+  }
 `
 
 const StyledModal = styled.div`
@@ -54,8 +58,10 @@ const StyledModal = styled.div`
   }
 
   @media print {
+    position: absolute;
+    bottom: 0;
     padding: 1em;
-    height: 100%;
+    height: calc(100% - 100px);
     width: 100%;
     max-width: unset;
     max-height: unset;

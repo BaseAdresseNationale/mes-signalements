@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useMemo } from 'react'
 import { useLoaderData, useSearchParams } from 'react-router-dom'
 import {
   IBANPlateformeNumero,
-  IBANPlateformeResult,
   BANPlateformeResultTypeEnum,
   IBANPlateformeVoie,
   IBANPlateformeLieuDit,
@@ -29,9 +28,15 @@ export function SignalementPage() {
   const { isMobile } = useWindowSize()
   const { mapRef, editParcelles, setAdresseSearchMapLayersOptions } = useContext(MapContext)
   const { adresse } = useLoaderData() as {
-    adresse: IBANPlateformeResult
+    adresse: IBANPlateformeVoie | IBANPlateformeLieuDit | IBANPlateformeNumero
   }
-  const { signalement, createSignalement, deleteSignalement, onEditSignalement } = useSignalement()
+  const {
+    signalement,
+    createSignalement,
+    deleteSignalement,
+    onEditSignalement,
+    hasSignalementChanged,
+  } = useSignalement()
 
   // Fly to location
   useEffect(() => {
@@ -88,7 +93,7 @@ export function SignalementPage() {
         ? ([
             'in',
             ['get', 'id'],
-            ['literal', (adresse as IBANPlateformeLieuDit).numeros.map((numero) => numero.id)],
+            ['literal', adresse.numeros.map((numero) => numero.id)],
           ] as FilterSpecification)
         : (['in', adresse.id, ['get', 'id']] as FilterSpecification)
 
@@ -133,22 +138,13 @@ export function SignalementPage() {
       {!signalement && (
         <>
           {adresse.type === BANPlateformeResultTypeEnum.NUMERO && (
-            <NumeroCard
-              adresse={adresse as IBANPlateformeNumero}
-              createSignalement={createSignalement}
-            />
+            <NumeroCard adresse={adresse} createSignalement={createSignalement} />
           )}
           {adresse.type === BANPlateformeResultTypeEnum.VOIE && (
-            <VoieCard
-              adresse={adresse as IBANPlateformeVoie}
-              createSignalement={createSignalement}
-            />
+            <VoieCard adresse={adresse} createSignalement={createSignalement} />
           )}
           {adresse.type === BANPlateformeResultTypeEnum.LIEU_DIT && (
-            <LieuDitCard
-              adresse={adresse as IBANPlateformeLieuDit}
-              createSignalement={createSignalement}
-            />
+            <LieuDitCard adresse={adresse} createSignalement={createSignalement} />
           )}
         </>
       )}
@@ -160,6 +156,7 @@ export function SignalementPage() {
           signalement={signalement as Signalement}
           onEditSignalement={onEditSignalement}
           onClose={handleCloseSignalementForm}
+          hasSignalementChanged={hasSignalementChanged}
         />
       )}
     </>

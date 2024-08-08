@@ -2,7 +2,6 @@ import React, { useMemo } from 'react'
 import { StyledForm } from '../signalement.styles'
 import PositionInput from '../../common/Position/PositionInput'
 import { NumeroChangesRequestedDTO, Signalement } from '../../../api/signalement'
-import { getInitialSignalement } from '../../../utils/signalement.utils'
 import { IBANPlateformeNumero, IBANPlateformeVoie } from '../../../api/ban-plateforme/types'
 import ComplementInputProps from '../../common/ComplementInput'
 import ParcelleInput from '../../common/ParcelleInput'
@@ -15,6 +14,7 @@ interface SignalementNumeroFormProps {
   address: IBANPlateformeNumero | IBANPlateformeVoie
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
   initialPositionCoords: number[]
+  hasSignalementChanged: boolean
 }
 
 export default function SignalementNumeroForm({
@@ -24,6 +24,7 @@ export default function SignalementNumeroForm({
   address,
   onSubmit,
   initialPositionCoords,
+  hasSignalementChanged,
 }: SignalementNumeroFormProps) {
   const isCreation = !address
 
@@ -34,12 +35,8 @@ export default function SignalementNumeroForm({
       return isDisabled
     }
 
-    return (
-      isDisabled ||
-      JSON.stringify(getInitialSignalement(address, signalement.type)) ===
-        JSON.stringify(signalement)
-    )
-  }, [address, signalement, isCreation])
+    return isDisabled || !hasSignalementChanged
+  }, [hasSignalementChanged, signalement, isCreation])
 
   const { numero, suffixe, nomVoie, nomComplement, positions, parcelles, comment } =
     signalement.changesRequested as NumeroChangesRequestedDTO

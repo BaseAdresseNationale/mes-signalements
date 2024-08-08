@@ -1,7 +1,6 @@
 import { StyledForm } from '../signalement.styles'
 import { Position, Signalement, ToponymeChangesRequestedDTO } from '../../../api/signalement'
-import { getInitialSignalement } from '../../../utils/signalement.utils'
-import React, { useMemo } from 'react'
+import React from 'react'
 import { getAdresseLabel } from '../../../utils/adresse.utils'
 import { IBANPlateformeLieuDit } from '../../../api/ban-plateforme/types'
 import PositionInput from '../../common/Position/PositionInput'
@@ -14,6 +13,7 @@ interface SignalementToponymeFormProps {
   address: IBANPlateformeLieuDit
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
   initialPositionCoords: number[]
+  hasSignalementChanged: boolean
 }
 
 export default function SignalementToponymeForm({
@@ -23,14 +23,8 @@ export default function SignalementToponymeForm({
   address,
   onSubmit,
   initialPositionCoords,
+  hasSignalementChanged,
 }: SignalementToponymeFormProps) {
-  const isSubmitDisabled = useMemo(() => {
-    return (
-      JSON.stringify(getInitialSignalement(address, signalement.type)) ===
-      JSON.stringify(signalement)
-    )
-  }, [address, signalement])
-
   const { nom, positions, parcelles, comment } =
     signalement.changesRequested as ToponymeChangesRequestedDTO
 
@@ -86,7 +80,7 @@ export default function SignalementToponymeForm({
       <div className='form-controls'>
         <button
           className='fr-btn'
-          disabled={isSubmitDisabled}
+          disabled={!hasSignalementChanged}
           style={{ color: 'white' }}
           type='submit'
         >
