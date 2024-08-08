@@ -1,5 +1,4 @@
-import React, { useMemo } from 'react'
-import { getInitialSignalement } from '../../../utils/signalement.utils'
+import React from 'react'
 import { StyledForm } from '../signalement.styles'
 import { Signalement } from '../../../api/signalement'
 import { getAdresseLabel } from '../../../utils/adresse.utils'
@@ -11,6 +10,7 @@ interface SignalementNumeroDeleteFormProps {
   onClose: () => void
   address: IBANPlateformeNumero
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
+  hasSignalementChanged: boolean
 }
 
 export default function SignalementNumeroDeleteForm({
@@ -19,15 +19,10 @@ export default function SignalementNumeroDeleteForm({
   onClose,
   address,
   onSubmit,
+  hasSignalementChanged,
 }: SignalementNumeroDeleteFormProps) {
   const { comment } = signalement.changesRequested
 
-  const isSubmitDisabled = useMemo(() => {
-    return (
-      JSON.stringify(getInitialSignalement(address, signalement.type)) ===
-      JSON.stringify(signalement)
-    )
-  }, [address, signalement])
   return (
     <StyledForm onSubmit={onSubmit}>
       <h4>Demande de suppression d&apos;un numéro</h4>
@@ -56,7 +51,7 @@ export default function SignalementNumeroDeleteForm({
       <div className='form-controls'>
         <button
           className='fr-btn'
-          disabled={isSubmitDisabled}
+          disabled={!hasSignalementChanged}
           style={{ color: 'white' }}
           type='submit'
         >

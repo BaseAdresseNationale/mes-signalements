@@ -46,9 +46,12 @@ export function NumeroCard({ adresse, createSignalement }: NumeroCardProps) {
         <h3>Certification</h3>
         <p>
           {adresse.certifie ? (
-            <>✅ Cette adresse a été certifiée par la commune</>
+            <>
+              <span className='fr-icon-checkbox-circle-line' /> Cette adresse a été certifiée par la
+              commune
+            </>
           ) : (
-            <>❌ Cette adresse n&apos;a pas été certifiée par la commune</>
+            <>Cette adresse n&apos;a pas été certifiée par la commune</>
           )}
         </p>
       </div>

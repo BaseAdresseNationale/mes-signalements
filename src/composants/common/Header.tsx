@@ -19,6 +19,18 @@ const StyledHeader = styled.header`
       font-size: 0.6em;
     }
   }
+
+  @media print {
+    display: flex;
+    align-items: center;
+    height: 100px;
+    div {
+      filter: none;
+    }
+    .fr-container {
+      margin: 0;
+    }
+  }
 `
 
 interface HeaderProps {

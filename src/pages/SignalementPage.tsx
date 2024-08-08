@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useMemo } from 'react'
 import { useLoaderData, useSearchParams } from 'react-router-dom'
 import {
   IBANPlateformeNumero,
-  IBANPlateformeResult,
   BANPlateformeResultTypeEnum,
   IBANPlateformeVoie,
   IBANPlateformeLieuDit,
@@ -29,9 +28,15 @@ export function SignalementPage() {
   const { isMobile } = useWindowSize()
   const { mapRef, editParcelles, setAdresseSearchMapLayersOptions } = useContext(MapContext)
   const { adresse } = useLoaderData() as {
-    adresse: IBANPlateformeResult
+    adresse: IBANPlateformeVoie | IBANPlateformeLieuDit | IBANPlateformeNumero
   }
-  const { signalement, createSignalement, deleteSignalement, onEditSignalement } = useSignalement()
+  const {
+    signalement,
+    createSignalement,
+    deleteSignalement,
+    onEditSignalement,
+    hasSignalementChanged,
+  } = useSignalement()
 
   // Fly to location
   useEffect(() => {
@@ -160,6 +165,7 @@ export function SignalementPage() {
           signalement={signalement as Signalement}
           onEditSignalement={onEditSignalement}
           onClose={handleCloseSignalementForm}
+          hasSignalementChanged={hasSignalementChanged}
         />
       )}
     </>

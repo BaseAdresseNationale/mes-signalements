@@ -98,7 +98,9 @@ export function ListNumeros({ adresse }: Readonly<ListNumerosProps>) {
                         {filteredNumeros.map(({ id, numero, suffixe, certifie }) => (
                           <tr onClick={() => navigate(`/${id}`)} className='numero-row' key={id}>
                             <td>{suffixe ? `${numero} ${suffixe}` : numero}</td>
-                            <td>{certifie ? '✅' : '❌'}</td>
+                            <td>
+                              {certifie ? <span className='fr-icon-checkbox-circle-line' /> : ''}
+                            </td>
                           </tr>
                         ))}
                       </tbody>

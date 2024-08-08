@@ -22,17 +22,17 @@ import {
 interface SignalementRecapModalProps {
   signalement: Signalement
   onEditSignalement: (property: keyof Signalement, key: string) => (event: string) => void
-  onClose: () => void
+  onCloseModal: () => void
   address: IBANPlateformeNumero | IBANPlateformeVoie | IBANPlateformeLieuDit
-  onSubmit: () => void
+  onClose: () => void
 }
 
 export default function SignalementRecapModal({
   signalement,
   onEditSignalement,
-  onClose,
+  onCloseModal,
   address,
-  onSubmit,
+  onClose,
 }: SignalementRecapModalProps) {
   const [submitStatus, setSubmitStatus] = useState<string | null>(null)
   const { source } = useContext(SourceContext)
@@ -62,9 +62,6 @@ export default function SignalementRecapModal({
       const sourceId = source?.id || process.env.REACT_APP_API_SIGNALEMENT_SOURCE_ID
       await SignalementsService.createSignalement(signalement as CreateSignalementDTO, sourceId)
       setSubmitStatus('success')
-      setTimeout(() => {
-        onSubmit()
-      }, 2000)
     } catch (error) {
       console.error(error)
       setSubmitStatus('error')
@@ -97,7 +94,7 @@ export default function SignalementRecapModal({
   }
 
   return (
-    <Modal title={getModalTitle()} onClose={onClose}>
+    <Modal title={getModalTitle()} onClose={submitStatus === 'success' ? onClose : onCloseModal}>
       <StyledForm onSubmit={handleSubmit}>
         {signalement.type === Signalement.type.LOCATION_TO_UPDATE && (
           <section>
@@ -247,14 +244,6 @@ export default function SignalementRecapModal({
             </div>
           </section>
         )}
-        <button
-          className='fr-btn fr-btn--tertiary'
-          type='button'
-          onClick={() => window.print()}
-          style={{ marginTop: '0.5rem' }}
-        >
-          Imprimer le récapitulatif
-        </button>
         {source?.type !== Source.type.PRIVATE && (
           <section>
             <h4>Contact</h4>
@@ -285,9 +274,14 @@ export default function SignalementRecapModal({
           </section>
         )}
         {submitStatus === 'success' && (
-          <div className='fr-alert fr-alert--success'>
-            <p>Votre signalement a bien été envoyée.</p>
-          </div>
+          <>
+            <p className='send-date'>
+              Date d&apos;envoi : <b>{new Date().toLocaleDateString()}</b>
+            </p>
+            <div className='fr-alert fr-alert--success'>
+              <p>Votre signalement a bien été envoyée.</p>
+            </div>
+          </>
         )}
         {submitStatus === 'error' && (
           <div className='fr-alert fr-alert--error'>
@@ -297,18 +291,31 @@ export default function SignalementRecapModal({
             </p>
           </div>
         )}
-        <div className='form-controls'>
-          <button
-            className='fr-btn'
-            disabled={submitStatus === 'loading' || submitStatus === 'success'}
-            type='submit'
-          >
-            Envoyer le signalement
-          </button>
+        <div className='form-controls' style={{ justifyContent: 'flex-start' }}>
+          {submitStatus !== 'success' ? (
+            <>
+              <button
+                className='fr-btn'
+                disabled={submitStatus === 'loading' || submitStatus === 'success'}
+                type='submit'
+              >
+                Envoyer le signalement
+              </button>
 
-          <button className='fr-btn fr-btn--tertiary' type='button' onClick={onClose}>
-            Annuler
-          </button>
+              <button className='fr-btn fr-btn--tertiary' type='button' onClick={onCloseModal}>
+                Annuler
+              </button>
+            </>
+          ) : (
+            <>
+              <button className='fr-btn ' type='button' onClick={() => window.print()}>
+                Imprimer le récapitulatif
+              </button>
+              <button className='fr-btn fr-btn--tertiary' type='button' onClick={onClose}>
+                Quitter
+              </button>
+            </>
+          )}
         </div>
       </StyledForm>
     </Modal>

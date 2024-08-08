@@ -42,11 +42,10 @@ export const positionTypeOptions = [
     value: Position.type.SERVICE_TECHNIQUE,
     label: 'Service technique',
   },
-  { value: Position.type.INCONNU, label: 'Inconnu' },
 ]
 
 export const getPositionTypeLabel = (positionType: Position.type) => {
-  return positionTypeOptions.find(({ value }) => value === positionType)?.label
+  return positionTypeOptions.find(({ value }) => value === positionType)?.label || 'Inconnu'
 }
 
 export function getSignalementCoodinates(signalement: Signalement): [number, number] | undefined {
