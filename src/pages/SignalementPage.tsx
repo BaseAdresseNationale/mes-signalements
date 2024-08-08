@@ -93,7 +93,7 @@ export function SignalementPage() {
         ? ([
             'in',
             ['get', 'id'],
-            ['literal', (adresse as IBANPlateformeLieuDit).numeros.map((numero) => numero.id)],
+            ['literal', adresse.numeros.map((numero) => numero.id)],
           ] as FilterSpecification)
         : (['in', adresse.id, ['get', 'id']] as FilterSpecification)
 
@@ -138,22 +138,13 @@ export function SignalementPage() {
       {!signalement && (
         <>
           {adresse.type === BANPlateformeResultTypeEnum.NUMERO && (
-            <NumeroCard
-              adresse={adresse as IBANPlateformeNumero}
-              createSignalement={createSignalement}
-            />
+            <NumeroCard adresse={adresse} createSignalement={createSignalement} />
           )}
           {adresse.type === BANPlateformeResultTypeEnum.VOIE && (
-            <VoieCard
-              adresse={adresse as IBANPlateformeVoie}
-              createSignalement={createSignalement}
-            />
+            <VoieCard adresse={adresse} createSignalement={createSignalement} />
           )}
           {adresse.type === BANPlateformeResultTypeEnum.LIEU_DIT && (
-            <LieuDitCard
-              adresse={adresse as IBANPlateformeLieuDit}
-              createSignalement={createSignalement}
-            />
+            <LieuDitCard adresse={adresse} createSignalement={createSignalement} />
           )}
         </>
       )}

@@ -45,7 +45,7 @@ export const positionTypeOptions = [
 ]
 
 export const getPositionTypeLabel = (positionType: Position.type) => {
-  return positionTypeOptions.find(({ value }) => value === positionType)?.label || 'Inconnu'
+  return positionTypeOptions.find(({ value }) => value === positionType)?.label ?? 'Inconnu'
 }
 
 export function getSignalementCoodinates(signalement: Signalement): [number, number] | undefined {
