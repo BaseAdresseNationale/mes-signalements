@@ -108,7 +108,6 @@ export function MapLayout({ children }: MapLayoutProps) {
             zoom: 5,
           }}
           mapStyle={mapStyles[0].uri}
-          attributionControl={false}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
           interactiveLayerIds={interactiveLayers.map((layer) => layer.id)}
