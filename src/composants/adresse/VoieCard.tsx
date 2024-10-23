@@ -34,8 +34,6 @@ export function VoieCard({ adresse, createSignalement }: VoieCardProps) {
         Modifier le nom de la voie
       </button>
 
-      <ListNumeros adresse={adresse} />
-
       <button
         type='button'
         className='fr-btn'
@@ -43,6 +41,8 @@ export function VoieCard({ adresse, createSignalement }: VoieCardProps) {
       >
         Ajouter un numéro manquant
       </button>
+
+      <ListNumeros adresse={adresse} />
     </Card>
   )
 }

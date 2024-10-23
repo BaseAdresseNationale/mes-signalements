@@ -92,7 +92,7 @@ export function Header({ customSource, toggleShowInfo }: HeaderProps) {
                     </p>
                   </a>
                   <p className='fr-header__service-tagline'>
-                    Signaler un problème dans la Base Adresse Nationale
+                    Contribuer à améliorer la Base Adresse Nationale
                   </p>
                 </div>
               </div>
