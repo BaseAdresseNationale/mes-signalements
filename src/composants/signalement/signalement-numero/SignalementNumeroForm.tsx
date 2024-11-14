@@ -3,7 +3,7 @@ import { StyledForm } from '../signalement.styles'
 import PositionInput from '../../common/Position/PositionInput'
 import { NumeroChangesRequestedDTO, Signalement } from '../../../api/signalement'
 import { IBANPlateformeNumero, IBANPlateformeVoie } from '../../../api/ban-plateforme/types'
-import ComplementInputProps from '../../common/ComplementInput'
+import ComplementInput from '../../common/ComplementInput'
 import ParcelleInput from '../../common/ParcelleInput'
 import { getAdresseLabel } from '../../../utils/adresse.utils'
 
@@ -105,7 +105,7 @@ export default function SignalementNumeroForm({
             />
           </div>
         </div>
-        <ComplementInputProps
+        <ComplementInput
           address={address}
           value={nomComplement ?? ''}
           onChange={(event) => onEditSignalement('changesRequested', 'nomComplement')(event)}

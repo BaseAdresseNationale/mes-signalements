@@ -76,6 +76,7 @@ export default function ComplementInput({
         <Autocomplete
           inputProps={{ placeholder: 'Rechercher un complément' }}
           fetchResults={fetchAPIAdresse}
+          minSearchLength={3}
           renderResultList={(results, onBlur) => (
             <StyledResultList>
               {results.map((result) => (

@@ -8,7 +8,10 @@ export function useCustomSource(source?: Source) {
     try {
       const paginatedSignalements = await SignalementsService.getSignalements(
         undefined,
-        sourceId as string,
+        undefined,
+        undefined,
+        undefined,
+        [sourceId],
       )
       setSignalements(paginatedSignalements.data as any)
     } catch (e) {

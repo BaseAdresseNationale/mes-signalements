@@ -31,12 +31,12 @@ export namespace Signalement {
         LOCATION_TO_UPDATE = 'LOCATION_TO_UPDATE',
         LOCATION_TO_DELETE = 'LOCATION_TO_DELETE',
         LOCATION_TO_CREATE = 'LOCATION_TO_CREATE',
-        OTHER = 'OTHER',
     }
     export enum status {
         PENDING = 'PENDING',
         IGNORED = 'IGNORED',
         PROCESSED = 'PROCESSED',
+        EXPIRED = 'EXPIRED',
     }
 }
 

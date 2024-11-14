@@ -5,12 +5,14 @@ interface AutocompleteProps<T> {
   fetchResults: (search: string) => Promise<T[]>
   renderResultList: (results: Array<T>, onBlur: () => void) => React.ReactNode
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>
+  minSearchLength?: number
 }
 
 const Autocomplete = <T extends { code: string }>({
   fetchResults,
   renderResultList,
   inputProps,
+  minSearchLength = 4,
 }: AutocompleteProps<T>) => {
   const searchTimeoutRef = useRef({} as NodeJS.Timeout)
   const [hasFocus, setHasFocus] = useState(false)
@@ -19,7 +21,7 @@ const Autocomplete = <T extends { code: string }>({
 
   useEffect(() => {
     async function fetch() {
-      if (search.length >= 4) {
+      if (search.length >= minSearchLength) {
         const results = await fetchResults(search)
 
         setResults(results)
@@ -67,8 +69,8 @@ const Autocomplete = <T extends { code: string }>({
       {hasFocus && (
         <div className='results'>
           {results.length > 0 && renderResultList(results, () => setHasFocus(false))}
-          {results.length === 0 && search.length >= 4 && <p>Aucun résultat</p>}
-          {results.length === 0 && search.length > 0 && search.length < 4 && (
+          {results.length === 0 && search.length >= minSearchLength && <p>Aucun résultat</p>}
+          {results.length === 0 && search.length > 0 && search.length < minSearchLength && (
             <p>Votre recherche doit comporter au moins 4 caractères</p>
           )}
         </div>

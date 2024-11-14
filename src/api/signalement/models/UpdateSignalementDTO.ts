@@ -10,6 +10,7 @@ export namespace UpdateSignalementDTO {
         PENDING = 'PENDING',
         IGNORED = 'IGNORED',
         PROCESSED = 'PROCESSED',
+        EXPIRED = 'EXPIRED',
     }
 }
 

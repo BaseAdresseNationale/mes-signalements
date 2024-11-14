@@ -22,7 +22,6 @@ export namespace CreateSignalementDTO {
         LOCATION_TO_UPDATE = 'LOCATION_TO_UPDATE',
         LOCATION_TO_DELETE = 'LOCATION_TO_DELETE',
         LOCATION_TO_CREATE = 'LOCATION_TO_CREATE',
-        OTHER = 'OTHER',
     }
 }
 

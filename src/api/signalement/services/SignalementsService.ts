@@ -12,33 +12,33 @@ import { request as __request } from '../core/request';
 export class SignalementsService {
     /**
      * Get signalements
-     * @param codeCommune
-     * @param sourceId
-     * @param type
-     * @param status
      * @param limit
      * @param page
+     * @param status
+     * @param types
+     * @param sourceIds
+     * @param codeCommunes
      * @returns PaginatedSignalementsDTO
      * @throws ApiError
      */
     public static getSignalements(
-        codeCommune?: string,
-        sourceId?: string,
-        type?: 'LOCATION_TO_UPDATE' | 'LOCATION_TO_DELETE' | 'LOCATION_TO_CREATE' | 'OTHER',
-        status?: 'PENDING' | 'IGNORED' | 'PROCESSED',
         limit?: number,
         page?: number,
+        status?: Array<'PENDING' | 'IGNORED' | 'PROCESSED' | 'EXPIRED'>,
+        types?: Array<'LOCATION_TO_UPDATE' | 'LOCATION_TO_DELETE' | 'LOCATION_TO_CREATE'>,
+        sourceIds?: Array<string>,
+        codeCommunes?: Array<string>,
     ): CancelablePromise<PaginatedSignalementsDTO> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/signalements',
             query: {
-                'codeCommune': codeCommune,
-                'sourceId': sourceId,
-                'type': type,
-                'status': status,
                 'limit': limit,
                 'page': page,
+                'status': status,
+                'types': types,
+                'sourceIds': sourceIds,
+                'codeCommunes': codeCommunes,
             },
         });
     }
