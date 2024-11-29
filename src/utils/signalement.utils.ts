@@ -196,6 +196,7 @@ export function getExistingLocation(
           type: ExistingLocation.type.VOIE,
           nom: address.voie.nomVoie,
         },
+        nomComplement: address.lieuDitComplementNom,
       } as ExistingNumero
     default:
       throw new Error(`Impossible de créer un signalement pour le type : ${address.type}`)

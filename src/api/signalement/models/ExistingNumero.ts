@@ -11,7 +11,9 @@ export type ExistingNumero = {
     numero: number;
     suffixe: string;
     position: Position;
+    parcelles?: Array<string> | null;
     toponyme: (ExistingVoie | ExistingToponyme);
+    nomComplement?: string;
 };
 export namespace ExistingNumero {
     export enum type {
