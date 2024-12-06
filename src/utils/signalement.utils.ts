@@ -172,9 +172,9 @@ export function getExistingLocation(
         position: {
           point: {
             type: 'Point',
-            coordinates: [address.lon, address.lat],
+            coordinates: address.position.coordinates,
           },
-          type: address.positionType,
+          type: Position.type.SEGMENT,
         },
         parcelles: address.parcelles,
       } as ExistingToponyme
