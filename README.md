@@ -1,46 +1,83 @@
-# Getting Started with Create React App
+# Mes Signalements
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+"Mes Signalements" est un outil en ligne qui vous permet de contribuer à l'adressage des communes.
 
-## Available Scripts
+Il est disponible en ligne à l'adresse [signalements.adresse.data.gouv.fr](https://signalements.adresse.data.gouv.fr).
 
-In the project directory, you can run:
+## Pré-requis
 
-### `yarn start`
+- [Node.js](https://nodejs.org) 22
+- [yarn](https://www.yarnpkg.com)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Utilisation
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### Installation
 
-### `yarn test`
+Installation des dépendances Node.js
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+$ yarn
+```
 
-### `yarn build`
+Créer les variables d'environnement
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+cp .env.sample .env
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+On pourra ensuite éditer les variables d'environnement dans le fichier `.env` si nécessaire.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Développement
 
-### `yarn eject`
+Lancer le serveur de développement :
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```
+$ yarn dev
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Production
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Créer une version de production :
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```
+$ yarn build
+```
 
-## Learn More
+Démarrer le serveur (port 3000 par défaut) :
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```
+$ yarn start
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Linter
+
+Rapport du linter (eslint) :
+
+```
+$ yarn lint
+```
+
+## Configuration
+
+Cette application utilise des variables d'environnement pour sa configuration.
+Elles peuvent être définies classiquement ou en créant un fichier `.env` sur la base du modèle `.env.sample`.
+
+| Nom de la variable                    | Description                                |
+| ------------------------------------- | ------------------------------------------ |
+| `PUBLIC_URL`                          | URL                                        |
+| `REACT_APP_API_SIGNALEMENT_URL`       | URL de base de l’API Géo                   |
+| `REACT_APP_API_SIGNALEMENT_SOURCE_ID` | URL de base du site adresse.data.gouv.fr   |
+| `REACT_APP_BAN_PLATEFORME_URL`        | URL de base de BAN plateforme              |
+| `REACT_APP_API_ADRESSE_URL`           | URL de base de l'API Adresse               |
+| `REACT_APP_FRIENDLY_CAPTCHA_SITE_KEY` | Paramétrage "Site key" de Friendly Captcha |
+| `PORT`                                | Port de l'application                      |
+
+Toutes ces variables ont des valeurs par défaut que vous trouverez dans le fichier `.env.sample`.
+
+## Gouvernance
+
+ANCT
+
+## Licence
+
+MIT

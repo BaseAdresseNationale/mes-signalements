@@ -3,6 +3,12 @@
   "name": "mes-signalements",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
+  "contributors": [
+    "Guillaume Fay <guillaume.fay@beta.gouv.fr>",
+    "Fabien Tafforeau <fabien.tafforeau@beta.gouv.fr>"
+  ],
+  "author": "Équipe Adresse <adresse@data.gouv.fr>",
   "dependencies": {
     "@gouvfr/dsfr": "^1.11.2",
     "@testing-library/jest-dom": "^5.14.1",
