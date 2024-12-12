@@ -248,9 +248,33 @@ export default function SignalementRecapModal({
           <section>
             <h4>Contact</h4>
             <p>
-              Vous pouvez nous laisser votre adresse email si vous souhaitez être tenu informé du
-              traitement de votre signalement.
+              Laissez nous vos coordonnées pour que nous puissions vous tenir informé de l&apos;état
+              d&apos;avancement de votre signalement.
             </p>
+            <div className='form-row'>
+              <div className='fr-input-group'>
+                <label className='fr-label' htmlFor='lastName'>
+                  Nom
+                </label>
+                <input
+                  name='lastName'
+                  className='fr-input'
+                  value={signalement.author?.lastName || ''}
+                  onChange={(event) => onEditSignalement('author', 'lastName')(event.target.value)}
+                />
+              </div>
+              <div className='fr-input-group'>
+                <label className='fr-label' htmlFor='firstName'>
+                  Prénom
+                </label>
+                <input
+                  name='firstName'
+                  className='fr-input'
+                  value={signalement.author?.firstName || ''}
+                  onChange={(event) => onEditSignalement('author', 'firstName')(event.target.value)}
+                />
+              </div>
+            </div>
             <div className='form-row'>
               <div className='fr-input-group'>
                 <label className='fr-label' htmlFor='email'>
