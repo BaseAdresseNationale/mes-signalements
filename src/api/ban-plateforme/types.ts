@@ -26,6 +26,7 @@ export interface IBANPlateformeCommune {
     nom: string
     code: string
   }
+  voies: (IBANPlateformeVoie | IBANPlateformeLieuDit)[]
 }
 
 export interface IBANPlateformeNumero extends IBANPlateformeResult {

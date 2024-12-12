@@ -229,6 +229,8 @@ export const getInitialSignalement = (
     type: signalementType,
     codeCommune: address.commune.code,
     author: {
+      firstName: '',
+      lastName: '',
       email: '',
     },
     changesRequested: {} as ChangesRequested,

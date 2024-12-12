@@ -2,7 +2,7 @@ import React from 'react'
 
 interface SelectInputProps {
   label: string
-  value: string
+  value?: string
   hint?: string
   options: { label: string; value: string }[]
   defaultOption?: string
