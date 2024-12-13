@@ -163,6 +163,13 @@ export function getExistingLocation(
         type: ExistingLocation.type.VOIE,
         banId: address.banId,
         nom: address.nomVoie,
+        position: {
+          point: {
+            type: 'Point',
+            coordinates: address.position.coordinates,
+          },
+          type: Position.type.SEGMENT,
+        },
       } as ExistingVoie
     case BANPlateformeResultTypeEnum.LIEU_DIT:
       return {
@@ -229,6 +236,8 @@ export const getInitialSignalement = (
     type: signalementType,
     codeCommune: address.commune.code,
     author: {
+      firstName: '',
+      lastName: '',
       email: '',
     },
     changesRequested: {} as ChangesRequested,

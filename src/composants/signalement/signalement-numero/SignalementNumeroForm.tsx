@@ -1,11 +1,17 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { StyledForm } from '../signalement.styles'
 import PositionInput from '../../common/Position/PositionInput'
 import { NumeroChangesRequestedDTO, Signalement } from '../../../api/signalement'
-import { IBANPlateformeNumero, IBANPlateformeVoie } from '../../../api/ban-plateforme/types'
-import ComplementInput from '../../common/ComplementInput'
+import {
+  BANPlateformeResultTypeEnum,
+  IBANPlateformeCommune,
+  IBANPlateformeNumero,
+  IBANPlateformeVoie,
+} from '../../../api/ban-plateforme/types'
 import ParcelleInput from '../../common/ParcelleInput'
 import { getAdresseLabel } from '../../../utils/adresse.utils'
+import { lookup as BANLookup } from '../../../api/ban-plateforme'
+import SelectInput from '../../common/SelectInput'
 
 interface SignalementNumeroFormProps {
   signalement: Signalement
@@ -27,6 +33,28 @@ export default function SignalementNumeroForm({
   hasSignalementChanged,
 }: SignalementNumeroFormProps) {
   const isCreation = !address
+
+  const [complementsOpts, setComplementsOpts] = useState<{ value: string; label: string }[]>([])
+
+  useEffect(() => {
+    if (address) {
+      const fetchComplements = async () => {
+        try {
+          const { commune } = address
+
+          const results = await BANLookup(commune.code)
+          const mappedResults = (results as unknown as IBANPlateformeCommune).voies
+            .filter(({ type }) => type === BANPlateformeResultTypeEnum.LIEU_DIT)
+            .map(({ nomVoie }) => ({ value: nomVoie, label: nomVoie }))
+          setComplementsOpts(mappedResults)
+        } catch (error) {
+          console.error(error)
+        }
+      }
+
+      fetchComplements()
+    }
+  }, [address])
 
   const isSubmitDisabled = useMemo(() => {
     const { changesRequested } = signalement
@@ -105,10 +133,12 @@ export default function SignalementNumeroForm({
             />
           </div>
         </div>
-        <ComplementInput
-          address={address}
-          value={nomComplement ?? ''}
-          onChange={(event) => onEditSignalement('changesRequested', 'nomComplement')(event)}
+        <SelectInput
+          label='Complément'
+          defaultOption='-'
+          value={nomComplement}
+          options={complementsOpts}
+          handleChange={(value) => onEditSignalement('changesRequested', 'nomComplement')(value)}
         />
         <PositionInput
           positions={positions}
