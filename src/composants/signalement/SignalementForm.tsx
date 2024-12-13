@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import SignalementToponymeForm from './signalement-toponyme/SignalementToponymeForm'
 import SignalementNumeroForm from './signalement-numero/SignalementNumeroForm'
 import RecapModal from './RecapModal'
@@ -12,6 +12,7 @@ import {
 } from '../../api/ban-plateforme/types'
 import { MapRef } from 'react-map-gl/maplibre'
 import SignalementVoieForm from './signalement-voie/SignalementVoieForm'
+import MapContext from '../../contexts/map.context'
 
 interface SignalementFormProps {
   signalement: Signalement
@@ -31,10 +32,14 @@ export default function SignalementForm({
   hasSignalementChanged,
 }: SignalementFormProps) {
   const [showRecapModal, setShowRecapModal] = useState(false)
+  const { showCadastre, setShowCadastre } = useContext(MapContext)
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setShowRecapModal(true)
+    if (showCadastre) {
+      setShowCadastre(false)
+    }
   }
 
   return (
