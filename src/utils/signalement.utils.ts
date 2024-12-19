@@ -226,7 +226,6 @@ export function getExistingLocationType(type: string) {
 export const getInitialSignalement = (
   address: any,
   signalementType: Signalement.type,
-  changesRequested?: ChangesRequested,
 ): Signalement | null => {
   if (!address) {
     return null
@@ -288,7 +287,7 @@ export const getInitialSignalement = (
                 type: 'Point',
                 coordinates: [...position.coordinates],
               },
-              type: positionType,
+              type: positionType || Position.type.ENTR_E,
             }),
           ),
           parcelles: address.parcelles,
@@ -306,13 +305,6 @@ export const getInitialSignalement = (
       break
     default:
       throw new Error(`Type de signalement inconnu : ${signalementType}`)
-  }
-
-  if (changesRequested) {
-    initialSignalement.changesRequested = {
-      ...initialSignalement.changesRequested,
-      ...changesRequested,
-    }
   }
 
   return initialSignalement as Signalement

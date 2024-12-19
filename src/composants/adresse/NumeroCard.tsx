@@ -3,6 +3,7 @@ import { Signalement } from '../../api/signalement'
 import { IBANPlateformeNumero, IBANPlateformeResult } from '../../api/ban-plateforme/types'
 import { Card } from '../common/Card'
 import { getAdresseLabel } from '../../utils/adresse.utils'
+import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
 
 interface NumeroCardProps {
   adresse: IBANPlateformeNumero
@@ -10,9 +11,13 @@ interface NumeroCardProps {
 }
 
 export function NumeroCard({ adresse, createSignalement }: NumeroCardProps) {
+  const { navigate } = useNavigateWithPreservedSearchParams()
+
   return (
     <Card>
-      <h2 style={{ lineHeight: 'normal' }}>{getAdresseLabel(adresse)}</h2>
+      <h2 style={{ lineHeight: 'normal' }}>
+        {getAdresseLabel(adresse, { withVoieLink: true, navigateFn: navigate })}
+      </h2>
       <ul>
         <li>
           Région : <b>{adresse.commune.region.nom}</b>

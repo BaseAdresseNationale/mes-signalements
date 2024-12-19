@@ -16,12 +16,12 @@ import {
 import { VoieCard } from '../composants/adresse/VoieCard'
 import { LieuDitCard } from '../composants/adresse/LieuDitCard'
 import useWindowSize from '../hooks/useWindowSize'
-import { useSignalement } from '../hooks/useSignalement'
 import { MapContext } from '../contexts/map.context'
 import SignalementMap from '../composants/map/SignalementMap'
 import { useMapContent } from '../hooks/useMapContent'
 import { ChangesRequested } from '../types/signalement.types'
 import { FilterSpecification } from 'maplibre-gl'
+import { SignalementContext } from '../contexts/signalement.context'
 
 export function SignalementPage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -36,7 +36,7 @@ export function SignalementPage() {
     deleteSignalement,
     onEditSignalement,
     hasSignalementChanged,
-  } = useSignalement()
+  } = useContext(SignalementContext)
 
   // Fly to location
   useEffect(() => {
@@ -45,11 +45,13 @@ export function SignalementPage() {
     }
 
     let position
-    if ((adresse as any).displayBBox) {
-      const voieOrLieuDit = adresse as IBANPlateformeVoie | IBANPlateformeLieuDit
+    const isVoieOrLieuDit =
+      adresse.type === BANPlateformeResultTypeEnum.VOIE ||
+      adresse.type === BANPlateformeResultTypeEnum.LIEU_DIT
+    if (isVoieOrLieuDit && adresse.displayBBox) {
       position = [
-        (voieOrLieuDit.displayBBox[0] + voieOrLieuDit.displayBBox[2]) / 2,
-        (voieOrLieuDit.displayBBox[1] + voieOrLieuDit.displayBBox[3]) / 2,
+        (adresse.displayBBox[0] + adresse.displayBBox[2]) / 2,
+        (adresse.displayBBox[1] + adresse.displayBBox[3]) / 2,
       ]
     } else {
       const numero = adresse as IBANPlateformeNumero
@@ -58,7 +60,7 @@ export function SignalementPage() {
     mapRef.flyTo({
       center: position as [number, number],
       offset: [0, isMobile ? -100 : 0],
-      zoom: 20,
+      zoom: isVoieOrLieuDit ? 18 : 20,
       screenSpeed: 2,
     })
   }, [mapRef, adresse, isMobile])
