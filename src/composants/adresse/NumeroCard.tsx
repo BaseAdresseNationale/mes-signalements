@@ -12,7 +12,7 @@ interface NumeroCardProps {
 export function NumeroCard({ adresse, createSignalement }: NumeroCardProps) {
   return (
     <Card>
-      <h2 style={{ lineHeight: 'normal' }}>{getAdresseLabel(adresse)}</h2>
+      <h2 style={{ lineHeight: 'normal' }}>{getAdresseLabel(adresse, { withVoieLink: true })}</h2>
       <ul>
         <li>
           Région : <b>{adresse.commune.region.nom}</b>

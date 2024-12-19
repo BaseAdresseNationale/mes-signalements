@@ -45,7 +45,10 @@ export function SignalementPage() {
     }
 
     let position
-    if ((adresse as any).displayBBox) {
+    const isVoieOrLieuDit =
+      adresse.type === BANPlateformeResultTypeEnum.VOIE ||
+      adresse.type === BANPlateformeResultTypeEnum.LIEU_DIT
+    if (isVoieOrLieuDit && (adresse as any).displayBBox) {
       const voieOrLieuDit = adresse as IBANPlateformeVoie | IBANPlateformeLieuDit
       position = [
         (voieOrLieuDit.displayBBox[0] + voieOrLieuDit.displayBBox[2]) / 2,
@@ -58,7 +61,7 @@ export function SignalementPage() {
     mapRef.flyTo({
       center: position as [number, number],
       offset: [0, isMobile ? -100 : 0],
-      zoom: 20,
+      zoom: isVoieOrLieuDit ? 18 : 20,
       screenSpeed: 2,
     })
   }, [mapRef, adresse, isMobile])

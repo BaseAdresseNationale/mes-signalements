@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import reportWebVitals from './reportWebVitals'
-import { RouterProvider, createBrowserRouter } from 'react-router-dom'
+import { RouterProvider, createHashRouter } from 'react-router-dom'
 import { MapLayout } from './layouts/MapLayout'
 import { lookup } from './api/ban-plateforme'
 import { SignalementPage } from './pages/SignalementPage'
@@ -46,7 +46,7 @@ const GlobalLayout = (props: { children: React.ReactNode }) => {
   )
 }
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: '/',
     element: (
