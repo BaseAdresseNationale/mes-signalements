@@ -28,24 +28,6 @@ export function SignalementContextProvider(props: { children: React.ReactNode })
   const [initialSignalement, setInitialSignalement] = useState<Signalement | null>(null)
   const [signalement, setSignalement] = useState<Signalement | null>(null)
 
-  const createSignalement = useCallback(
-    (
-      signalementType: Signalement.type,
-      adresse: IBANPlateformeResult,
-      changesRequested?: ChangesRequested,
-    ) => {
-      const signalement = getInitialSignalement(adresse, signalementType, changesRequested)
-      setInitialSignalement(signalement)
-      setSignalement(signalement)
-    },
-    [setSignalement],
-  )
-
-  const deleteSignalement = useCallback(() => {
-    setInitialSignalement(null)
-    setSignalement(null)
-  }, [setSignalement])
-
   const onEditSignalement = useCallback(
     (property: keyof Signalement, key: string) => (value: any) => {
       setSignalement(
@@ -62,6 +44,27 @@ export function SignalementContextProvider(props: { children: React.ReactNode })
     },
     [setSignalement],
   )
+
+  const createSignalement = useCallback(
+    (
+      signalementType: Signalement.type,
+      adresse: IBANPlateformeResult,
+      changesRequested?: ChangesRequested,
+    ) => {
+      const signalement = getInitialSignalement(adresse, signalementType)
+      setInitialSignalement(signalement)
+      setSignalement(signalement)
+      for (const [key, value] of Object.entries(changesRequested || {})) {
+        onEditSignalement('changesRequested', key)(value)
+      }
+    },
+    [setSignalement],
+  )
+
+  const deleteSignalement = useCallback(() => {
+    setInitialSignalement(null)
+    setSignalement(null)
+  }, [setSignalement])
 
   const hasSignalementChanged = useMemo(() => {
     return (
