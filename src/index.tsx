@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import reportWebVitals from './reportWebVitals'
-import { RouterProvider, createHashRouter } from 'react-router-dom'
+import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import { MapLayout } from './layouts/MapLayout'
 import { lookup } from './api/ban-plateforme'
 import { SignalementPage } from './pages/SignalementPage'
@@ -15,6 +15,7 @@ import { MapContextProvider } from './contexts/map.context'
 import { AdresseSearchPage } from './pages/AdresseSearchPage'
 import GlobalStyle from './globalStyles'
 import { SourceContextProvider } from './contexts/source.context'
+import { SignalementContextProvider } from './contexts/signalement.context'
 
 const API_SIGNALEMENT_URL = process.env.REACT_APP_API_SIGNALEMENT_URL
 
@@ -32,25 +33,34 @@ Object.assign(OpenAPI, {
   BASE: API_SIGNALEMENT_URL,
 })
 
-const router = createHashRouter([
+const GlobalLayout = (props: { children: React.ReactNode }) => {
+  const { children } = props
+  return (
+    <MapContextProvider>
+      <SignalementContextProvider>
+        <SourceContextProvider>
+          <MapLayout>{children}</MapLayout>
+        </SourceContextProvider>
+      </SignalementContextProvider>
+    </MapContextProvider>
+  )
+}
+
+const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      <SourceContextProvider>
-        <MapLayout>
-          <AdresseSearchPage />
-        </MapLayout>
-      </SourceContextProvider>
+      <GlobalLayout>
+        <AdresseSearchPage />
+      </GlobalLayout>
     ),
   },
   {
     path: '/:code',
     element: (
-      <SourceContextProvider>
-        <MapLayout>
-          <SignalementPage />
-        </MapLayout>
-      </SourceContextProvider>
+      <GlobalLayout>
+        <SignalementPage />
+      </GlobalLayout>
     ),
     loader: async ({ params }) => {
       if (!params.code) {
@@ -69,11 +79,9 @@ const router = createHashRouter([
   {
     path: '/source',
     element: (
-      <SourceContextProvider>
-        <MapLayout>
-          <SourcePage />
-        </MapLayout>
-      </SourceContextProvider>
+      <GlobalLayout>
+        <SourcePage />
+      </GlobalLayout>
     ),
   },
 ])
@@ -82,9 +90,7 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
     <GlobalStyle />
-    <MapContextProvider>
-      <RouterProvider router={router} />
-    </MapContextProvider>
+    <RouterProvider router={router} />
   </React.StrictMode>,
 )
 

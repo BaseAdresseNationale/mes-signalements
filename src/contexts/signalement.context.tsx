@@ -1,10 +1,10 @@
-import { useCallback, useMemo, useState } from 'react'
+import React, { createContext, useCallback, useMemo, useState } from 'react'
 import { Signalement } from '../api/signalement'
 import { getInitialSignalement } from '../utils/signalement.utils'
 import { IBANPlateformeResult } from '../api/ban-plateforme/types'
 import { ChangesRequested } from '../types/signalement.types'
 
-export interface useSignalementType {
+export interface SignalementContextValue {
   signalement: Signalement | null
   createSignalement: (
     signalementType: Signalement.type,
@@ -16,7 +16,15 @@ export interface useSignalementType {
   hasSignalementChanged: boolean
 }
 
-export function useSignalement(): useSignalementType {
+export const SignalementContext = createContext<SignalementContextValue>({
+  signalement: null,
+  createSignalement: () => {},
+  deleteSignalement: () => {},
+  onEditSignalement: () => () => {},
+  hasSignalementChanged: false,
+})
+
+export function SignalementContextProvider(props: { children: React.ReactNode }) {
   const [initialSignalement, setInitialSignalement] = useState<Signalement | null>(null)
   const [signalement, setSignalement] = useState<Signalement | null>(null)
 
@@ -67,11 +75,16 @@ export function useSignalement(): useSignalementType {
     )
   }, [initialSignalement, signalement])
 
-  return {
-    signalement,
-    createSignalement,
-    deleteSignalement,
-    onEditSignalement,
-    hasSignalementChanged,
-  }
+  const value = useMemo(
+    () => ({
+      createSignalement,
+      deleteSignalement,
+      onEditSignalement,
+      hasSignalementChanged,
+      signalement,
+    }),
+    [createSignalement, deleteSignalement, onEditSignalement, hasSignalementChanged, signalement],
+  )
+
+  return <SignalementContext.Provider value={value} {...props} />
 }

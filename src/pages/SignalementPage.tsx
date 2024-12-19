@@ -16,12 +16,12 @@ import {
 import { VoieCard } from '../composants/adresse/VoieCard'
 import { LieuDitCard } from '../composants/adresse/LieuDitCard'
 import useWindowSize from '../hooks/useWindowSize'
-import { useSignalement } from '../hooks/useSignalement'
 import { MapContext } from '../contexts/map.context'
 import SignalementMap from '../composants/map/SignalementMap'
 import { useMapContent } from '../hooks/useMapContent'
 import { ChangesRequested } from '../types/signalement.types'
 import { FilterSpecification } from 'maplibre-gl'
+import { SignalementContext } from '../contexts/signalement.context'
 
 export function SignalementPage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -36,7 +36,7 @@ export function SignalementPage() {
     deleteSignalement,
     onEditSignalement,
     hasSignalementChanged,
-  } = useSignalement()
+  } = useContext(SignalementContext)
 
   // Fly to location
   useEffect(() => {
