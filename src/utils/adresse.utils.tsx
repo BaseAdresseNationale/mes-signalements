@@ -6,11 +6,13 @@ import {
   IBANPlateformeResult,
   IBANPlateformeVoie,
 } from '../api/ban-plateforme/types'
-import useNavigateWithPreservedSearchParams from '../hooks/useNavigateWithPreservedSearchParams'
 
-export function getAdresseLabel(address: IBANPlateformeResult, opts?: { withVoieLink: boolean }) {
+export function getAdresseLabel(
+  address: IBANPlateformeResult,
+  opts?: { withVoieLink: boolean; navigateFn: (path: string) => void },
+) {
   const withVoieLink = opts?.withVoieLink || false
-  const { navigate } = useNavigateWithPreservedSearchParams()
+  const navigate = opts?.navigateFn
 
   switch (address.type) {
     case BANPlateformeResultTypeEnum.VOIE:
@@ -34,7 +36,7 @@ export function getAdresseLabel(address: IBANPlateformeResult, opts?: { withVoie
       return (
         <>
           {`${(address as IBANPlateformeNumero).numero} ${(address as IBANPlateformeNumero).suffixe || ''}`}{' '}
-          {withVoieLink ? (
+          {navigate && withVoieLink ? (
             <button
               className='fr-link'
               style={{

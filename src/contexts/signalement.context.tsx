@@ -24,7 +24,11 @@ export const SignalementContext = createContext<SignalementContextValue>({
   hasSignalementChanged: false,
 })
 
-export function SignalementContextProvider(props: { children: React.ReactNode }) {
+interface SignalementContextProviderProps {
+  children: React.ReactNode
+}
+
+export function SignalementContextProvider(props: Readonly<SignalementContextProviderProps>) {
   const [initialSignalement, setInitialSignalement] = useState<Signalement | null>(null)
   const [signalement, setSignalement] = useState<Signalement | null>(null)
 
@@ -54,7 +58,7 @@ export function SignalementContextProvider(props: { children: React.ReactNode })
       const signalement = getInitialSignalement(adresse, signalementType)
       setInitialSignalement(signalement)
       setSignalement(signalement)
-      for (const [key, value] of Object.entries(changesRequested || {})) {
+      for (const [key, value] of Object.entries(changesRequested ?? {})) {
         onEditSignalement('changesRequested', key)(value)
       }
     },

@@ -48,11 +48,10 @@ export function SignalementPage() {
     const isVoieOrLieuDit =
       adresse.type === BANPlateformeResultTypeEnum.VOIE ||
       adresse.type === BANPlateformeResultTypeEnum.LIEU_DIT
-    if (isVoieOrLieuDit && (adresse as any).displayBBox) {
-      const voieOrLieuDit = adresse as IBANPlateformeVoie | IBANPlateformeLieuDit
+    if (isVoieOrLieuDit && adresse.displayBBox) {
       position = [
-        (voieOrLieuDit.displayBBox[0] + voieOrLieuDit.displayBBox[2]) / 2,
-        (voieOrLieuDit.displayBBox[1] + voieOrLieuDit.displayBBox[3]) / 2,
+        (adresse.displayBBox[0] + adresse.displayBBox[2]) / 2,
+        (adresse.displayBBox[1] + adresse.displayBBox[3]) / 2,
       ]
     } else {
       const numero = adresse as IBANPlateformeNumero
