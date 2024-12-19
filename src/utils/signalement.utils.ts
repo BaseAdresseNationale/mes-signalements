@@ -288,7 +288,7 @@ export const getInitialSignalement = (
                 type: 'Point',
                 coordinates: [...position.coordinates],
               },
-              type: positionType,
+              type: positionType || Position.type.ENTR_E,
             }),
           ),
           parcelles: address.parcelles,
