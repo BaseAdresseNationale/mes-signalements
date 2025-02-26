@@ -9,6 +9,11 @@ const StyledWrapper = styled.div`
     margin-bottom: 10px;
   }
 
+  h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
   p {
     margin-bottom: 10px;
   }
@@ -22,70 +27,47 @@ export function AboutModal({ onClose }: ModalProps) {
   return (
     <Modal title='À propos de Mes Signalements' onClose={onClose}>
       <StyledWrapper>
-        <section>
-          <h2>A quoi ça sert?</h2>
-          <p>
-            L&apos;application Mes Signalements vous permet de signaler un problème dans la Base
-            Adresse Nationale (BAN).
-          </p>
-          <p>Via cette application, vous pouvez : </p>
-          <ul>
-            <li>
-              Signaler une <b>erreur ou des informations manquantes</b> sur une adresse, une voie ou
-              un lieu-dit.
-            </li>
-            <li>
-              Signaler une <b>adresse manquante</b>.
-            </li>
-            <li>
-              Demander la <b>suppression d&apos;une adresse</b>.
-            </li>
-          </ul>
-        </section>
-
-        <section>
-          <h2>Comment ça marche?</h2>
-          <p>
-            Une fois votre signalement effectué, il sera transmis à la commune concernée qui pourra
-            le traiter. Vous pourrez être averti de l&apos;avancement de son traitement en laissant
-            votre email dans le fenêtre de confirmation.
-          </p>
-        </section>
-
-        <section>
-          <h2>Comment signaler un problème d&apos;adressage?</h2>
-          <p>
-            Afin de signaler un problème, commencer par rechercher l&apos;objet de votre signalement
-            via la barre de recherche ou la carte. Il peut s&apos;agit d&apos;une adresse,
-            d&apos;une voie ou d&apos;un lieu-dit.
-          </p>
-          <p>
-            <b>
-              Si vous souhaiter signaler une adresse manquante, merci de rechercher la voie à
-              laquelle l&apos;adresse est rattachée puis cliquer sur &quot;Signaler un numéro
-              manquant&quot;.
-            </b>
-          </p>
-          <p>
-            Ensuite il vous suffit de remplir le formulaire sans oublier d&apos;ajouter les
-            positions et les parcelles (ces informations devront être saisies via la carte.)
-          </p>
-          <p>
-            Enfin une fenêtre de confirmation s&apos;ouvrira pour vous permettre de laisser votre
-            adresse email si vous souhaitez être tenu informé de l&apos;avancement du traitement de
-            votre signalement. Vous devrez alors compléter le captcha pour envoyer le signalement.
-          </p>
-        </section>
-
-        <section>
-          <h2>Qui sommes-nous?</h2>
-          <p>
-            Pour plus d&apos;information, retrouvez-nous sur le site{' '}
-            <a rel='noreferrer' target='_blank' href='https://adresse.data.gouv.fr/'>
-              adresse.data.gouv.fr
+        <h2>Vous avez un problème avec votre adresse ?</h2>
+        <h3>La première étape, c&apos;est de vous assurer qu&apos;elle existe.</h3>
+        <p>Pour cela, commencez par utiliser la barre de recherche pour trouver votre adresse.</p>
+        <h3>La deuxième étape, c&apos;est de vous assurer qu&apos;elle soit bien renseignée.</h3>
+        <p>
+          Pour cela, assurez-vous qu&apos;elle soit correctement orthagraphiée et positionnée sur la
+          carte.
+        </p>
+        <h2>Si une de ces étapes est impossible : proposez une création ou une modification !</h2>
+        <ul>
+          <li>
+            En déposant une création ou modification, vous aidez la commune à améliorer sa{' '}
+            <a href='https://adresse.data.gouv.fr/programme-bal' target='_blank' rel='noreferrer'>
+              Base Adresse Locale (BAL)
             </a>
-          </p>
-        </section>
+            .
+          </li>
+          <li>
+            En améliorant sa BAL, vous améliorez l&apos;intervention des secours, le référencement
+            dans les GPS, l&apos;accès aux réseaux, pour ne citer que quelques exemples.
+          </li>
+          <li>
+            Une fois acceptée par la commune, votre proposition remontera dans la{' '}
+            <a
+              href='https://adresse.data.gouv.fr/decouvrir-la-BAN'
+              target='_blank'
+              rel='noreferrer'
+            >
+              Base Adresse Nationale
+            </a>
+            .
+          </li>
+        </ul>
+
+        <p>
+          Si vous souhaitez en savoir plus, consultez le{' '}
+          <a href='' target='_blank'>
+            guide de Mes Signalements
+          </a>
+          .
+        </p>
       </StyledWrapper>
     </Modal>
   )
