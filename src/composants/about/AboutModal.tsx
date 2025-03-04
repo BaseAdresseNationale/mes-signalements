@@ -63,10 +63,21 @@ export function AboutModal({ onClose }: ModalProps) {
 
         <p>
           Si vous souhaitez en savoir plus, consultez le{' '}
-          <a href='' target='_blank'>
+          <a
+            href='https://adresse-data-gouv-fr.gitbook.io/doc-bal/deposer-un-signalement/mes-signalements'
+            target='_blank'
+            rel='noreferrer'
+          >
             guide de Mes Signalements
           </a>
           .
+        </p>
+
+        <p>
+          L&apos;application Mes Signalement vous est proposé par le{' '}
+          <a href='https://adresse.data.gouv.fr/programme-bal' target='_blank' rel='noreferrer'>
+            Programme Base Adresse Locale
+          </a>
         </p>
       </StyledWrapper>
     </Modal>

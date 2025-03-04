@@ -254,9 +254,10 @@ export default function SignalementRecapModal({
             <div className='form-row'>
               <div className='fr-input-group'>
                 <label className='fr-label' htmlFor='lastName'>
-                  Nom
+                  Nom*
                 </label>
                 <input
+                  required
                   name='lastName'
                   className='fr-input'
                   value={signalement.author?.lastName || ''}
@@ -265,9 +266,10 @@ export default function SignalementRecapModal({
               </div>
               <div className='fr-input-group'>
                 <label className='fr-label' htmlFor='firstName'>
-                  Prénom
+                  Prénom*
                 </label>
                 <input
+                  required
                   name='firstName'
                   className='fr-input'
                   value={signalement.author?.firstName || ''}
@@ -278,9 +280,10 @@ export default function SignalementRecapModal({
             <div className='form-row'>
               <div className='fr-input-group'>
                 <label className='fr-label' htmlFor='email'>
-                  Email
+                  Email*
                 </label>
                 <input
+                  required
                   name='email'
                   className='fr-input'
                   type='email'

@@ -56,6 +56,15 @@ export function Header({ customSource, toggleShowInfo }: HeaderProps) {
                   <div className='fr-header__navbar'>
                     <ul className='fr-btns-group'>
                       <li>
+                        <button
+                          title='À propos'
+                          className='fr-btn fr-icon-information-fill'
+                          onClick={toggleShowInfo}
+                        >
+                          À propos
+                        </button>
+                      </li>
+                      <li>
                         {customSource ? (
                           <button
                             className='fr-btn fr-icon-account-circle-fill'
@@ -71,15 +80,6 @@ export function Header({ customSource, toggleShowInfo }: HeaderProps) {
                             Se connecter
                           </button>
                         )}
-                      </li>
-                      <li>
-                        <button
-                          title='À propos'
-                          className='fr-btn fr-icon-information-fill'
-                          onClick={toggleShowInfo}
-                        >
-                          À propos
-                        </button>
                       </li>
                     </ul>
                   </div>
