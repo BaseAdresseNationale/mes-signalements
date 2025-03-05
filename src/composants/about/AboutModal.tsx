@@ -74,10 +74,12 @@ export function AboutModal({ onClose }: ModalProps) {
         </p>
 
         <p>
-          L&apos;application Mes Signalement vous est proposé par le{' '}
-          <a href='https://adresse.data.gouv.fr/programme-bal' target='_blank' rel='noreferrer'>
-            Programme Base Adresse Locale
-          </a>
+          <i>
+            L&apos;application Mes Signalement vous est proposé par le{' '}
+            <a href='https://adresse.data.gouv.fr/programme-bal' target='_blank' rel='noreferrer'>
+              Programme Base Adresse Locale
+            </a>
+          </i>
         </p>
       </StyledWrapper>
     </Modal>

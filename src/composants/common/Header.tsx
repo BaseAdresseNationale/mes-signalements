@@ -58,7 +58,7 @@ export function Header({ customSource, toggleShowInfo }: HeaderProps) {
                       <li>
                         <button
                           title='À propos'
-                          className='fr-btn fr-icon-information-fill'
+                          className='fr-btn fr-icon-information-line'
                           onClick={toggleShowInfo}
                         >
                           À propos
@@ -100,6 +100,11 @@ export function Header({ customSource, toggleShowInfo }: HeaderProps) {
                 <div className='fr-header__tools-links'>
                   <ul className='fr-btns-group'>
                     <li>
+                      <button className='fr-btn fr-icon-information-line' onClick={toggleShowInfo}>
+                        À propos
+                      </button>
+                    </li>
+                    <li>
                       {customSource ? (
                         <button
                           className='fr-btn fr-icon-account-circle-fill'
@@ -115,11 +120,6 @@ export function Header({ customSource, toggleShowInfo }: HeaderProps) {
                           Se connecter
                         </button>
                       )}
-                    </li>
-                    <li>
-                      <button className='fr-btn fr-icon-information-fill' onClick={toggleShowInfo}>
-                        À propos
-                      </button>
                     </li>
                   </ul>
                 </div>
