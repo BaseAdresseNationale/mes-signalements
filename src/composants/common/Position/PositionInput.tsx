@@ -17,6 +17,7 @@ interface PositionInputProps {
   initialPositionCoords: number[]
   onChange: (positions: Position[]) => void
   defaultPositionType?: Position.type
+  multiPositionDisabled?: boolean
 }
 
 export default function PositionInput({
@@ -24,10 +25,11 @@ export default function PositionInput({
   initialPositionCoords,
   onChange,
   defaultPositionType = Position.type.ENTR_E,
+  multiPositionDisabled,
 }: Readonly<PositionInputProps>) {
   return (
     <StyledContainer>
-      <p>Positions*</p>
+      <p>{`Position${multiPositionDisabled ? '' : 's'}*`}</p>
       {positions?.map(({ point, type }, index) => (
         <PositionItem
           key={point.coordinates.toString()}
@@ -38,32 +40,38 @@ export default function PositionInput({
             newPositions[index] = updatedPosition
             onChange(newPositions)
           }}
-          onDelete={() => {
-            onChange(positions.filter((_, i) => i !== index))
-          }}
+          {...(multiPositionDisabled
+            ? {}
+            : {
+                onDelete: () => {
+                  onChange(positions.filter((_, i) => i !== index))
+                },
+              })}
         />
       ))}
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <button
-          type='button'
-          className='fr-btn'
-          style={{ color: 'white', marginBottom: 10 }}
-          onClick={() =>
-            onChange([
-              ...positions,
-              {
-                point: {
-                  type: 'Point',
-                  coordinates: blurPosition(initialPositionCoords),
+      {!multiPositionDisabled && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <button
+            type='button'
+            className='fr-btn'
+            style={{ color: 'white', marginBottom: 10 }}
+            onClick={() =>
+              onChange([
+                ...positions,
+                {
+                  point: {
+                    type: 'Point',
+                    coordinates: blurPosition(initialPositionCoords),
+                  },
+                  type: defaultPositionType,
                 },
-                type: defaultPositionType,
-              },
-            ])
-          }
-        >
-          Ajouter une position
-        </button>
-      </div>
+              ])
+            }
+          >
+            Ajouter une position
+          </button>
+        </div>
+      )}
     </StyledContainer>
   )
 }

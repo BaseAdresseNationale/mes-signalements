@@ -4,10 +4,11 @@ import { IBANPlateformeNumero, IBANPlateformeResult } from '../../api/ban-platef
 import { Card } from '../common/Card'
 import { getAdresseLabel } from '../../utils/adresse.utils'
 import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
+import SignalementDisabled from '../signalement/SignalementDisabled'
 
 interface NumeroCardProps {
   adresse: IBANPlateformeNumero
-  createSignalement: (type: Signalement.type, adresse: IBANPlateformeResult) => void
+  createSignalement?: (type: Signalement.type, adresse: IBANPlateformeResult) => void
 }
 
 export function NumeroCard({ adresse, createSignalement }: NumeroCardProps) {
@@ -61,20 +62,26 @@ export function NumeroCard({ adresse, createSignalement }: NumeroCardProps) {
         </p>
       </div>
 
-      <button
-        type='button'
-        className='fr-btn'
-        onClick={() => createSignalement(Signalement.type.LOCATION_TO_UPDATE, adresse)}
-      >
-        Modifier l&apos;adresse
-      </button>
-      <button
-        type='button'
-        className='fr-btn'
-        onClick={() => createSignalement(Signalement.type.LOCATION_TO_DELETE, adresse)}
-      >
-        Demander la suppression
-      </button>
+      {createSignalement ? (
+        <>
+          <button
+            type='button'
+            className='fr-btn'
+            onClick={() => createSignalement(Signalement.type.LOCATION_TO_UPDATE, adresse)}
+          >
+            Modifier l&apos;adresse
+          </button>
+          <button
+            type='button'
+            className='fr-btn'
+            onClick={() => createSignalement(Signalement.type.LOCATION_TO_DELETE, adresse)}
+          >
+            Demander la suppression
+          </button>
+        </>
+      ) : (
+        <SignalementDisabled />
+      )}
     </Card>
   )
 }

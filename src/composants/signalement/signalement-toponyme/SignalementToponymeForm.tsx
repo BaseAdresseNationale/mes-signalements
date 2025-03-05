@@ -5,6 +5,7 @@ import { getAdresseLabel } from '../../../utils/adresse.utils'
 import { IBANPlateformeLieuDit } from '../../../api/ban-plateforme/types'
 import PositionInput from '../../common/Position/PositionInput'
 import ParcelleInput from '../../common/ParcelleInput'
+import { SignalementMode } from '../../../types/signalement.types'
 
 interface SignalementToponymeFormProps {
   signalement: Signalement
@@ -14,6 +15,7 @@ interface SignalementToponymeFormProps {
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
   initialPositionCoords: number[]
   hasSignalementChanged: boolean
+  mode: SignalementMode
 }
 
 export default function SignalementToponymeForm({
@@ -24,6 +26,7 @@ export default function SignalementToponymeForm({
   onSubmit,
   initialPositionCoords,
   hasSignalementChanged,
+  mode,
 }: SignalementToponymeFormProps) {
   const { nom, positions, parcelles, comment } =
     signalement.changesRequested as ToponymeChangesRequestedDTO
@@ -56,8 +59,9 @@ export default function SignalementToponymeForm({
           onChange={onEditSignalement('changesRequested', 'positions')}
           initialPositionCoords={initialPositionCoords}
           defaultPositionType={Position.type.SEGMENT}
+          multiPositionDisabled={mode !== SignalementMode.FULL}
         />
-        <ParcelleInput parcelles={parcelles} />
+        {mode === SignalementMode.FULL && <ParcelleInput parcelles={parcelles} />}
       </section>
       <section>
         <div className='form-row'>

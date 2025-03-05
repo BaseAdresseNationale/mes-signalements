@@ -38,6 +38,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "generate:openapi:signalement": "openapi --input http://localhost:5005/api-json --output ./src/api/signalement",
+    "generate:openapi:api-depot": "openapi --input http://localhost:4242/api-json --output ./src/api/api-depot",
     "push-staging": "./scripts/push-staging.sh"
   },
   "eslintConfig": {
