@@ -187,7 +187,7 @@ export function SourcePage() {
 
     const signalementWithCoordinates = paginatedSignalements.data.filter((signalement) => {
       const coords = getSignalementCoodinates(signalement)
-      return coords && coords.every((coord) => coord !== null)
+      return coords?.every((coord) => coord !== null)
     })
 
     const clustersData: FeatureCollection = {
@@ -243,6 +243,7 @@ export function SourcePage() {
           <ul className='signalement-list'>
             {paginatedSignalements.data.map((signalement, index) => (
               <li
+                role='button'
                 key={index}
                 onMouseEnter={() => setHoveredSignalement(signalement)}
                 onMouseLeave={() => setHoveredSignalement(undefined)}

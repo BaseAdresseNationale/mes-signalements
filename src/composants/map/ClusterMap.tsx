@@ -8,7 +8,7 @@ interface ClusterMapProps {
   data: FeatureCollection
 }
 
-export function ClusterMap({ data }: ClusterMapProps) {
+export function ClusterMap({ data }: Readonly<ClusterMapProps>) {
   const map = useMap()
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export function ClusterMap({ data }: ClusterMapProps) {
       if (!map.current) {
         return
       }
-      const feature = event.features && event.features[0]
+      const feature = event.features?.[0]
       if (!feature) {
         return
       }

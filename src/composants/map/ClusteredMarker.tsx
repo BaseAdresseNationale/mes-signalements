@@ -16,8 +16,7 @@ export function ClusteredMarker({ id, ...props }: ClusteredMarkerProps) {
     }
 
     const isInsideCluster = () => {
-      const features =
-        map.current && map.current.queryRenderedFeatures({ layers: ['unclustered-point'] })
+      const features = map.current?.queryRenderedFeatures({ layers: ['unclustered-point'] })
       const featureIds = features?.map((feature) => feature.properties.id) || []
 
       setShow(featureIds.includes(id))

@@ -18,7 +18,7 @@ interface SignalementRecapModalProps {
 export default function SignalementRecapModal({
   signalement,
   address,
-}: SignalementRecapModalProps) {
+}: Readonly<SignalementRecapModalProps>) {
   const { numero, suffixe, nomVoie, nomComplement, positions, parcelles, nom } =
     signalement.changesRequested as ChangesRequested
 

@@ -27,7 +27,7 @@ interface FiltersProps {
   style?: React.CSSProperties
 }
 
-export function Filters({ options, value, onChange, style }: FiltersProps) {
+export function Filters({ options, value, onChange, style }: Readonly<FiltersProps>) {
   return (
     <StyledFilters style={style}>
       {options.map(({ label, value: _value }, index) => (
