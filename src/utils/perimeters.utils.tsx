@@ -8,7 +8,7 @@ export const getSignalementMode = (currentRevision: APIDepotRevision | null) => 
     return SignalementMode.DISABLED
   }
 
-  // TODO: If the current revision has a BAL ID and it's a valid ObjectId, we can deduce that it's from Mes-adresses
+  // If the current revision has a BAL ID and it's a valid ObjectId, we can deduce that it's from Mes-adresses
   if (
     currentRevision.context.extras?.balId &&
     ObjectIdRE.test(currentRevision.context.extras.balId)

@@ -5,6 +5,7 @@ import { Card } from '../common/Card'
 import { getAdresseLabel } from '../../utils/adresse.utils'
 import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
 import SignalementDisabled from '../signalement/SignalementDisabled'
+import Badge from '@codegouvfr/react-dsfr/Badge'
 
 interface NumeroCardProps {
   adresse: IBANPlateformeNumero
@@ -40,11 +41,13 @@ export function NumeroCard({ adresse, createSignalement }: NumeroCardProps) {
       {adresse.parcelles?.length > 0 && (
         <div>
           <h3>Parcelles rattachées</h3>
-          <ul>
+          <div>
             {adresse.parcelles.map((parcelle) => (
-              <li key={parcelle}>{parcelle}</li>
+              <Badge style={{ marginRight: 4 }} key={parcelle}>
+                {parcelle}
+              </Badge>
             ))}
-          </ul>
+          </div>
         </div>
       )}
 
