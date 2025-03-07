@@ -22,6 +22,10 @@ const StyledContainer = styled.div`
     font-size: 1rem;
     margin: 0;
   }
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
 
   button:not(:first-of-type) {
     margin-top: 10px;

@@ -11,17 +11,15 @@ interface DrawerProps {
 function _Drawer({ children, onClose }: DrawerProps, ref: React.Ref<HTMLDivElement>) {
   return (
     <StyledDrawer ref={ref} $animationDuration={ANIMATION_DURATION}>
-      <div className='header'>
-        <button
-          className='fr-btn fr-btn--close fr-btn--tertiary-no-outline'
-          title='Fermer'
-          type='button'
-          onClick={onClose}
-        >
-          Fermer
-        </button>
-      </div>
-      {children}
+      <button
+        className='fr-btn fr-btn--close fr-btn--tertiary-no-outline'
+        title='Fermer'
+        type='button'
+        onClick={onClose}
+      >
+        Fermer
+      </button>
+      <div className='content'>{children}</div>
     </StyledDrawer>
   )
 }

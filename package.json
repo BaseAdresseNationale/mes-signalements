@@ -10,7 +10,7 @@
   ],
   "author": "Équipe Adresse <adresse@data.gouv.fr>",
   "dependencies": {
-    "@gouvfr/dsfr": "^1.11.2",
+    "@codegouvfr/react-dsfr": "^1.20.2",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
@@ -38,7 +38,15 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "generate:openapi:signalement": "openapi --input http://localhost:5005/api-json --output ./src/api/signalement",
-    "push-staging": "./scripts/push-staging.sh"
+    "push-staging": "./scripts/push-staging.sh",
+    "postinstall": "react-dsfr copy-static-assets",
+    "predev": "react-dsfr update-icons",
+    "prebuild": "react-dsfr update-icons"
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!@codegouvfr/react-dsfr)"
+    ]
   },
   "eslintConfig": {
     "extends": [

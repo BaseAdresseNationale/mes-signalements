@@ -9,3 +9,9 @@ export type ChangesRequested = NumeroChangesRequestedDTO &
   DeleteNumeroChangesRequestedDTO &
   VoieChangesRequestedDTO &
   ToponymeChangesRequestedDTO
+
+export enum SignalementMode {
+  FULL = 'FULL',
+  LIGHT = 'LIGHT',
+  DISABLED = 'DISABLED',
+}

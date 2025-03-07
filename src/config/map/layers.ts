@@ -152,14 +152,6 @@ export const parcelleHoveredLayer = {
   },
 }
 
-export const interactiveLayers = [
-  adresseCircleLayer,
-  adresseLabelLayer,
-  voieLayer,
-  toponymeLayer,
-  parcelleHoveredLayer,
-]
-
 export const allBANLayers = [adresseCircleLayer, adresseLabelLayer, voieLayer, toponymeLayer]
 
 export const staticCadastreLayers = [
@@ -231,4 +223,54 @@ export const staticCadastreLayers = [
       'text-translate-anchor': 'map',
     },
   },
+]
+
+const clusters = {
+  id: 'clusters',
+  type: 'circle',
+  source: 'clusters',
+  filter: ['has', 'point_count'],
+  paint: {
+    'circle-color': DEFAULT_COLOR_DARK,
+    'circle-radius': ['step', ['get', 'point_count'], 15, 10, 20, 15, 25],
+    'circle-stroke-width': 2,
+    'circle-stroke-color': DEFAULT_COLOR_LIGHT,
+  },
+}
+
+const clusterCount = {
+  id: 'cluster-count',
+  type: 'symbol',
+  source: 'clusters',
+  filter: ['has', 'point_count'],
+  layout: {
+    'text-field': '{point_count_abbreviated}',
+    'text-size': 12,
+    'text-font': ['Noto Sans Bold'],
+  },
+  paint: {
+    'text-color': '#ffffff',
+  },
+}
+
+const unclusteredPoint = {
+  id: 'unclustered-point',
+  type: 'circle',
+  source: 'clusters',
+  filter: ['!', ['has', 'point_count']],
+  paint: {
+    'circle-color': 'transparent',
+    'circle-radius': 0,
+  },
+}
+
+export const clusterLayers = [clusters, clusterCount, unclusteredPoint]
+
+export const interactiveLayers = [
+  adresseCircleLayer,
+  adresseLabelLayer,
+  voieLayer,
+  toponymeLayer,
+  parcelleHoveredLayer,
+  clusters,
 ]

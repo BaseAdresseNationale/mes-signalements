@@ -19,7 +19,7 @@ import useWindowSize from '../hooks/useWindowSize'
 import { MapContext } from '../contexts/map.context'
 import SignalementMap from '../composants/map/SignalementMap'
 import { useMapContent } from '../hooks/useMapContent'
-import { ChangesRequested } from '../types/signalement.types'
+import { ChangesRequested, SignalementMode } from '../types/signalement.types'
 import { FilterSpecification } from 'maplibre-gl'
 import { SignalementContext } from '../contexts/signalement.context'
 
@@ -27,8 +27,9 @@ export function SignalementPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { isMobile } = useWindowSize()
   const { mapRef, editParcelles, setAdresseSearchMapLayersOptions } = useContext(MapContext)
-  const { adresse } = useLoaderData() as {
+  const { adresse, mode } = useLoaderData() as {
     adresse: IBANPlateformeVoie | IBANPlateformeLieuDit | IBANPlateformeNumero
+    mode: SignalementMode
   }
   const {
     signalement,
@@ -137,29 +138,49 @@ export function SignalementPage() {
 
   return (
     <>
-      {!signalement && (
-        <>
-          {adresse.type === BANPlateformeResultTypeEnum.NUMERO && (
-            <NumeroCard adresse={adresse} createSignalement={createSignalement} />
-          )}
-          {adresse.type === BANPlateformeResultTypeEnum.VOIE && (
-            <VoieCard adresse={adresse} createSignalement={createSignalement} />
-          )}
-          {adresse.type === BANPlateformeResultTypeEnum.LIEU_DIT && (
-            <LieuDitCard adresse={adresse} createSignalement={createSignalement} />
-          )}
-        </>
-      )}
-
-      {signalement && (
+      {signalement ? (
         <SignalementForm
           address={adresse}
+          mode={mode}
           map={mapRef || null}
           signalement={signalement as Signalement}
           onEditSignalement={onEditSignalement}
           onClose={handleCloseSignalementForm}
           hasSignalementChanged={hasSignalementChanged}
         />
+      ) : (
+        <>
+          {adresse.type === BANPlateformeResultTypeEnum.NUMERO && (
+            <NumeroCard
+              adresse={adresse}
+              {...(mode === SignalementMode.DISABLED
+                ? {}
+                : {
+                    createSignalement,
+                  })}
+            />
+          )}
+          {adresse.type === BANPlateformeResultTypeEnum.VOIE && (
+            <VoieCard
+              adresse={adresse}
+              {...(mode === SignalementMode.DISABLED
+                ? {}
+                : {
+                    createSignalement,
+                  })}
+            />
+          )}
+          {adresse.type === BANPlateformeResultTypeEnum.LIEU_DIT && (
+            <LieuDitCard
+              adresse={adresse}
+              {...(mode === SignalementMode.DISABLED
+                ? {}
+                : {
+                    createSignalement,
+                  })}
+            />
+          )}
+        </>
       )}
     </>
   )

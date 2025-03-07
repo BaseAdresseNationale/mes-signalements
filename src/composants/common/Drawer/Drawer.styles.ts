@@ -12,12 +12,25 @@ export const StyledDrawer = styled.div<{ $animationDuration: number }>`
   display: flex;
   flex-direction: column;
   background: white;
-  padding: 10px;
+  padding: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   transition: ${({ $animationDuration }) => `left ${$animationDuration}ms ease-in-out`};
 
   &.open {
     left: 0;
+    bottom: 0;
+  }
+
+  > .fr-btn--close {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+  }
+
+  .content {
+    flex: 1;
+    margin-top: 32px;
+    overflow-y: auto;
   }
 
   @media screen and (max-width: ${MOBILE_BREAKPOINT}px) {
@@ -31,12 +44,7 @@ export const StyledDrawer = styled.div<{ $animationDuration: number }>`
     display: flex;
     flex-direction: column;
     background: white;
-    padding: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     transition: ${({ $animationDuration }) => `bottom ${$animationDuration}ms ease-in-out`};
-  }
-
-  &.open {
-    bottom: 0;
   }
 `

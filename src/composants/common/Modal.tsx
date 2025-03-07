@@ -61,7 +61,7 @@ const StyledModal = styled.div`
     position: absolute;
     bottom: 0;
     padding: 1em;
-    height: calc(100% - 100px);
+    height: calc(100% - 90px);
     width: 100%;
     max-width: unset;
     max-height: unset;

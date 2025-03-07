@@ -135,6 +135,25 @@ export const getSignalementColor = (type: Signalement.type) => {
   return color
 }
 
+export const getSignalementColorHex = (type: Signalement.type) => {
+  let color = ''
+  switch (type) {
+    case Signalement.type.LOCATION_TO_UPDATE:
+      color = '#465F9D'
+      break
+    case Signalement.type.LOCATION_TO_CREATE:
+      color = '#009081'
+      break
+    case Signalement.type.LOCATION_TO_DELETE:
+      color = '#A558A0'
+      break
+    default:
+      color = 'black'
+  }
+
+  return color
+}
+
 export const getSignalementTypeLabel = (type: Signalement.type) => {
   let label = ''
   switch (type) {

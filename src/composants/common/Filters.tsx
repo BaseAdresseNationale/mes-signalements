@@ -24,11 +24,12 @@ interface FiltersProps {
   options: { label: string; value: string | null }[]
   value: string | null
   onChange: (value: string | null) => void
+  style?: React.CSSProperties
 }
 
-export function Filters({ options, value, onChange }: FiltersProps) {
+export function Filters({ options, value, onChange, style }: Readonly<FiltersProps>) {
   return (
-    <StyledFilters>
+    <StyledFilters style={style}>
       {options.map(({ label, value: _value }, index) => (
         <button
           key={index}

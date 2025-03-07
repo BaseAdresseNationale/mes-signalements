@@ -4,10 +4,11 @@ import { Signalement } from '../../api/signalement'
 import { Card } from '../common/Card'
 import { getAdresseLabel } from '../../utils/adresse.utils'
 import { ListNumeros } from './ListNumeros'
+import SignalementDisabled from '../signalement/SignalementDisabled'
 
 interface LieuDitCardProps {
   adresse: IBANPlateformeLieuDit
-  createSignalement: (type: Signalement.type, adresse: IBANPlateformeResult) => void
+  createSignalement?: (type: Signalement.type, adresse: IBANPlateformeResult) => void
 }
 
 export function LieuDitCard({ adresse, createSignalement }: LieuDitCardProps) {
@@ -29,13 +30,17 @@ export function LieuDitCard({ adresse, createSignalement }: LieuDitCardProps) {
         </li>
       </ul>
 
-      <button
-        type='button'
-        className='fr-btn'
-        onClick={() => createSignalement(Signalement.type.LOCATION_TO_UPDATE, adresse)}
-      >
-        Demander une modification
-      </button>
+      {createSignalement ? (
+        <button
+          type='button'
+          className='fr-btn'
+          onClick={() => createSignalement(Signalement.type.LOCATION_TO_UPDATE, adresse)}
+        >
+          Demander une modification
+        </button>
+      ) : (
+        <SignalementDisabled />
+      )}
 
       <ListNumeros adresse={adresse} />
     </Card>

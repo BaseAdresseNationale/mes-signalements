@@ -35,7 +35,7 @@ const StyledContainer = styled.div`
 interface PositionItemProps {
   point: Point
   type: Position.type
-  onDelete: () => void
+  onDelete?: () => void
   onEditPositionType: ({ point, type }: { point: Point; type: Position.type }) => void
 }
 
@@ -77,14 +77,16 @@ export default function PositionItem({
           {point.coordinates[1].toFixed(5)}
         </div>
       </div>
-      <button
-        type='button'
-        className='fr-btn  fr-icon-delete-line fr-btn--tertiary-no-outline'
-        title='Supprimer la position'
-        onClick={onDelete}
-      >
-        Supprimer la position
-      </button>
+      {onDelete && (
+        <button
+          type='button'
+          className='fr-btn  fr-icon-delete-line fr-btn--tertiary-no-outline'
+          title='Supprimer la position'
+          onClick={onDelete}
+        >
+          Supprimer la position
+        </button>
+      )}
     </StyledContainer>
   )
 }
