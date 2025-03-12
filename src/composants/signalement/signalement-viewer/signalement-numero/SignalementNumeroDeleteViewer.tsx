@@ -28,7 +28,12 @@ export default function SignalementNumeroDeleteViewer({
           <h5>Lieu concerné</h5>
           <p>
             {`${existingNumero} ${existingSuffixe || ''}`} {existingNomVoie}{' '}
-            {existingNomComplement && <br />}
+            {existingNomComplement && (
+              <>
+                <br />
+                {existingNomComplement}
+              </>
+            )}
             <br />
             {commune}
           </p>

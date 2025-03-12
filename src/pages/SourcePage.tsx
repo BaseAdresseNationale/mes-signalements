@@ -93,20 +93,15 @@ export function SourcePage() {
 
   const fetchSignalements = useCallback(
     async (page: number, filter: Signalement.status, sourceId: string) => {
-      try {
-        const paginatedSignalements = await SignalementsService.getSignalements(
-          PAGE_SIZE,
-          page,
-          [filter],
-          undefined,
-          [sourceId],
-        )
-        setPaginatedSignalements(paginatedSignalements)
-      } catch (e) {
-        console.error(e)
-      } finally {
-        setIsLoading(false)
-      }
+      const paginatedSignalements = await SignalementsService.getSignalements(
+        PAGE_SIZE,
+        page,
+        [filter],
+        undefined,
+        [sourceId],
+      )
+      setPaginatedSignalements(paginatedSignalements)
+      setIsLoading(false)
     },
     [],
   )
@@ -179,9 +174,11 @@ export function SourcePage() {
           options={filterOptions}
         />
       </div>
-      {isLoading ? (
-        <Loader />
-      ) : paginatedSignalements ? (
+      {isLoading && <Loader />}
+      {!isLoading && paginatedSignalements && paginatedSignalements.data.length === 0 && (
+        <p>Aucun signalement</p>
+      )}
+      {!isLoading && paginatedSignalements && paginatedSignalements.data.length > 0 && (
         <>
           <ul className='signalement-list'>
             {paginatedSignalements.data.map((signalement, index) => (
@@ -208,8 +205,6 @@ export function SourcePage() {
             showFirstLast={false}
           />
         </>
-      ) : (
-        <p>Une erreur est survenue</p>
       )}
       {selectedSignalement && (
         <Modal

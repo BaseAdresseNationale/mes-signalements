@@ -19,16 +19,17 @@ export default function SignalementNumeroCreateViewer({
     <StyledRecapSection>
       <div className='signalement-recap'>
         <div>
+          <h5>Ajout souhaité</h5>
           <p>
             {numero} {suffixe} {nomVoie}{' '}
             {nomComplement && (
               <>
                 <br />
                 {nomComplement}
-                <br />
-                {commune}
               </>
             )}
+            <br />
+            {commune}
           </p>
           {positions && (
             <>
