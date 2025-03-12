@@ -1,8 +1,8 @@
 import React from 'react'
-import { StyledForm } from '../signalement.styles'
-import { Signalement } from '../../../api/signalement'
-import { getAdresseLabel } from '../../../utils/adresse.utils'
-import { IBANPlateformeNumero } from '../../../api/ban-plateforme/types'
+import { StyledForm } from '../../signalement.styles'
+import { Signalement } from '../../../../api/signalement'
+import { getAdresseLabel } from '../../../../utils/adresse.utils'
+import { IBANPlateformeNumero } from '../../../../api/ban-plateforme/types'
 
 interface SignalementNumeroDeleteFormProps {
   signalement: Signalement

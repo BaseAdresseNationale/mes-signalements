@@ -1,25 +1,47 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react'
-import { useCustomSource } from '../hooks/useCustomSource'
-import {
-  getSignalementColor,
-  getSignalementCoodinates,
-  getSignalementLabel,
-  getSignalementTypeLabel,
-} from '../utils/signalement.utils'
-import { Marker } from '../composants/map/Marker'
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { getModalTitle, getSignalementCoodinates } from '../utils/signalement.utils'
 import { Filters } from '../composants/common/Filters'
-import { Signalement } from '../api/signalement'
+import { PaginatedSignalementsDTO, Signalement, SignalementsService } from '../api/signalement'
 import styled from 'styled-components'
 import { useMapContent } from '../hooks/useMapContent'
 import SourceContext from '../contexts/source.context'
 import MapContext from '../contexts/map.context'
+import { Pagination } from '@codegouvfr/react-dsfr/Pagination'
+import Loader from '../composants/common/Loader'
+import SignalementCard from '../composants/signalement/SignalementCard'
+import SourceMap from '../composants/map/SourceMap'
+import Modal from '../composants/common/Modal'
+import SignalementViewer from '../composants/signalement/SignalementViewer'
+
+const StyledPagination = styled(Pagination)`
+  padding: 5px;
+
+  .fr-pagination__list {
+    justify-content: center;
+    align-items: center;
+
+    .fr-pagination__link--prev,
+    .fr-pagination__link--next {
+      display: none;
+    }
+    button {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+  }
+`
 
 const StyledWrapper = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding-top: 10px;
+
+  .header {
+    box-shadow: 0 2px 6px 0 rgba(0, 0, 18, 16%);
+    padding: 5px 0;
+  }
+
   .signalement-list {
     overflow-y: scroll;
     flex: 1;
@@ -31,7 +53,7 @@ const StyledWrapper = styled.div`
       border-bottom: 1px solid #ccc;
 
       &:hover {
-        background-color: #f9f9f9;
+        background-color: #f9f9f980;
         cursor: pointer;
       }
 
@@ -42,11 +64,6 @@ const StyledWrapper = styled.div`
   }
 `
 
-const StyledSignalementCard = styled.div`
-  p {
-    margin: 2px 0;
-  }
-`
 const filterOptions = [
   {
     label: 'En cours',
@@ -62,38 +79,61 @@ const filterOptions = [
   },
 ]
 
+const PAGE_SIZE = 20
+
 export function SourcePage() {
   const { source } = useContext(SourceContext)
-  const { setAdresseSearchMapLayersOptions } = useContext(MapContext)
-  const [currentFilter, setCurrentFilter] = useState<Signalement.status | null>(
-    Signalement.status.PENDING,
-  )
-  const { signalements: customSourceSignalements } = useCustomSource(source)
-  const filteredSignalements = useMemo(
-    () =>
-      currentFilter
-        ? customSourceSignalements.filter((signalement) => signalement.status === currentFilter)
-        : customSourceSignalements,
-    [customSourceSignalements, currentFilter],
+  const [selectedSignalement, setSelectedSignalement] = useState<Signalement>()
+  const [hoveredSignalement, setHoveredSignalement] = useState<Signalement>()
+  const [isLoading, setIsLoading] = useState(false)
+  const [paginatedSignalements, setPaginatedSignalements] = useState<PaginatedSignalementsDTO>()
+  const { setAdresseSearchMapLayersOptions, mapRef } = useContext(MapContext)
+  const [currentFilter, setCurrentFilter] = useState(Signalement.status.PENDING)
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const fetchSignalements = useCallback(
+    async (page: number, filter: Signalement.status, sourceId: string) => {
+      const paginatedSignalements = await SignalementsService.getSignalements(
+        PAGE_SIZE,
+        page,
+        [filter],
+        undefined,
+        [sourceId],
+      )
+      setPaginatedSignalements(paginatedSignalements)
+      setIsLoading(false)
+    },
+    [],
   )
 
-  const getSignalementCard = (signalement: Signalement) => {
-    return (
-      <StyledSignalementCard>
-        <p className={`fr-badge fr-badge--${getSignalementColor(signalement.type)}`}>
-          {getSignalementTypeLabel(signalement.type)}
-        </p>
-        <p>{getSignalementLabel(signalement)}</p>
-        <p>Créé le {new Date(signalement.createdAt).toLocaleDateString()}</p>
-        {signalement.processedBy && (
-          <p>
-            Traité le {new Date(signalement.updatedAt).toLocaleDateString()} par{' '}
-            {signalement.processedBy.nom}
-          </p>
-        )}
-      </StyledSignalementCard>
-    )
-  }
+  useEffect(() => {
+    if (source) {
+      fetchSignalements(currentPage, currentFilter, source.id)
+    }
+  }, [source, fetchSignalements, currentPage, currentFilter])
+
+  const flyToSignalement = useCallback(
+    (signalement: Signalement) => {
+      if (!mapRef) {
+        return
+      }
+
+      mapRef.flyTo({
+        center: getSignalementCoodinates(signalement) as [number, number],
+        zoom: 18,
+        maxDuration: 3000,
+      })
+    },
+    [mapRef],
+  )
+
+  const handleSelectSignalement = useCallback(
+    (signalement: Signalement) => {
+      setSelectedSignalement(signalement)
+      flyToSignalement(signalement)
+    },
+    [flyToSignalement],
+  )
 
   // Hide map search layers
   useEffect(() => {
@@ -106,38 +146,74 @@ export function SourcePage() {
   }, [setAdresseSearchMapLayersOptions])
 
   // Map content
-  const mapContent = useMemo(
-    () => (
-      <>
-        {filteredSignalements.map((signalement) => {
-          const coordinates = getSignalementCoodinates(signalement)
-          return coordinates ? (
-            <Marker
-              key={signalement.id as string}
-              coordinates={coordinates}
-              popupContent={getSignalementCard(signalement)}
-            />
-          ) : null
-        })}
-      </>
-    ),
-    [filteredSignalements],
-  )
+  const mapContent = useMemo(() => {
+    if (!paginatedSignalements) {
+      return null
+    }
+
+    return (
+      <SourceMap
+        signalements={paginatedSignalements.data}
+        hoveredSignalement={hoveredSignalement}
+        onSelectSignalement={handleSelectSignalement}
+      />
+    )
+  }, [paginatedSignalements, hoveredSignalement, handleSelectSignalement])
 
   useMapContent(mapContent)
 
   return (
     <StyledWrapper>
-      <Filters
-        value={currentFilter}
-        onChange={(newValue) => setCurrentFilter(newValue as Signalement.status)}
-        options={filterOptions}
-      />
-      <ul className='signalement-list'>
-        {filteredSignalements.map((signalement, index) => (
-          <li key={index}>{getSignalementCard(signalement)}</li>
-        ))}
-      </ul>
+      <div className='header'>
+        <Filters
+          value={currentFilter}
+          onChange={(newValue) => {
+            setCurrentFilter(newValue as Signalement.status)
+            setCurrentPage(1)
+          }}
+          options={filterOptions}
+        />
+      </div>
+      {isLoading && <Loader />}
+      {!isLoading && paginatedSignalements && paginatedSignalements.data.length === 0 && (
+        <p>Aucun signalement</p>
+      )}
+      {!isLoading && paginatedSignalements && paginatedSignalements.data.length > 0 && (
+        <>
+          <ul className='signalement-list'>
+            {paginatedSignalements.data.map((signalement, index) => (
+              <li
+                role='button'
+                key={index}
+                onMouseEnter={() => setHoveredSignalement(signalement)}
+                onMouseLeave={() => setHoveredSignalement(undefined)}
+                onClick={() => handleSelectSignalement(signalement)}
+              >
+                <SignalementCard signalement={signalement} />
+              </li>
+            ))}
+          </ul>
+          <StyledPagination
+            count={Math.ceil(paginatedSignalements.total / PAGE_SIZE)}
+            defaultPage={currentPage}
+            getPageLinkProps={(pageNumber) => ({
+              onClick: () => {
+                setCurrentPage(pageNumber)
+              },
+              href: '#',
+            })}
+            showFirstLast={false}
+          />
+        </>
+      )}
+      {selectedSignalement && (
+        <Modal
+          title={getModalTitle(selectedSignalement)}
+          onClose={() => setSelectedSignalement(undefined)}
+        >
+          <SignalementViewer signalement={selectedSignalement} />
+        </Modal>
+      )}
     </StyledWrapper>
   )
 }

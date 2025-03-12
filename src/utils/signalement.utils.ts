@@ -44,6 +44,19 @@ export const positionTypeOptions = [
   },
 ]
 
+export const getModalTitle = (signalement: Signalement) => {
+  switch (signalement.type) {
+    case Signalement.type.LOCATION_TO_UPDATE:
+      return 'Demande de modification'
+    case Signalement.type.LOCATION_TO_CREATE:
+      return 'Demande de création'
+    case Signalement.type.LOCATION_TO_DELETE:
+      return 'Demande de suppression'
+    default:
+      return 'Demande de signalement'
+  }
+}
+
 export const getPositionTypeLabel = (positionType: Position.type) => {
   return positionTypeOptions.find(({ value }) => value === positionType)?.label ?? 'Inconnu'
 }
@@ -127,6 +140,25 @@ export const getSignalementColor = (type: Signalement.type) => {
       break
     case Signalement.type.LOCATION_TO_DELETE:
       color = 'purple-glycine'
+      break
+    default:
+      color = 'black'
+  }
+
+  return color
+}
+
+export const getSignalementColorHex = (type: Signalement.type) => {
+  let color = ''
+  switch (type) {
+    case Signalement.type.LOCATION_TO_UPDATE:
+      color = '#465F9D'
+      break
+    case Signalement.type.LOCATION_TO_CREATE:
+      color = '#009081'
+      break
+    case Signalement.type.LOCATION_TO_DELETE:
+      color = '#A558A0'
       break
     default:
       color = 'black'

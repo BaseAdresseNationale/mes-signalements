@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react'
-import SignalementToponymeForm from './signalement-toponyme/SignalementToponymeForm'
-import SignalementNumeroForm from './signalement-numero/SignalementNumeroForm'
+import SignalementToponymeForm from './signalement-form/signalement-toponyme/SignalementToponymeForm'
+import SignalementNumeroForm from './signalement-form/signalement-numero/SignalementNumeroForm'
 import RecapModal from './RecapModal'
-import SignalementNumeroDeleteForm from './signalement-numero/SignalementNumeroDeleteForm'
+import SignalementNumeroDeleteForm from './signalement-form/signalement-numero/SignalementNumeroDeleteForm'
 import { Signalement } from '../../api/signalement'
 import {
   BANPlateformeResultTypeEnum,
@@ -11,8 +11,9 @@ import {
   IBANPlateformeVoie,
 } from '../../api/ban-plateforme/types'
 import { MapRef } from 'react-map-gl/maplibre'
-import SignalementVoieForm from './signalement-voie/SignalementVoieForm'
+import SignalementVoieForm from './signalement-form/signalement-voie/SignalementVoieForm'
 import MapContext from '../../contexts/map.context'
+import { SignalementMode } from '../../types/signalement.types'
 
 interface SignalementFormProps {
   signalement: Signalement
@@ -21,6 +22,7 @@ interface SignalementFormProps {
   onClose: () => void
   address: IBANPlateformeVoie | IBANPlateformeLieuDit | IBANPlateformeNumero
   hasSignalementChanged: boolean
+  mode: SignalementMode
 }
 
 export default function SignalementForm({
@@ -30,6 +32,7 @@ export default function SignalementForm({
   onClose,
   address,
   hasSignalementChanged,
+  mode,
 }: SignalementFormProps) {
   const [showRecapModal, setShowRecapModal] = useState(false)
   const { showCadastre, setShowCadastre } = useContext(MapContext)
@@ -54,6 +57,7 @@ export default function SignalementForm({
             address={address}
             initialPositionCoords={[map?.getCenter()?.lng || 0, map?.getCenter()?.lat || 0]}
             hasSignalementChanged={hasSignalementChanged}
+            mode={mode}
           />
         )}
 
@@ -79,6 +83,7 @@ export default function SignalementForm({
             address={address}
             initialPositionCoords={[map?.getCenter()?.lng || 0, map?.getCenter()?.lat || 0]}
             hasSignalementChanged={hasSignalementChanged}
+            mode={mode}
           />
         )}
 
@@ -92,6 +97,7 @@ export default function SignalementForm({
             address={address}
             initialPositionCoords={[address.lon, address.lat]}
             hasSignalementChanged={hasSignalementChanged}
+            mode={mode}
           />
         )}
 

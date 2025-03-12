@@ -69,6 +69,7 @@ Elles peuvent être définies classiquement ou en créant un fichier `.env` sur 
 | `REACT_APP_API_SIGNALEMENT_SOURCE_ID` | URL de base du site adresse.data.gouv.fr   |
 | `REACT_APP_BAN_PLATEFORME_URL`        | URL de base de BAN plateforme              |
 | `REACT_APP_API_ADRESSE_URL`           | URL de base de l'API Adresse               |
+| `REACT_APP_API_DEPOT_URL`             | URL de base de l'API Dépôt                 |
 | `REACT_APP_FRIENDLY_CAPTCHA_SITE_KEY` | Paramétrage "Site key" de Friendly Captcha |
 | `PORT`                                | Port de l'application                      |
 

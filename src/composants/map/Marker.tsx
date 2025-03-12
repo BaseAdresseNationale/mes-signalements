@@ -1,5 +1,5 @@
-import React from 'react'
-import { MarkerDragEvent } from 'react-map-gl/dist/esm/types'
+import React, { useState } from 'react'
+import { MarkerDragEvent, MarkerEvent } from 'react-map-gl/dist/esm/types'
 import { Marker as _Marker, Popup } from 'react-map-gl/maplibre'
 import styled from 'styled-components'
 import { DEFAULT_COLOR_DARK } from '../../config/map/layers'
@@ -29,12 +29,14 @@ const StyledMarker = styled(_Marker)`
   }
 `
 
-interface MarkerProps {
+export interface MarkerProps {
   label?: string
   coordinates: [number, number]
   color?: string
   onDragEnd?: (event: MarkerDragEvent<any>) => void
   popupContent?: React.ReactNode
+  showPopup?: boolean
+  onClick?: (event: MarkerEvent<any, any>) => void
 }
 
 export function Marker({
@@ -43,21 +45,22 @@ export function Marker({
   color = DEFAULT_COLOR_DARK,
   onDragEnd,
   popupContent,
+  onClick,
+  showPopup = false,
 }: MarkerProps) {
-  const [showPopup, setShowPopup] = React.useState(false)
+  const [isHovered, setIsHovered] = useState(false)
+
+  const _showPopup = popupContent && (showPopup || isHovered)
   return (
-    <>
+    <div onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
       <StyledMarker
         longitude={coordinates[0]}
         latitude={coordinates[1]}
         anchor='bottom'
         {...(onDragEnd ? { draggable: true, onDragEnd } : {})}
-        {...(popupContent
+        {...(onClick
           ? {
-              onClick: (e) => {
-                e.originalEvent.stopPropagation()
-                setShowPopup(true)
-              },
+              onClick,
               style: {
                 cursor: 'pointer',
               },
@@ -79,18 +82,17 @@ export function Marker({
           />
         </svg>
       </StyledMarker>
-      {showPopup && (
+      {_showPopup && (
         <Popup
-          onClose={() => setShowPopup(false)}
-          closeButton={true}
           offset={25}
           longitude={coordinates[0]}
           latitude={coordinates[1]}
           anchor='bottom'
+          closeButton={false}
         >
           {popupContent}
         </Popup>
       )}
-    </>
+    </div>
   )
 }

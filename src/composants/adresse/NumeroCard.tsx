@@ -4,10 +4,12 @@ import { IBANPlateformeNumero, IBANPlateformeResult } from '../../api/ban-platef
 import { Card } from '../common/Card'
 import { getAdresseLabel } from '../../utils/adresse.utils'
 import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
+import SignalementDisabled from '../signalement/SignalementDisabled'
+import Badge from '@codegouvfr/react-dsfr/Badge'
 
 interface NumeroCardProps {
   adresse: IBANPlateformeNumero
-  createSignalement: (type: Signalement.type, adresse: IBANPlateformeResult) => void
+  createSignalement?: (type: Signalement.type, adresse: IBANPlateformeResult) => void
 }
 
 export function NumeroCard({ adresse, createSignalement }: NumeroCardProps) {
@@ -39,11 +41,13 @@ export function NumeroCard({ adresse, createSignalement }: NumeroCardProps) {
       {adresse.parcelles?.length > 0 && (
         <div>
           <h3>Parcelles rattachées</h3>
-          <ul>
+          <div>
             {adresse.parcelles.map((parcelle) => (
-              <li key={parcelle}>{parcelle}</li>
+              <Badge style={{ marginRight: 4 }} key={parcelle}>
+                {parcelle}
+              </Badge>
             ))}
-          </ul>
+          </div>
         </div>
       )}
 
@@ -61,20 +65,26 @@ export function NumeroCard({ adresse, createSignalement }: NumeroCardProps) {
         </p>
       </div>
 
-      <button
-        type='button'
-        className='fr-btn'
-        onClick={() => createSignalement(Signalement.type.LOCATION_TO_UPDATE, adresse)}
-      >
-        Modifier l&apos;adresse
-      </button>
-      <button
-        type='button'
-        className='fr-btn'
-        onClick={() => createSignalement(Signalement.type.LOCATION_TO_DELETE, adresse)}
-      >
-        Demander la suppression
-      </button>
+      {createSignalement ? (
+        <>
+          <button
+            type='button'
+            className='fr-btn'
+            onClick={() => createSignalement(Signalement.type.LOCATION_TO_UPDATE, adresse)}
+          >
+            Modifier l&apos;adresse
+          </button>
+          <button
+            type='button'
+            className='fr-btn'
+            onClick={() => createSignalement(Signalement.type.LOCATION_TO_DELETE, adresse)}
+          >
+            Demander la suppression
+          </button>
+        </>
+      ) : (
+        <SignalementDisabled />
+      )}
     </Card>
   )
 }

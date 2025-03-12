@@ -7,8 +7,6 @@ import { lookup } from './api/ban-plateforme'
 import { SignalementPage } from './pages/SignalementPage'
 import { OpenAPI } from './api/signalement'
 
-import '@gouvfr/dsfr/dist/dsfr.min.css'
-import '@gouvfr/dsfr/dist/utility/utility.min.css'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { SourcePage } from './pages/SourcePage'
 import { MapContextProvider } from './contexts/map.context'
@@ -16,6 +14,10 @@ import { AdresseSearchPage } from './pages/AdresseSearchPage'
 import GlobalStyle from './globalStyles'
 import { SourceContextProvider } from './contexts/source.context'
 import { SignalementContextProvider } from './contexts/signalement.context'
+import { getCurrentRevision } from './api/api-depot'
+import { getSignalementMode } from './utils/perimeters.utils'
+import { startReactDsfr } from '@codegouvfr/react-dsfr/spa'
+startReactDsfr({ defaultColorScheme: 'light' })
 
 const API_SIGNALEMENT_URL = process.env.REACT_APP_API_SIGNALEMENT_URL
 
@@ -68,10 +70,14 @@ const router = createHashRouter([
           adresse: null,
         }
       }
+      const codeCommune = params.code.split('_')[0]
+      const currentRevision = await getCurrentRevision(codeCommune)
+      const mode = getSignalementMode(currentRevision)
       const adresse = await lookup(params.code)
 
       return {
         adresse,
+        mode,
       }
     },
     errorElement: <div>Une erreur est survenue</div>,

@@ -24,24 +24,6 @@ export const StyledForm = styled.form`
     margin-top: 2em;
   }
 
-  .signalement-recap {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 1em;
-
-    > div {
-      width: 100%;
-    }
-
-    @media screen and (max-width: ${MOBILE_BREAKPOINT}px) {
-      flex-direction: column;
-
-      > div:not(:first-of-type) > h5 {
-        margin-top: 1em;
-      }
-    }
-  }
-
   .close-btn {
     position: absolute;
     top: 15px;
@@ -129,6 +111,31 @@ export const StyledForm = styled.form`
 
     button {
       display: none;
+    }
+  }
+`
+
+export const StyledRecapSection = styled.section`
+  .signalement-recap {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1em;
+
+    > div {
+      width: 100%;
+    }
+
+    h6 {
+      font-size: 1.2em;
+      margin-bottom: 0.5em;
+    }
+
+    @media screen and (max-width: ${MOBILE_BREAKPOINT}px) {
+      flex-direction: column;
+
+      > div:not(:first-of-type) > h5 {
+        margin-top: 1em;
+      }
     }
   }
 `
