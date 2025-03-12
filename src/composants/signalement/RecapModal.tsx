@@ -16,6 +16,7 @@ import {
   IBANPlateformeVoie,
 } from '../../api/ban-plateforme/types'
 import SignalementDiffRecap from './SignalementDiffRecap'
+import { getModalTitle } from '../../utils/signalement.utils'
 
 interface SignalementRecapModalProps {
   signalement: Signalement
@@ -40,19 +41,6 @@ export default function SignalementRecapModal({
     language: 'fr',
   })
 
-  const getModalTitle = () => {
-    switch (signalement.type) {
-      case Signalement.type.LOCATION_TO_UPDATE:
-        return 'Demande de modification'
-      case Signalement.type.LOCATION_TO_CREATE:
-        return 'Demande de création'
-      case Signalement.type.LOCATION_TO_DELETE:
-        return 'Demande de suppression'
-      default:
-        return 'Demande de signalement'
-    }
-  }
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setSubmitStatus('loading')
@@ -67,7 +55,10 @@ export default function SignalementRecapModal({
   }
 
   return (
-    <Modal title={getModalTitle()} onClose={submitStatus === 'success' ? onClose : onCloseModal}>
+    <Modal
+      title={getModalTitle(signalement)}
+      onClose={submitStatus === 'success' ? onClose : onCloseModal}
+    >
       <StyledForm onSubmit={handleSubmit}>
         <SignalementDiffRecap signalement={signalement} address={address} />
         {source?.type !== Source.type.PRIVATE && (

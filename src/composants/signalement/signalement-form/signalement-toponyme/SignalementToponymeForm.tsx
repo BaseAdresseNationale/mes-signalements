@@ -1,11 +1,11 @@
-import { StyledForm } from '../signalement.styles'
-import { Position, Signalement, ToponymeChangesRequestedDTO } from '../../../api/signalement'
+import { StyledForm } from '../../signalement.styles'
+import { Position, Signalement, ToponymeChangesRequestedDTO } from '../../../../api/signalement'
 import React from 'react'
-import { getAdresseLabel } from '../../../utils/adresse.utils'
-import { IBANPlateformeLieuDit } from '../../../api/ban-plateforme/types'
-import PositionInput from '../../common/Position/PositionInput'
-import ParcelleInput from '../../common/ParcelleInput'
-import { SignalementMode } from '../../../types/signalement.types'
+import { getAdresseLabel } from '../../../../utils/adresse.utils'
+import { IBANPlateformeLieuDit } from '../../../../api/ban-plateforme/types'
+import PositionInput from '../../../common/Position/PositionInput'
+import ParcelleInput from '../../../common/ParcelleInput'
+import { SignalementMode } from '../../../../types/signalement.types'
 
 interface SignalementToponymeFormProps {
   signalement: Signalement

@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react'
-import SignalementToponymeForm from './signalement-toponyme/SignalementToponymeForm'
-import SignalementNumeroForm from './signalement-numero/SignalementNumeroForm'
+import SignalementToponymeForm from './signalement-form/signalement-toponyme/SignalementToponymeForm'
+import SignalementNumeroForm from './signalement-form/signalement-numero/SignalementNumeroForm'
 import RecapModal from './RecapModal'
-import SignalementNumeroDeleteForm from './signalement-numero/SignalementNumeroDeleteForm'
+import SignalementNumeroDeleteForm from './signalement-form/signalement-numero/SignalementNumeroDeleteForm'
 import { Signalement } from '../../api/signalement'
 import {
   BANPlateformeResultTypeEnum,
@@ -11,7 +11,7 @@ import {
   IBANPlateformeVoie,
 } from '../../api/ban-plateforme/types'
 import { MapRef } from 'react-map-gl/maplibre'
-import SignalementVoieForm from './signalement-voie/SignalementVoieForm'
+import SignalementVoieForm from './signalement-form/signalement-voie/SignalementVoieForm'
 import MapContext from '../../contexts/map.context'
 import { SignalementMode } from '../../types/signalement.types'
 

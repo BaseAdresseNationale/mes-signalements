@@ -1,18 +1,18 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { StyledForm } from '../signalement.styles'
-import PositionInput from '../../common/Position/PositionInput'
-import { NumeroChangesRequestedDTO, Signalement } from '../../../api/signalement'
+import { StyledForm } from '../../signalement.styles'
+import PositionInput from '../../../common/Position/PositionInput'
+import { NumeroChangesRequestedDTO, Signalement } from '../../../../api/signalement'
 import {
   BANPlateformeResultTypeEnum,
   IBANPlateformeCommune,
   IBANPlateformeNumero,
   IBANPlateformeVoie,
-} from '../../../api/ban-plateforme/types'
-import ParcelleInput from '../../common/ParcelleInput'
-import { getAdresseLabel } from '../../../utils/adresse.utils'
-import { lookup as BANLookup } from '../../../api/ban-plateforme'
-import SelectInput from '../../common/SelectInput'
-import { SignalementMode } from '../../../types/signalement.types'
+} from '../../../../api/ban-plateforme/types'
+import ParcelleInput from '../../../common/ParcelleInput'
+import { getAdresseLabel } from '../../../../utils/adresse.utils'
+import { lookup as BANLookup } from '../../../../api/ban-plateforme'
+import SelectInput from '../../../common/SelectInput'
+import { SignalementMode } from '../../../../types/signalement.types'
 
 interface SignalementNumeroFormProps {
   signalement: Signalement

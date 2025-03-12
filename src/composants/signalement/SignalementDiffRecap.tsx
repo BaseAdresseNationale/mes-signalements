@@ -9,16 +9,17 @@ import {
   IBANPlateformeNumero,
   IBANPlateformeVoie,
 } from '../../api/ban-plateforme/types'
+import { StyledRecapSection } from './signalement.styles'
 
-interface SignalementRecapModalProps {
+interface SignalementDiffRecapProps {
   signalement: Signalement
   address: IBANPlateformeNumero | IBANPlateformeVoie | IBANPlateformeLieuDit
 }
 
-export default function SignalementRecapModal({
+export default function SignalementDiffRecap({
   signalement,
   address,
-}: Readonly<SignalementRecapModalProps>) {
+}: Readonly<SignalementDiffRecapProps>) {
   const { numero, suffixe, nomVoie, nomComplement, positions, parcelles, nom } =
     signalement.changesRequested as ChangesRequested
 
@@ -30,10 +31,10 @@ export default function SignalementRecapModal({
           <>
             <br />
             {nomComplement}
-            <br />
-            {address.codePostal} {address.commune.nom}
           </>
         )}
+        <br />
+        {address.codePostal} {address.commune.nom}
       </>
     ) : (
       <>
@@ -47,7 +48,7 @@ export default function SignalementRecapModal({
   return (
     <>
       {signalement.type === Signalement.type.LOCATION_TO_UPDATE && (
-        <section>
+        <StyledRecapSection>
           <div className='signalement-recap'>
             <div>
               <h5>Lieu concerné</h5>
@@ -112,10 +113,10 @@ export default function SignalementRecapModal({
               )}
             </div>
           </div>
-        </section>
+        </StyledRecapSection>
       )}
       {signalement.type === Signalement.type.LOCATION_TO_CREATE && (
-        <section>
+        <StyledRecapSection>
           <div className='signalement-recap'>
             <div>
               <p>{getChangesRequestedLabel()}</p>
@@ -149,11 +150,11 @@ export default function SignalementRecapModal({
               )}
             </div>
           </div>
-        </section>
+        </StyledRecapSection>
       )}
 
       {signalement.type === Signalement.type.LOCATION_TO_DELETE && (
-        <section>
+        <StyledRecapSection>
           <div className='signalement-recap'>
             <div>
               <h5>Lieu concerné</h5>
@@ -190,7 +191,7 @@ export default function SignalementRecapModal({
               <p>{signalement.changesRequested.comment}</p>
             </div>
           </div>
-        </section>
+        </StyledRecapSection>
       )}
     </>
   )

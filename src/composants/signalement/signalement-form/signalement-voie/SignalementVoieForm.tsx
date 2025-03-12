@@ -1,8 +1,8 @@
-import { StyledForm } from '../signalement.styles'
-import { Signalement, VoieChangesRequestedDTO } from '../../../api/signalement'
+import { StyledForm } from '../../signalement.styles'
+import { Signalement, VoieChangesRequestedDTO } from '../../../../api/signalement'
 import React from 'react'
-import { getAdresseLabel } from '../../../utils/adresse.utils'
-import { IBANPlateformeVoie } from '../../../api/ban-plateforme/types'
+import { getAdresseLabel } from '../../../../utils/adresse.utils'
+import { IBANPlateformeVoie } from '../../../../api/ban-plateforme/types'
 
 interface SignalementVoieFormProps {
   signalement: Signalement

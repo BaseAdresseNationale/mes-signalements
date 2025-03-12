@@ -44,6 +44,19 @@ export const positionTypeOptions = [
   },
 ]
 
+export const getModalTitle = (signalement: Signalement) => {
+  switch (signalement.type) {
+    case Signalement.type.LOCATION_TO_UPDATE:
+      return 'Demande de modification'
+    case Signalement.type.LOCATION_TO_CREATE:
+      return 'Demande de création'
+    case Signalement.type.LOCATION_TO_DELETE:
+      return 'Demande de suppression'
+    default:
+      return 'Demande de signalement'
+  }
+}
+
 export const getPositionTypeLabel = (positionType: Position.type) => {
   return positionTypeOptions.find(({ value }) => value === positionType)?.label ?? 'Inconnu'
 }

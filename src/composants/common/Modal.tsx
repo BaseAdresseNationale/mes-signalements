@@ -53,6 +53,11 @@ const StyledModal = styled.div`
     }
   }
 
+  > .content {
+    overflow-y: auto;
+    flex: 1;
+  }
+
   @media screen and (max-width: ${MOBILE_BREAKPOINT}px) {
     padding: 1em;
   }
@@ -97,7 +102,7 @@ function Modal({ title, children, onClose }: ModalProps) {
             Fermer
           </button>
         </div>
-        {children}
+        <div className='content'>{children}</div>
       </StyledModal>
     </StyledBackDrop>,
     rootElement as HTMLElement,

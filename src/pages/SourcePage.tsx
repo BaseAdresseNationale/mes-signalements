@@ -1,11 +1,5 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import {
-  getSignalementColor,
-  getSignalementColorHex,
-  getSignalementCoodinates,
-  getSignalementLabel,
-  getSignalementTypeLabel,
-} from '../utils/signalement.utils'
+import { getModalTitle, getSignalementCoodinates } from '../utils/signalement.utils'
 import { Filters } from '../composants/common/Filters'
 import { PaginatedSignalementsDTO, Signalement, SignalementsService } from '../api/signalement'
 import styled from 'styled-components'
@@ -14,10 +8,10 @@ import SourceContext from '../contexts/source.context'
 import MapContext from '../contexts/map.context'
 import { Pagination } from '@codegouvfr/react-dsfr/Pagination'
 import Loader from '../composants/common/Loader'
-import type { FeatureCollection } from 'geojson'
-import { ClusterMap } from '../composants/map/ClusterMap'
-import { ClusteredMarker } from '../composants/map/ClusteredMarker'
-import Badge from '@codegouvfr/react-dsfr/Badge'
+import SignalementCard from '../composants/signalement/SignalementCard'
+import SourceMap from '../composants/map/SourceMap'
+import Modal from '../composants/common/Modal'
+import SignalementViewer from '../composants/signalement/SignalementViewer'
 
 const StyledPagination = styled(Pagination)`
   padding: 5px;
@@ -70,11 +64,6 @@ const StyledWrapper = styled.div`
   }
 `
 
-const StyledSignalementCard = styled.div`
-  p {
-    margin: 2px 0;
-  }
-`
 const filterOptions = [
   {
     label: 'En cours',
@@ -94,6 +83,7 @@ const PAGE_SIZE = 20
 
 export function SourcePage() {
   const { source } = useContext(SourceContext)
+  const [selectedSignalement, setSelectedSignalement] = useState<Signalement>()
   const [hoveredSignalement, setHoveredSignalement] = useState<Signalement>()
   const [isLoading, setIsLoading] = useState(false)
   const [paginatedSignalements, setPaginatedSignalements] = useState<PaginatedSignalementsDTO>()
@@ -142,32 +132,13 @@ export function SourcePage() {
     [mapRef],
   )
 
-  const getSignalementCard = (signalement: Signalement) => {
-    return (
-      <StyledSignalementCard>
-        <Badge
-          severity={
-            signalement.status === Signalement.status.PROCESSED
-              ? 'success'
-              : signalement.status === Signalement.status.IGNORED
-                ? 'error'
-                : undefined
-          }
-          className={`fr-badge--${getSignalementColor(signalement.type)}`}
-        >
-          {getSignalementTypeLabel(signalement.type)}
-        </Badge>
-        <p>{getSignalementLabel(signalement)}</p>
-        <p>Créé le {new Date(signalement.createdAt).toLocaleDateString()}</p>
-        {signalement.processedBy && (
-          <p>
-            {signalement.status === Signalement.status.PROCESSED ? 'Accepté' : 'Refusé'} le{' '}
-            {new Date(signalement.updatedAt).toLocaleDateString()} via {signalement.processedBy.nom}
-          </p>
-        )}
-      </StyledSignalementCard>
-    )
-  }
+  const handleSelectSignalement = useCallback(
+    (signalement: Signalement) => {
+      setSelectedSignalement(signalement)
+      flyToSignalement(signalement)
+    },
+    [flyToSignalement],
+  )
 
   // Hide map search layers
   useEffect(() => {
@@ -185,42 +156,14 @@ export function SourcePage() {
       return null
     }
 
-    const signalementWithCoordinates = paginatedSignalements.data.filter((signalement) => {
-      const coords = getSignalementCoodinates(signalement)
-      return coords?.every((coord) => coord !== null)
-    })
-
-    const clustersData: FeatureCollection = {
-      type: 'FeatureCollection',
-      features: signalementWithCoordinates.map((signalement) => ({
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: getSignalementCoodinates(signalement) as [number, number],
-        },
-        properties: { id: signalement.id },
-      })),
-    }
-
     return (
-      <>
-        <ClusterMap data={clustersData} />
-        {signalementWithCoordinates.map((signalement: Signalement) => {
-          return (
-            <ClusteredMarker
-              key={signalement.id}
-              id={signalement.id}
-              color={getSignalementColorHex(signalement.type)}
-              coordinates={getSignalementCoodinates(signalement) as [number, number]}
-              popupContent={getSignalementCard(signalement)}
-              showPopup={hoveredSignalement?.id === signalement.id}
-              onClick={() => flyToSignalement(signalement)}
-            />
-          )
-        })}
-      </>
+      <SourceMap
+        signalements={paginatedSignalements.data}
+        hoveredSignalement={hoveredSignalement}
+        onSelectSignalement={handleSelectSignalement}
+      />
     )
-  }, [paginatedSignalements, hoveredSignalement])
+  }, [paginatedSignalements, hoveredSignalement, handleSelectSignalement])
 
   useMapContent(mapContent)
 
@@ -247,9 +190,9 @@ export function SourcePage() {
                 key={index}
                 onMouseEnter={() => setHoveredSignalement(signalement)}
                 onMouseLeave={() => setHoveredSignalement(undefined)}
-                onClick={() => flyToSignalement(signalement)}
+                onClick={() => handleSelectSignalement(signalement)}
               >
-                {getSignalementCard(signalement)}
+                <SignalementCard signalement={signalement} />
               </li>
             ))}
           </ul>
@@ -267,6 +210,14 @@ export function SourcePage() {
         </>
       ) : (
         <p>Une erreur est survenue</p>
+      )}
+      {selectedSignalement && (
+        <Modal
+          title={getModalTitle(selectedSignalement)}
+          onClose={() => setSelectedSignalement(undefined)}
+        >
+          <SignalementViewer signalement={selectedSignalement} />
+        </Modal>
       )}
     </StyledWrapper>
   )
