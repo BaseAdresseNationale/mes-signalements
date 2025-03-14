@@ -99,6 +99,15 @@ export function MapLayout({ children }: MapLayoutProps) {
             latitude: 47,
             zoom: 5,
           }}
+          onLoad={async (e) => {
+            const map = e.target
+            if (!map) {
+              return
+            }
+
+            const coneIcon = await map.loadImage('/icons/cone.png')
+            map.addImage('cone', coneIcon.data)
+          }}
           mapStyle={mapStyles[0].uri}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}

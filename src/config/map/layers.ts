@@ -225,6 +225,20 @@ export const staticCadastreLayers = [
   },
 ]
 
+export const signalementPointsLayer = {
+  id: 'signalement-points',
+  source: 'api-signalement',
+  'source-layer': 'signalements',
+  type: 'symbol',
+  minzoom: 12,
+  layout: {
+    'icon-image': 'cone',
+    'icon-size': 0.05,
+    'icon-offset': [0, 150],
+    'icon-anchor': 'top',
+  },
+}
+
 const clusters = {
   id: 'clusters',
   type: 'circle',
@@ -273,4 +287,5 @@ export const interactiveLayers = [
   toponymeLayer,
   parcelleHoveredLayer,
   clusters,
+  signalementPointsLayer,
 ]
