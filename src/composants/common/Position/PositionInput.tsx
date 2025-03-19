@@ -49,7 +49,7 @@ export default function PositionInput({
               })}
         />
       ))}
-      {!multiPositionDisabled && (
+      {(!multiPositionDisabled || positions.length === 0) && (
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <button
             type='button'

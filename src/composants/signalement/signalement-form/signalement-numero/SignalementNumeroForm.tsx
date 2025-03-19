@@ -35,7 +35,7 @@ export default function SignalementNumeroForm({
   hasSignalementChanged,
   mode,
 }: SignalementNumeroFormProps) {
-  const isCreation = !address
+  const isCreation = signalement.type === Signalement.type.LOCATION_TO_CREATE
 
   const [complementsOpts, setComplementsOpts] = useState<{ value: string; label: string }[]>([])
 
