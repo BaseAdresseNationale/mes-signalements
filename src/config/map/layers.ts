@@ -1,3 +1,5 @@
+import { Signalement } from '../../api/signalement'
+
 // DSFR default blue color
 export const DEFAULT_COLOR_DARK = '#000091'
 export const DEFAULT_COLOR_LIGHT = '#f0f0f0'
@@ -234,13 +236,13 @@ export const signalementPointsLayer = {
   layout: {
     'icon-image': [
       'case',
-      ['==', ['get', 'type'], 'LOCATION_TO_CREATE'],
-      'marker-green',
-      ['==', ['get', 'type'], 'LOCATION_TO_UPDATE'],
-      'marker-purple',
-      ['==', ['get', 'type'], 'LOCATION_TO_DELETE'],
-      'marker-orange',
-      'marker-purple',
+      ['==', ['get', 'type'], Signalement.type.LOCATION_TO_CREATE],
+      'cone-green',
+      ['==', ['get', 'type'], Signalement.type.LOCATION_TO_UPDATE],
+      'cone-purple',
+      ['==', ['get', 'type'], Signalement.type.LOCATION_TO_DELETE],
+      'cone-orange',
+      'cone-purple',
     ],
     'icon-size': 0.05,
     'icon-offset': [0, 150],

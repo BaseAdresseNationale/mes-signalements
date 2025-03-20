@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useMemo } from 'react'
 import MapContext from '../contexts/map.context'
 import { useMapContent } from '../hooks/useMapContent'
 import { SignalementsSearchMap } from '../composants/map/SignalementsSearchMap'
@@ -15,7 +15,11 @@ export function AdresseSearchPage() {
     })
   }, [setAdresseSearchMapLayersOptions])
 
-  useMapContent(<SignalementsSearchMap />)
+  const mapContent = useMemo(() => {
+    return <SignalementsSearchMap />
+  }, [])
+
+  useMapContent(mapContent)
 
   return null
 }

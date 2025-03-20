@@ -16,6 +16,7 @@ import SourceContext from '../contexts/source.context'
 import { MaplibreStyleDefinition } from '../types/maplibre.types'
 import { CadastreToggle } from '../composants/map/CadastreToggle'
 import { AdresseSearchMap } from '../composants/map/AdresseSearchMap'
+import { MapLibreEvent } from 'maplibre-gl'
 
 const Layout = styled.div`
   position: relative;
@@ -40,6 +41,31 @@ export const ANIMATION_DURATION = 300
 
 interface MapLayoutProps {
   children?: React.ReactNode
+}
+
+const loadAssets = async (e: MapLibreEvent) => {
+  const map = e.target
+  if (!map) {
+    return
+  }
+
+  const markerGreen = await map.loadImage('/icons/marker-green.png')
+  map.addImage('marker-green', markerGreen.data)
+
+  const markerOrange = await map.loadImage('/icons/marker-orange.png')
+  map.addImage('marker-orange', markerOrange.data)
+
+  const markerPurple = await map.loadImage('/icons/marker-purple.png')
+  map.addImage('marker-purple', markerPurple.data)
+
+  const coneGreen = await map.loadImage('/icons/cone-green.png')
+  map.addImage('cone-green', coneGreen.data)
+
+  const coneOrange = await map.loadImage('/icons/cone-orange.png')
+  map.addImage('cone-orange', coneOrange.data)
+
+  const conePurple = await map.loadImage('/icons/cone-purple.png')
+  map.addImage('cone-purple', conePurple.data)
 }
 
 export function MapLayout({ children }: MapLayoutProps) {
@@ -99,21 +125,7 @@ export function MapLayout({ children }: MapLayoutProps) {
             latitude: 47,
             zoom: 5,
           }}
-          onLoad={async (e) => {
-            const map = e.target
-            if (!map) {
-              return
-            }
-
-            const markerGreen = await map.loadImage('/icons/marker-green.png')
-            map.addImage('marker-green', markerGreen.data)
-
-            const markerOrange = await map.loadImage('/icons/marker-orange.png')
-            map.addImage('marker-orange', markerOrange.data)
-
-            const markerPurple = await map.loadImage('/icons/marker-purple.png')
-            map.addImage('marker-purple', markerPurple.data)
-          }}
+          onLoad={loadAssets}
           mapStyle={mapStyles[0].uri}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
