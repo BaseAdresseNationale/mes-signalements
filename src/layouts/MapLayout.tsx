@@ -105,8 +105,14 @@ export function MapLayout({ children }: MapLayoutProps) {
               return
             }
 
-            const coneIcon = await map.loadImage('/icons/cone.png')
-            map.addImage('cone', coneIcon.data)
+            const markerGreen = await map.loadImage('/icons/marker-green.png')
+            map.addImage('marker-green', markerGreen.data)
+
+            const markerOrange = await map.loadImage('/icons/marker-orange.png')
+            map.addImage('marker-orange', markerOrange.data)
+
+            const markerPurple = await map.loadImage('/icons/marker-purple.png')
+            map.addImage('marker-purple', markerPurple.data)
           }}
           mapStyle={mapStyles[0].uri}
           onMouseEnter={onMouseEnter}

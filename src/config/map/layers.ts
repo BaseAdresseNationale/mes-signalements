@@ -232,7 +232,16 @@ export const signalementPointsLayer = {
   type: 'symbol',
   minzoom: 12,
   layout: {
-    'icon-image': 'cone',
+    'icon-image': [
+      'case',
+      ['==', ['get', 'type'], 'LOCATION_TO_CREATE'],
+      'marker-green',
+      ['==', ['get', 'type'], 'LOCATION_TO_UPDATE'],
+      'marker-purple',
+      ['==', ['get', 'type'], 'LOCATION_TO_DELETE'],
+      'marker-orange',
+      'marker-purple',
+    ],
     'icon-size': 0.05,
     'icon-offset': [0, 150],
     'icon-anchor': 'top',

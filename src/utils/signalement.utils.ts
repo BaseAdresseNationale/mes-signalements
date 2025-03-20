@@ -133,13 +133,13 @@ export const getSignalementColor = (type: Signalement.type) => {
   let color = ''
   switch (type) {
     case Signalement.type.LOCATION_TO_UPDATE:
-      color = 'blue-ecume'
+      color = 'purple-glycine'
       break
     case Signalement.type.LOCATION_TO_CREATE:
       color = 'green-menthe'
       break
     case Signalement.type.LOCATION_TO_DELETE:
-      color = 'purple-glycine'
+      color = 'orange-terre-battue'
       break
     default:
       color = 'black'
@@ -152,13 +152,13 @@ export const getSignalementColorHex = (type: Signalement.type) => {
   let color = ''
   switch (type) {
     case Signalement.type.LOCATION_TO_UPDATE:
-      color = '#465F9D'
+      color = '#A558A0'
       break
     case Signalement.type.LOCATION_TO_CREATE:
       color = '#009081'
       break
     case Signalement.type.LOCATION_TO_DELETE:
-      color = '#A558A0'
+      color = '#E4794A'
       break
     default:
       color = 'black'
