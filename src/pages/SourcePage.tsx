@@ -1,5 +1,4 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { getModalTitle, getSignalementCoodinates } from '../utils/signalement.utils'
 import { Filters } from '../composants/common/Filters'
 import { PaginatedSignalementsDTO, Signalement, SignalementsService } from '../api/signalement'
 import styled from 'styled-components'
@@ -10,8 +9,7 @@ import { Pagination } from '@codegouvfr/react-dsfr/Pagination'
 import Loader from '../composants/common/Loader'
 import SignalementCard from '../composants/signalement/SignalementCard'
 import SourceMap from '../composants/map/SourceMap'
-import Modal from '../composants/common/Modal'
-import SignalementViewer from '../composants/signalement/SignalementViewer'
+import { SignalementViewerContext } from '../contexts/signalement-viewer.context'
 
 const StyledPagination = styled(Pagination)`
   padding: 5px;
@@ -83,11 +81,12 @@ const PAGE_SIZE = 20
 
 export function SourcePage() {
   const { source } = useContext(SourceContext)
-  const [selectedSignalement, setSelectedSignalement] = useState<Signalement>()
+  const { setViewedSignalement } = useContext(SignalementViewerContext)
   const [hoveredSignalement, setHoveredSignalement] = useState<Signalement>()
   const [isLoading, setIsLoading] = useState(false)
   const [paginatedSignalements, setPaginatedSignalements] = useState<PaginatedSignalementsDTO>()
-  const { setAdresseSearchMapLayersOptions, mapRef } = useContext(MapContext)
+  const { setAdresseSearchMapLayersOptions, setSignalementSearchMapLayerOptions, mapRef } =
+    useContext(MapContext)
   const [currentFilter, setCurrentFilter] = useState(Signalement.status.PENDING)
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -118,21 +117,23 @@ export function SourcePage() {
         return
       }
 
-      mapRef.flyTo({
-        center: getSignalementCoodinates(signalement) as [number, number],
-        zoom: 18,
-        maxDuration: 3000,
-      })
+      if (signalement.point) {
+        mapRef.flyTo({
+          center: signalement.point.coordinates as [number, number],
+          zoom: 18,
+          maxDuration: 3000,
+        })
+      }
     },
     [mapRef],
   )
 
   const handleSelectSignalement = useCallback(
     (signalement: Signalement) => {
-      setSelectedSignalement(signalement)
+      setViewedSignalement(signalement)
       flyToSignalement(signalement)
     },
-    [flyToSignalement],
+    [flyToSignalement, setViewedSignalement],
   )
 
   // Hide map search layers
@@ -143,7 +144,8 @@ export function SourcePage() {
       voie: { layout: { visibility: 'none' } },
       toponyme: { layout: { visibility: 'none' } },
     })
-  }, [setAdresseSearchMapLayersOptions])
+    setSignalementSearchMapLayerOptions({ layout: { visibility: 'none' } })
+  }, [setAdresseSearchMapLayersOptions, setSignalementSearchMapLayerOptions])
 
   // Map content
   const mapContent = useMemo(() => {
@@ -155,6 +157,7 @@ export function SourcePage() {
       <SourceMap
         signalements={paginatedSignalements.data}
         hoveredSignalement={hoveredSignalement}
+        setHoveredSignalement={setHoveredSignalement}
         onSelectSignalement={handleSelectSignalement}
       />
     )
@@ -205,14 +208,6 @@ export function SourcePage() {
             showFirstLast={false}
           />
         </>
-      )}
-      {selectedSignalement && (
-        <Modal
-          title={getModalTitle(selectedSignalement)}
-          onClose={() => setSelectedSignalement(undefined)}
-        >
-          <SignalementViewer signalement={selectedSignalement} />
-        </Modal>
       )}
     </StyledWrapper>
   )

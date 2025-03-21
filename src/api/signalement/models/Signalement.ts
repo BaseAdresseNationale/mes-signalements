@@ -25,6 +25,7 @@ export type Signalement = {
     status?: Signalement.status | null;
     source: Source;
     processedBy?: Client | null;
+    point: Record<string, any>;
 };
 export namespace Signalement {
     export enum type {

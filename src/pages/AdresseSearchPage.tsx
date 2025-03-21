@@ -2,7 +2,8 @@ import { useContext, useEffect } from 'react'
 import MapContext from '../contexts/map.context'
 
 export function AdresseSearchPage() {
-  const { setAdresseSearchMapLayersOptions } = useContext(MapContext)
+  const { setAdresseSearchMapLayersOptions, setSignalementSearchMapLayerOptions } =
+    useContext(MapContext)
 
   useEffect(() => {
     setAdresseSearchMapLayersOptions({
@@ -11,7 +12,8 @@ export function AdresseSearchPage() {
       voie: {},
       toponyme: {},
     })
-  }, [setAdresseSearchMapLayersOptions])
+    setSignalementSearchMapLayerOptions({})
+  }, [setAdresseSearchMapLayersOptions, setSignalementSearchMapLayerOptions])
 
   return null
 }

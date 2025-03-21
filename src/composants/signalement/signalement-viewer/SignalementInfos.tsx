@@ -38,9 +38,11 @@ export default function SignalementInfos({ signalement }: Readonly<SignalementIn
               Déposée il y a <b>{getDuration(new Date(createdAt))}</b>{' '}
             </p>
           )}
-          <p>
-            via <b>{source.nom}</b>
-          </p>
+          {source && (
+            <p>
+              via <b>{source.nom}</b>
+            </p>
+          )}
 
           {changesRequested.comment && (
             <p>
@@ -49,25 +51,29 @@ export default function SignalementInfos({ signalement }: Readonly<SignalementIn
             </p>
           )}
 
-          {status === Signalement.status.PROCESSED && processedBy && (
+          {status === Signalement.status.PROCESSED && (
             <>
               <p>
                 Acceptée le <b>{new Date(updatedAt).toLocaleDateString()}</b>
               </p>
-              <p>
-                via <b>{processedBy.nom}</b>
-              </p>
+              {processedBy && (
+                <p>
+                  via <b>{processedBy.nom}</b>
+                </p>
+              )}
             </>
           )}
 
-          {status === Signalement.status.IGNORED && processedBy && (
+          {status === Signalement.status.IGNORED && (
             <>
               <p>
                 Refusée le <b>{new Date(updatedAt).toLocaleDateString()}</b>
               </p>
-              <p>
-                via <b>{processedBy.nom}</b>
-              </p>
+              {processedBy && (
+                <p>
+                  via <b>{processedBy.nom}</b>
+                </p>
+              )}
             </>
           )}
         </div>

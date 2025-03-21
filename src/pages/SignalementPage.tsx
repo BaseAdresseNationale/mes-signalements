@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useLoaderData, useSearchParams } from 'react-router-dom'
 import {
   IBANPlateformeNumero,
@@ -22,11 +22,22 @@ import { useMapContent } from '../hooks/useMapContent'
 import { ChangesRequested, SignalementMode } from '../types/signalement.types'
 import { FilterSpecification } from 'maplibre-gl'
 import { SignalementContext } from '../contexts/signalement.context'
+import { getModalTitle, getSignalementFromFeatureAPISignalement } from '../utils/signalement.utils'
+import Alert from '@codegouvfr/react-dsfr/Alert'
+import { SignalementViewerContext } from '../contexts/signalement-viewer.context'
+import Button from '@codegouvfr/react-dsfr/Button'
 
 export function SignalementPage() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const { setViewedSignalement } = useContext(SignalementViewerContext)
+  const [pendingSignalements, setPendingSignalements] = useState<Signalement[]>([])
   const { isMobile } = useWindowSize()
-  const { mapRef, editParcelles, setAdresseSearchMapLayersOptions } = useContext(MapContext)
+  const {
+    mapRef,
+    editParcelles,
+    setAdresseSearchMapLayersOptions,
+    setSignalementSearchMapLayerOptions,
+  } = useContext(MapContext)
   const { adresse, mode } = useLoaderData() as {
     adresse: IBANPlateformeVoie | IBANPlateformeLieuDit | IBANPlateformeNumero
     mode: SignalementMode
@@ -120,6 +131,39 @@ export function SignalementPage() {
     }
   }, [setAdresseSearchMapLayersOptions, adresse, signalement])
 
+  // Query the map to get existing signalements
+  useEffect(() => {
+    // Dirty hack : To be able to query the features, they need to stay "visible"
+    setSignalementSearchMapLayerOptions({
+      layout: { 'icon-size': 0.0000001 },
+      paint: { 'icon-opacity': 0 },
+    })
+
+    if (!mapRef) {
+      return
+    }
+
+    const handleQueryPendingSignalements = () => {
+      const pendingSignalements = mapRef
+        .querySourceFeatures('api-signalement', {
+          sourceLayer: 'signalements',
+        })
+        .map((feature) => getSignalementFromFeatureAPISignalement(feature))
+        .filter(
+          (signalement) =>
+            Boolean(adresse.banId) && adresse.banId === signalement.existingLocation?.banId,
+        )
+
+      setPendingSignalements(pendingSignalements)
+    }
+
+    mapRef.once('idle', handleQueryPendingSignalements)
+
+    return () => {
+      mapRef.off('idle', handleQueryPendingSignalements)
+    }
+  }, [mapRef, setSignalementSearchMapLayerOptions])
+
   // Map content
   const mapContent = useMemo(() => {
     return (
@@ -150,6 +194,27 @@ export function SignalementPage() {
         />
       ) : (
         <>
+          {pendingSignalements.length > 0 && (
+            <Alert
+              style={{ marginBottom: '0.5rem', marginTop: '0.5rem' }}
+              severity='info'
+              title={`${pendingSignalements.length} signalement${pendingSignalements.length > 1 ? 's' : ''} en attente de traitement`}
+              description={
+                <ul>
+                  {pendingSignalements.map((signalement) => (
+                    <Button
+                      size='small'
+                      priority='tertiary no outline'
+                      key={signalement.id}
+                      onClick={() => setViewedSignalement(signalement)}
+                    >
+                      {`${getModalTitle(signalement)} déposée le ${new Date(signalement.createdAt).toLocaleDateString()}`}
+                    </Button>
+                  ))}
+                </ul>
+              }
+            />
+          )}
           {adresse.type === BANPlateformeResultTypeEnum.NUMERO && (
             <NumeroCard
               adresse={adresse}

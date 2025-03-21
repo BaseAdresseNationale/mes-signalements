@@ -16,6 +16,8 @@ import SourceContext from '../contexts/source.context'
 import { MaplibreStyleDefinition } from '../types/maplibre.types'
 import { CadastreToggle } from '../composants/map/CadastreToggle'
 import { AdresseSearchMap } from '../composants/map/AdresseSearchMap'
+import { MapLibreEvent } from 'maplibre-gl'
+import { SignalementsSearchMap } from '../composants/map/SignalementsSearchMap'
 
 const Layout = styled.div`
   position: relative;
@@ -42,6 +44,31 @@ interface MapLayoutProps {
   children?: React.ReactNode
 }
 
+const loadAssets = async (e: MapLibreEvent) => {
+  const map = e.target
+  if (!map) {
+    return
+  }
+
+  const markerGreen = await map.loadImage('/icons/marker-green.png')
+  map.addImage('marker-green', markerGreen.data)
+
+  const markerOrange = await map.loadImage('/icons/marker-orange.png')
+  map.addImage('marker-orange', markerOrange.data)
+
+  const markerPurple = await map.loadImage('/icons/marker-purple.png')
+  map.addImage('marker-purple', markerPurple.data)
+
+  const coneGreen = await map.loadImage('/icons/cone-green.png')
+  map.addImage('cone-green', coneGreen.data)
+
+  const coneOrange = await map.loadImage('/icons/cone-orange.png')
+  map.addImage('cone-orange', coneOrange.data)
+
+  const conePurple = await map.loadImage('/icons/cone-purple.png')
+  map.addImage('cone-purple', conePurple.data)
+}
+
 export function MapLayout({ children }: MapLayoutProps) {
   const searchRef = useRef<HTMLDivElement>(null)
   const drawerRef = useRef<HTMLDivElement>(null)
@@ -51,8 +78,14 @@ export function MapLayout({ children }: MapLayoutProps) {
   const onMouseEnter = useCallback(() => setCursor('pointer'), [])
   const onMouseLeave = useCallback(() => setCursor(null), [])
 
-  const { mapRefCb, mapChildren, showCadastre, setShowCadastre, adresseSearchMapLayersOptions } =
-    useContext(MapContext)
+  const {
+    mapRefCb,
+    mapChildren,
+    showCadastre,
+    setShowCadastre,
+    adresseSearchMapLayersOptions,
+    signalementSearchMapLayerOptions,
+  } = useContext(MapContext)
   const { source } = useContext(SourceContext)
 
   const { navigate } = useNavigateWithPreservedSearchParams()
@@ -99,6 +132,7 @@ export function MapLayout({ children }: MapLayoutProps) {
             latitude: 47,
             zoom: 5,
           }}
+          onLoad={loadAssets}
           mapStyle={mapStyles[0].uri}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
@@ -124,6 +158,7 @@ export function MapLayout({ children }: MapLayoutProps) {
             })}
           </Source>
           <AdresseSearchMap options={adresseSearchMapLayersOptions} />
+          <SignalementsSearchMap options={signalementSearchMapLayerOptions} />
           {mapChildren}
           <NavigationControl position='top-right' />
           <CadastreToggle

@@ -14,6 +14,8 @@ interface MapContextValue {
   setAdresseSearchMapLayersOptions: React.Dispatch<
     React.SetStateAction<Record<string, Partial<LayerProps>>>
   >
+  signalementSearchMapLayerOptions: Partial<LayerProps>
+  setSignalementSearchMapLayerOptions: React.Dispatch<React.SetStateAction<Partial<LayerProps>>>
 }
 
 export const MapContext = createContext<MapContextValue>({
@@ -32,6 +34,8 @@ export const MapContext = createContext<MapContextValue>({
     toponyme: {},
   },
   setAdresseSearchMapLayersOptions: () => {},
+  signalementSearchMapLayerOptions: {},
+  setSignalementSearchMapLayerOptions: () => {},
 })
 
 export function MapContextProvider(props: { children: React.ReactNode }) {
@@ -52,6 +56,7 @@ export function MapContextProvider(props: { children: React.ReactNode }) {
     voie: {},
     toponyme: {},
   })
+  const [signalementSearchMapLayerOptions, setSignalementSearchMapLayerOptions] = useState({})
 
   // Update cadastre toggle button
   useEffect(() => {
@@ -82,6 +87,8 @@ export function MapContextProvider(props: { children: React.ReactNode }) {
       setEditParcelles,
       adresseSearchMapLayersOptions,
       setAdresseSearchMapLayersOptions,
+      signalementSearchMapLayerOptions,
+      setSignalementSearchMapLayerOptions,
     }),
     [
       mapRef,
@@ -94,6 +101,8 @@ export function MapContextProvider(props: { children: React.ReactNode }) {
       setEditParcelles,
       adresseSearchMapLayersOptions,
       setAdresseSearchMapLayersOptions,
+      signalementSearchMapLayerOptions,
+      setSignalementSearchMapLayerOptions,
     ],
   )
 

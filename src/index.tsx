@@ -17,6 +17,7 @@ import { SignalementContextProvider } from './contexts/signalement.context'
 import { getCurrentRevision } from './api/api-depot'
 import { getSignalementMode } from './utils/perimeters.utils'
 import { startReactDsfr } from '@codegouvfr/react-dsfr/spa'
+import { SignalementViewerContextProvider } from './contexts/signalement-viewer.context'
 startReactDsfr({ defaultColorScheme: 'light' })
 
 const API_SIGNALEMENT_URL = process.env.REACT_APP_API_SIGNALEMENT_URL
@@ -41,7 +42,9 @@ const GlobalLayout = (props: { children: React.ReactNode }) => {
     <MapContextProvider>
       <SignalementContextProvider>
         <SourceContextProvider>
-          <MapLayout>{children}</MapLayout>
+          <SignalementViewerContextProvider>
+            <MapLayout>{children}</MapLayout>
+          </SignalementViewerContextProvider>
         </SourceContextProvider>
       </SignalementContextProvider>
     </MapContextProvider>
