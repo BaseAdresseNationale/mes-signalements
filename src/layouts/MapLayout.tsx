@@ -17,6 +17,7 @@ import { MaplibreStyleDefinition } from '../types/maplibre.types'
 import { CadastreToggle } from '../composants/map/CadastreToggle'
 import { AdresseSearchMap } from '../composants/map/AdresseSearchMap'
 import { MapLibreEvent } from 'maplibre-gl'
+import { SignalementsSearchMap } from '../composants/map/SignalementsSearchMap'
 
 const Layout = styled.div`
   position: relative;
@@ -77,8 +78,14 @@ export function MapLayout({ children }: MapLayoutProps) {
   const onMouseEnter = useCallback(() => setCursor('pointer'), [])
   const onMouseLeave = useCallback(() => setCursor(null), [])
 
-  const { mapRefCb, mapChildren, showCadastre, setShowCadastre, adresseSearchMapLayersOptions } =
-    useContext(MapContext)
+  const {
+    mapRefCb,
+    mapChildren,
+    showCadastre,
+    setShowCadastre,
+    adresseSearchMapLayersOptions,
+    signalementSearchMapLayerOptions,
+  } = useContext(MapContext)
   const { source } = useContext(SourceContext)
 
   const { navigate } = useNavigateWithPreservedSearchParams()
@@ -151,6 +158,7 @@ export function MapLayout({ children }: MapLayoutProps) {
             })}
           </Source>
           <AdresseSearchMap options={adresseSearchMapLayersOptions} />
+          <SignalementsSearchMap options={signalementSearchMapLayerOptions} />
           {mapChildren}
           <NavigationControl position='top-right' />
           <CadastreToggle

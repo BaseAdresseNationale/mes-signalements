@@ -1,28 +1,19 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Layer, MapLayerMouseEvent, Popup, Source, useMap } from 'react-map-gl/maplibre'
+import { Layer, LayerProps, MapLayerMouseEvent, Popup, Source, useMap } from 'react-map-gl/maplibre'
 import { signalementPointsLayer } from '../../config/map/layers'
 import { Signalement } from '../../api/signalement'
 import SignalementCard from '../signalement/SignalementCard'
 import { SignalementViewerContext } from '../../contexts/signalement-viewer.context'
+import { getSignalementFromFeatureAPISignalement } from '../../utils/signalement.utils'
 
-const getSignalementFromFeature = (feature: any): Signalement => {
-  return {
-    ...feature.properties,
-    createdAt: JSON.parse(feature.properties.createdAt),
-    updatedAt: JSON.parse(feature.properties.updatedAt),
-    changesRequested: JSON.parse(feature.properties.changesRequested),
-    existingLocation: JSON.parse(feature.properties.existingLocation),
-    source: JSON.parse(feature.properties.source),
-  }
+interface SignalementSearchMapProps {
+  options: Partial<LayerProps>
 }
 
-export function SignalementsSearchMap() {
+export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMapProps>) {
   const map = useMap()
   const { setViewedSignalement } = useContext(SignalementViewerContext)
-  const [hoveredSignalement, setHoveredSignalement] = useState<{
-    point: number[]
-    signalement: Signalement
-  } | null>(null)
+  const [hoveredSignalement, setHoveredSignalement] = useState<Signalement | null>(null)
 
   useEffect(() => {
     if (!map.current) {
@@ -35,9 +26,10 @@ export function SignalementsSearchMap() {
       }
 
       if (e.features.length > 0) {
+        const feature = e.features[0]
         setHoveredSignalement({
-          point: e.lngLat.toArray(),
-          signalement: getSignalementFromFeature(e.features[0]),
+          ...getSignalementFromFeatureAPISignalement(feature),
+          point: feature.geometry,
         })
       }
     }
@@ -52,7 +44,7 @@ export function SignalementsSearchMap() {
       }
 
       if (e.features.length > 0) {
-        setViewedSignalement(getSignalementFromFeature(e.features[0]))
+        setViewedSignalement(getSignalementFromFeatureAPISignalement(e.features[0]))
       }
     }
 
@@ -75,12 +67,13 @@ export function SignalementsSearchMap() {
     <>
       {hoveredSignalement && (
         <Popup
-          offset={15}
-          longitude={hoveredSignalement.point[0]}
-          latitude={hoveredSignalement.point[1]}
+          offset={-5}
+          longitude={hoveredSignalement.point.coordinates[0]}
+          latitude={hoveredSignalement.point.coordinates[1]}
           anchor='bottom'
+          closeButton={false}
         >
-          <SignalementCard signalement={hoveredSignalement.signalement} />
+          <SignalementCard signalement={hoveredSignalement} />
         </Popup>
       )}
       <Source
@@ -93,7 +86,7 @@ export function SignalementsSearchMap() {
         maxzoom={14}
         promoteId='id'
       >
-        <Layer key={signalementPointsLayer.id} {...(signalementPointsLayer as any)} />
+        <Layer key={signalementPointsLayer.id} {...(signalementPointsLayer as any)} {...options} />
       </Source>
     </>
   )

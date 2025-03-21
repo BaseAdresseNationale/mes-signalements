@@ -1,5 +1,4 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { getSignalementCoodinates } from '../utils/signalement.utils'
 import { Filters } from '../composants/common/Filters'
 import { PaginatedSignalementsDTO, Signalement, SignalementsService } from '../api/signalement'
 import styled from 'styled-components'
@@ -86,7 +85,8 @@ export function SourcePage() {
   const [hoveredSignalement, setHoveredSignalement] = useState<Signalement>()
   const [isLoading, setIsLoading] = useState(false)
   const [paginatedSignalements, setPaginatedSignalements] = useState<PaginatedSignalementsDTO>()
-  const { setAdresseSearchMapLayersOptions, mapRef } = useContext(MapContext)
+  const { setAdresseSearchMapLayersOptions, setSignalementSearchMapLayerOptions, mapRef } =
+    useContext(MapContext)
   const [currentFilter, setCurrentFilter] = useState(Signalement.status.PENDING)
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -117,11 +117,13 @@ export function SourcePage() {
         return
       }
 
-      mapRef.flyTo({
-        center: getSignalementCoodinates(signalement) as [number, number],
-        zoom: 18,
-        maxDuration: 3000,
-      })
+      if (signalement.point) {
+        mapRef.flyTo({
+          center: signalement.point.coordinates as [number, number],
+          zoom: 18,
+          maxDuration: 3000,
+        })
+      }
     },
     [mapRef],
   )
@@ -142,7 +144,8 @@ export function SourcePage() {
       voie: { layout: { visibility: 'none' } },
       toponyme: { layout: { visibility: 'none' } },
     })
-  }, [setAdresseSearchMapLayersOptions])
+    setSignalementSearchMapLayerOptions({ layout: { visibility: 'none' } })
+  }, [setAdresseSearchMapLayersOptions, setSignalementSearchMapLayerOptions])
 
   // Map content
   const mapContent = useMemo(() => {
@@ -154,6 +157,7 @@ export function SourcePage() {
       <SourceMap
         signalements={paginatedSignalements.data}
         hoveredSignalement={hoveredSignalement}
+        setHoveredSignalement={setHoveredSignalement}
         onSelectSignalement={handleSelectSignalement}
       />
     )

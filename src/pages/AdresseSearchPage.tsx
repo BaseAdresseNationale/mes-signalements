@@ -1,10 +1,9 @@
-import React, { useContext, useEffect, useMemo } from 'react'
+import { useContext, useEffect } from 'react'
 import MapContext from '../contexts/map.context'
-import { useMapContent } from '../hooks/useMapContent'
-import { SignalementsSearchMap } from '../composants/map/SignalementsSearchMap'
 
 export function AdresseSearchPage() {
-  const { setAdresseSearchMapLayersOptions } = useContext(MapContext)
+  const { setAdresseSearchMapLayersOptions, setSignalementSearchMapLayerOptions } =
+    useContext(MapContext)
 
   useEffect(() => {
     setAdresseSearchMapLayersOptions({
@@ -13,13 +12,8 @@ export function AdresseSearchPage() {
       voie: {},
       toponyme: {},
     })
-  }, [setAdresseSearchMapLayersOptions])
-
-  const mapContent = useMemo(() => {
-    return <SignalementsSearchMap />
-  }, [])
-
-  useMapContent(mapContent)
+    setSignalementSearchMapLayerOptions({})
+  }, [setAdresseSearchMapLayersOptions, setSignalementSearchMapLayerOptions])
 
   return null
 }

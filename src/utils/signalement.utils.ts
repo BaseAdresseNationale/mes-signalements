@@ -61,17 +61,14 @@ export const getPositionTypeLabel = (positionType: Position.type) => {
   return positionTypeOptions.find(({ value }) => value === positionType)?.label ?? 'Inconnu'
 }
 
-export function getSignalementCoodinates(signalement: Signalement): [number, number] | undefined {
-  if ((signalement.existingLocation as ExistingNumero)?.position) {
-    return [
-      (signalement.existingLocation as ExistingNumero).position.point.coordinates[0],
-      (signalement.existingLocation as ExistingNumero).position.point.coordinates[1],
-    ]
-  } else if ((signalement.changesRequested as ChangesRequested).positions) {
-    return [
-      (signalement.changesRequested as ChangesRequested).positions[0].point.coordinates[0],
-      (signalement.changesRequested as ChangesRequested).positions[0].point.coordinates[1],
-    ]
+export const getSignalementFromFeatureAPISignalement = (feature: any): Signalement => {
+  return {
+    ...feature.properties,
+    createdAt: JSON.parse(feature.properties.createdAt),
+    updatedAt: JSON.parse(feature.properties.updatedAt),
+    changesRequested: JSON.parse(feature.properties.changesRequested),
+    existingLocation: JSON.parse(feature.properties.existingLocation),
+    source: JSON.parse(feature.properties.source),
   }
 }
 
