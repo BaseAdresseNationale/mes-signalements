@@ -164,6 +164,14 @@ export const getSignalementColorHex = (type: Signalement.type) => {
   return color
 }
 
+export const getSignalementExistingLocationString = (signalement: Signalement) => {
+  if (signalement.existingLocation) {
+    return `${getExistingLocationLabel(signalement.existingLocation)} ${signalement.codeCommune}`
+  }
+
+  return ''
+}
+
 export const getSignalementTypeLabel = (type: Signalement.type) => {
   let label = ''
   switch (type) {

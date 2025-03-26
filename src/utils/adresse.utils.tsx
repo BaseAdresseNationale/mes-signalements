@@ -63,3 +63,12 @@ export function getAdresseLabel(
       throw new Error(`Impossible de créer un signalement pour le type : ${address.type}`)
   }
 }
+
+export function getAdresseString(address: IBANPlateformeResult) {
+  switch (address.type) {
+    case BANPlateformeResultTypeEnum.NUMERO:
+      return `${(address as IBANPlateformeNumero).numero}${(address as IBANPlateformeNumero).suffixe ? ` ${(address as IBANPlateformeNumero).suffixe}` : ''} ${(address as IBANPlateformeNumero).voie.nomVoie} ${address.commune.code}`
+    default:
+      return `${(address as IBANPlateformeLieuDit).nomVoie} ${address.commune.code}`
+  }
+}

@@ -22,10 +22,15 @@ import { useMapContent } from '../hooks/useMapContent'
 import { ChangesRequested, SignalementMode } from '../types/signalement.types'
 import { FilterSpecification } from 'maplibre-gl'
 import { SignalementContext } from '../contexts/signalement.context'
-import { getModalTitle, getSignalementFromFeatureAPISignalement } from '../utils/signalement.utils'
+import {
+  getModalTitle,
+  getSignalementExistingLocationString,
+  getSignalementFromFeatureAPISignalement,
+} from '../utils/signalement.utils'
 import Alert from '@codegouvfr/react-dsfr/Alert'
 import { SignalementViewerContext } from '../contexts/signalement-viewer.context'
 import Button from '@codegouvfr/react-dsfr/Button'
+import { getAdresseString } from '../utils/adresse.utils'
 
 export function SignalementPage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -73,7 +78,7 @@ export function SignalementPage() {
       center: position as [number, number],
       offset: [0, isMobile ? -100 : 0],
       zoom: isVoieOrLieuDit ? 18 : 20,
-      screenSpeed: 2,
+      maxDuration: 3000,
     })
   }, [mapRef, adresse, isMobile])
 
@@ -149,10 +154,13 @@ export function SignalementPage() {
           sourceLayer: 'signalements',
         })
         .map((feature) => getSignalementFromFeatureAPISignalement(feature))
-        .filter(
-          (signalement) =>
-            Boolean(adresse.banId) && adresse.banId === signalement.existingLocation?.banId,
-        )
+        .filter((signalement) => {
+          if (adresse.banId && signalement.existingLocation?.banId) {
+            return adresse.banId === signalement.existingLocation?.banId
+          } else {
+            return getAdresseString(adresse) === getSignalementExistingLocationString(signalement)
+          }
+        })
 
       setPendingSignalements(pendingSignalements)
     }
