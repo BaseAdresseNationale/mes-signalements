@@ -5,29 +5,11 @@ import styled from 'styled-components'
 import { useMapContent } from '../hooks/useMapContent'
 import SourceContext from '../contexts/source.context'
 import MapContext from '../contexts/map.context'
-import { Pagination } from '@codegouvfr/react-dsfr/Pagination'
 import Loader from '../composants/common/Loader'
 import SignalementCard from '../composants/signalement/SignalementCard'
 import SourceMap from '../composants/map/SourceMap'
 import { SignalementViewerContext } from '../contexts/signalement-viewer.context'
-
-const StyledPagination = styled(Pagination)`
-  padding: 5px;
-
-  .fr-pagination__list {
-    justify-content: center;
-    align-items: center;
-
-    .fr-pagination__link--prev,
-    .fr-pagination__link--next {
-      display: none;
-    }
-    button {
-      margin-top: 0;
-      margin-bottom: 0;
-    }
-  }
-`
+import Pagination from '../composants/common/Pagination'
 
 const StyledWrapper = styled.div`
   position: relative;
@@ -179,7 +161,7 @@ export function SourcePage() {
       </div>
       {isLoading && <Loader />}
       {!isLoading && paginatedSignalements && paginatedSignalements.data.length === 0 && (
-        <p>Aucun signalement</p>
+        <p style={{ padding: 10 }}>Aucun signalement</p>
       )}
       {!isLoading && paginatedSignalements && paginatedSignalements.data.length > 0 && (
         <>
@@ -196,16 +178,12 @@ export function SourcePage() {
               </li>
             ))}
           </ul>
-          <StyledPagination
+          <Pagination
             count={Math.ceil(paginatedSignalements.total / PAGE_SIZE)}
-            defaultPage={currentPage}
-            getPageLinkProps={(pageNumber) => ({
-              onClick: () => {
-                setCurrentPage(pageNumber)
-              },
-              href: '#',
-            })}
-            showFirstLast={false}
+            currentPage={currentPage}
+            onPageChange={(page) => {
+              setCurrentPage(page)
+            }}
           />
         </>
       )}
