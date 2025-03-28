@@ -1,55 +1,151 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Signalement } from '../../api/signalement'
-import { FeatureCollection } from 'geojson'
-import { getSignalementColorHex, getSignalementCoodinates } from '../../utils/signalement.utils'
-import { ClusterMap } from './ClusterMap'
-import { ClusteredMarker } from './ClusteredMarker'
+import { FeatureCollection, Geometry } from 'geojson'
+import {
+  GeoJSONSource,
+  Layer,
+  MapLayerMouseEvent,
+  Popup,
+  Source,
+  useMap,
+} from 'react-map-gl/maplibre'
 import SignalementCard from '../signalement/SignalementCard'
+import { clusterLayers, clusters, unclusteredPoint } from '../../config/map/layers'
 
 interface SourceMapProps {
   signalements: Signalement[]
   onSelectSignalement: (signalement: Signalement) => void
   hoveredSignalement?: Signalement
+  setHoveredSignalement: (hoveredSignalement?: Signalement) => void
+}
+
+const getSignalementFromFeature = (feature: any): Signalement => {
+  const signalement = {
+    ...feature.properties,
+    changesRequested: JSON.parse(feature.properties.changesRequested),
+    existingLocation: JSON.parse(feature.properties.existingLocation),
+    point: feature.geometry,
+  }
+
+  return signalement as Signalement
 }
 
 export default function SourceMap({
   signalements,
   onSelectSignalement,
   hoveredSignalement,
+  setHoveredSignalement,
 }: SourceMapProps) {
-  const signalementWithCoordinates = signalements.filter((signalement) => {
-    const coords = getSignalementCoodinates(signalement)
-    return coords?.every((coord) => coord !== null)
+  const map = useMap()
+
+  useEffect(() => {
+    if (!map.current) {
+      return
+    }
+
+    const handleMouseMove = (e: MapLayerMouseEvent) => {
+      if (!map.current || !e.features) {
+        return
+      }
+
+      if (e.features.length > 0) {
+        setHoveredSignalement(getSignalementFromFeature(e.features[0]))
+      }
+    }
+
+    const handleMouseLeave = () => {
+      setHoveredSignalement(undefined)
+    }
+
+    const handleClickCluster = async (event: MapLayerMouseEvent) => {
+      if (!map.current) {
+        return
+      }
+      const feature = event.features?.[0]
+      if (!feature) {
+        return
+      }
+      const clusterId = feature.properties.cluster_id
+
+      const geojsonSource: GeoJSONSource = map.current.getSource('clusters') as GeoJSONSource
+
+      const zoom = await geojsonSource.getClusterExpansionZoom(clusterId)
+
+      map.current.easeTo({
+        center: (feature.geometry as any).coordinates,
+        zoom,
+        duration: 500,
+      })
+    }
+
+    const handleClickSignalement = (event: MapLayerMouseEvent) => {
+      if (!map.current) {
+        return
+      }
+
+      const feature = event.features?.[0]
+      if (!feature) {
+        return
+      }
+
+      onSelectSignalement(getSignalementFromFeature(feature))
+    }
+
+    if (map?.current) {
+      map.current.on('click', clusters.id, handleClickCluster)
+      map.current.on('click', unclusteredPoint.id, handleClickSignalement)
+      map.current.on('mousemove', unclusteredPoint.id, handleMouseMove)
+      map.current.on('mouseleave', unclusteredPoint.id, handleMouseLeave)
+    }
+
+    return () => {
+      if (map?.current) {
+        map.current.off('click', clusters.id, handleClickCluster)
+        map.current.off('click', unclusteredPoint.id, handleClickSignalement)
+        map.current.off('mousemove', unclusteredPoint.id, handleMouseMove)
+        map.current.off('mouseleave', unclusteredPoint.id, handleMouseLeave)
+      }
+    }
+  }, [map])
+
+  const signalementWithCoordinates = signalements.filter(({ point }) => {
+    return Boolean(point)
   })
 
-  const clustersData: FeatureCollection = {
+  const data: FeatureCollection = {
     type: 'FeatureCollection',
-    features: signalementWithCoordinates.map((signalement) => ({
+    features: signalementWithCoordinates.map(({ point, ...rest }) => ({
       type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: getSignalementCoodinates(signalement) as [number, number],
-      },
-      properties: { id: signalement.id },
+      geometry: point as Geometry,
+      properties: { ...rest },
     })),
   }
 
   return (
     <>
-      <ClusterMap data={clustersData} />
-      {signalementWithCoordinates.map((signalement: Signalement) => {
-        return (
-          <ClusteredMarker
-            key={signalement.id}
-            id={signalement.id}
-            color={getSignalementColorHex(signalement.type)}
-            coordinates={getSignalementCoodinates(signalement) as [number, number]}
-            popupContent={<SignalementCard signalement={signalement} />}
-            showPopup={hoveredSignalement?.id === signalement.id}
-            onClick={() => onSelectSignalement(signalement)}
-          />
-        )
-      })}
+      {hoveredSignalement && (
+        <Popup
+          offset={22}
+          longitude={hoveredSignalement.point.coordinates[0]}
+          latitude={hoveredSignalement.point.coordinates[1]}
+          anchor='bottom'
+          closeButton={false}
+        >
+          <SignalementCard signalement={hoveredSignalement} />
+        </Popup>
+      )}
+      <Source
+        id='clusters'
+        type='geojson'
+        data={data}
+        cluster={true}
+        clusterMaxZoom={14}
+        clusterRadius={50}
+      >
+        {clusterLayers.map((layer) => (
+          <Layer key={layer.id} {...(layer as any)} />
+        ))}
+      </Source>
     </>
   )
 }

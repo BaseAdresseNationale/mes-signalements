@@ -1,3 +1,5 @@
+import { Signalement } from '../../api/signalement'
+
 // DSFR default blue color
 export const DEFAULT_COLOR_DARK = '#000091'
 export const DEFAULT_COLOR_LIGHT = '#f0f0f0'
@@ -225,7 +227,30 @@ export const staticCadastreLayers = [
   },
 ]
 
-const clusters = {
+export const signalementPointsLayer = {
+  id: 'signalement-points',
+  source: 'api-signalement',
+  'source-layer': 'signalements',
+  type: 'symbol',
+  minzoom: 12,
+  layout: {
+    'icon-image': [
+      'case',
+      ['==', ['get', 'type'], Signalement.type.LOCATION_TO_CREATE],
+      'cone-green',
+      ['==', ['get', 'type'], Signalement.type.LOCATION_TO_UPDATE],
+      'cone-purple',
+      ['==', ['get', 'type'], Signalement.type.LOCATION_TO_DELETE],
+      'cone-orange',
+      'cone-purple',
+    ],
+    'icon-size': 0.05,
+    'icon-offset': [0, 150],
+    'icon-anchor': 'top',
+  },
+}
+
+export const clusters = {
   id: 'clusters',
   type: 'circle',
   source: 'clusters',
@@ -253,14 +278,24 @@ const clusterCount = {
   },
 }
 
-const unclusteredPoint = {
+export const unclusteredPoint = {
   id: 'unclustered-point',
-  type: 'circle',
+  type: 'symbol',
   source: 'clusters',
   filter: ['!', ['has', 'point_count']],
-  paint: {
-    'circle-color': 'transparent',
-    'circle-radius': 0,
+  layout: {
+    'icon-image': [
+      'case',
+      ['==', ['get', 'type'], Signalement.type.LOCATION_TO_CREATE],
+      'marker-green',
+      ['==', ['get', 'type'], Signalement.type.LOCATION_TO_UPDATE],
+      'marker-purple',
+      ['==', ['get', 'type'], Signalement.type.LOCATION_TO_DELETE],
+      'marker-orange',
+      'marker-purple',
+    ],
+    'icon-size': 0.35,
+    'icon-anchor': 'bottom',
   },
 }
 
@@ -273,4 +308,6 @@ export const interactiveLayers = [
   toponymeLayer,
   parcelleHoveredLayer,
   clusters,
+  unclusteredPoint,
+  signalementPointsLayer,
 ]

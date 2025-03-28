@@ -61,17 +61,14 @@ export const getPositionTypeLabel = (positionType: Position.type) => {
   return positionTypeOptions.find(({ value }) => value === positionType)?.label ?? 'Inconnu'
 }
 
-export function getSignalementCoodinates(signalement: Signalement): [number, number] | undefined {
-  if ((signalement.existingLocation as ExistingNumero)?.position) {
-    return [
-      (signalement.existingLocation as ExistingNumero).position.point.coordinates[0],
-      (signalement.existingLocation as ExistingNumero).position.point.coordinates[1],
-    ]
-  } else if ((signalement.changesRequested as ChangesRequested).positions) {
-    return [
-      (signalement.changesRequested as ChangesRequested).positions[0].point.coordinates[0],
-      (signalement.changesRequested as ChangesRequested).positions[0].point.coordinates[1],
-    ]
+export const getSignalementFromFeatureAPISignalement = (feature: any): Signalement => {
+  return {
+    ...feature.properties,
+    createdAt: JSON.parse(feature.properties.createdAt),
+    updatedAt: JSON.parse(feature.properties.updatedAt),
+    changesRequested: JSON.parse(feature.properties.changesRequested),
+    existingLocation: JSON.parse(feature.properties.existingLocation),
+    source: JSON.parse(feature.properties.source),
   }
 }
 
@@ -133,13 +130,13 @@ export const getSignalementColor = (type: Signalement.type) => {
   let color = ''
   switch (type) {
     case Signalement.type.LOCATION_TO_UPDATE:
-      color = 'blue-ecume'
+      color = 'purple-glycine'
       break
     case Signalement.type.LOCATION_TO_CREATE:
       color = 'green-menthe'
       break
     case Signalement.type.LOCATION_TO_DELETE:
-      color = 'purple-glycine'
+      color = 'orange-terre-battue'
       break
     default:
       color = 'black'
@@ -152,19 +149,27 @@ export const getSignalementColorHex = (type: Signalement.type) => {
   let color = ''
   switch (type) {
     case Signalement.type.LOCATION_TO_UPDATE:
-      color = '#465F9D'
+      color = '#A558A0'
       break
     case Signalement.type.LOCATION_TO_CREATE:
       color = '#009081'
       break
     case Signalement.type.LOCATION_TO_DELETE:
-      color = '#A558A0'
+      color = '#E4794A'
       break
     default:
       color = 'black'
   }
 
   return color
+}
+
+export const getSignalementExistingLocationString = (signalement: Signalement) => {
+  if (signalement.existingLocation) {
+    return `${getExistingLocationLabel(signalement.existingLocation)} ${signalement.codeCommune}`
+  }
+
+  return ''
 }
 
 export const getSignalementTypeLabel = (type: Signalement.type) => {
