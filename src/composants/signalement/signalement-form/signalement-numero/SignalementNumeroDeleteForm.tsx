@@ -48,7 +48,7 @@ export default function SignalementNumeroDeleteForm({
         </div>
       </section>
       <div className='form-controls'>
-        <button className='fr-btn' disabled={!comment} style={{ color: 'white' }} type='submit'>
+        <button className='fr-btn' disabled={!comment?.trim()} style={{ color: 'white' }} type='submit'>
           Envoyer le signalement
         </button>
         <button className='fr-btn' type='button' onClick={onClose}>
