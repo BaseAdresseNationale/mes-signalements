@@ -72,8 +72,14 @@ export function SignalementContextProvider(props: Readonly<SignalementContextPro
 
   const hasSignalementChanged = useMemo(() => {
     return (
-      JSON.stringify(initialSignalement) !==
-      JSON.stringify(signalement, (_key, value) => {
+      JSON.stringify(initialSignalement?.changesRequested) !==
+      JSON.stringify(signalement?.changesRequested, (_key, value) => {
+        if (_key === 'comment') {
+          return ''
+        }
+        if (_key === 'numero') {
+          return parseInt(value, 10)
+        }
         if (typeof value === 'string') {
           return value.trim()
         }

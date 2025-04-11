@@ -33,7 +33,7 @@ export default function SignalementVoieForm({
         <div className='form-row'>
           <div className='fr-input-group'>
             <label className='fr-label' htmlFor='nom'>
-              Nom
+              Nom*
             </label>
             <input
               name='nom'
@@ -50,7 +50,7 @@ export default function SignalementVoieForm({
         <div className='form-row'>
           <div className='fr-input-group'>
             <label className='fr-label' htmlFor='comment'>
-              Autres informations
+              Informations complémentaires
             </label>
             <textarea
               className='fr-input'
@@ -59,7 +59,7 @@ export default function SignalementVoieForm({
               onChange={(event) =>
                 onEditSignalement('changesRequested', 'comment')(event.target.value)
               }
-              placeholder="Informations complémentaires sur le problème d'adressage (facultatif)"
+              placeholder='Merci de ne pas indiquer de données personnelles'
             />
           </div>
         </div>
