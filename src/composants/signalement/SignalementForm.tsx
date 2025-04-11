@@ -108,7 +108,6 @@ export default function SignalementForm({
           onClose={onClose}
           onSubmit={handleSubmit}
           onEditSignalement={onEditSignalement}
-          hasSignalementChanged={hasSignalementChanged}
         />
       )}
 

@@ -10,7 +10,6 @@ interface SignalementNumeroDeleteFormProps {
   onClose: () => void
   address: IBANPlateformeNumero
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
-  hasSignalementChanged: boolean
 }
 
 export default function SignalementNumeroDeleteForm({
@@ -19,7 +18,6 @@ export default function SignalementNumeroDeleteForm({
   onClose,
   address,
   onSubmit,
-  hasSignalementChanged,
 }: SignalementNumeroDeleteFormProps) {
   const { comment } = signalement.changesRequested
 
@@ -44,17 +42,13 @@ export default function SignalementNumeroDeleteForm({
                 onEditSignalement('changesRequested', 'comment')(event.target.value)
               }
               required
+              placeholder='Merci de ne pas indiquer de données personnelles'
             />
           </div>
         </div>
       </section>
       <div className='form-controls'>
-        <button
-          className='fr-btn'
-          disabled={!hasSignalementChanged}
-          style={{ color: 'white' }}
-          type='submit'
-        >
+        <button className='fr-btn' disabled={!comment?.trim()} style={{ color: 'white' }} type='submit'>
           Envoyer le signalement
         </button>
         <button className='fr-btn' type='button' onClick={onClose}>
