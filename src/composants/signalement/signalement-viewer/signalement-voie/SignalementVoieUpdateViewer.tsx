@@ -4,15 +4,13 @@ import { StyledRecapSection } from '../../signalement.styles'
 
 interface SignalementVoieUpdateViewerProps {
   signalement: Signalement
-  commune: string
 }
 
 export default function SignalementVoieUpdateViewer({
   signalement,
-  commune,
 }: Readonly<SignalementVoieUpdateViewerProps>) {
+  const { nomCommune } = signalement
   const { nom } = signalement.changesRequested as VoieChangesRequestedDTO
-
   const { nom: existingNom } = signalement.existingLocation as ExistingVoie
 
   return (
@@ -23,7 +21,7 @@ export default function SignalementVoieUpdateViewer({
           <p>
             {existingNom}
             <br />
-            {commune}
+            {nomCommune}
           </p>
         </div>
         <div>
@@ -31,7 +29,7 @@ export default function SignalementVoieUpdateViewer({
           <p>
             {nom}
             <br />
-            {commune}
+            {nomCommune}
           </p>
         </div>
       </div>

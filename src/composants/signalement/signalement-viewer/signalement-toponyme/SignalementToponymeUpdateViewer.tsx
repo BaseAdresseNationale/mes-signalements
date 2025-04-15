@@ -9,13 +9,12 @@ import { StyledRecapSection } from '../../signalement.styles'
 
 interface SignalementToponymeUpdateViewerProps {
   signalement: Signalement
-  commune: string
 }
 
 export default function SignalementToponymeUpdateViewer({
   signalement,
-  commune,
 }: Readonly<SignalementToponymeUpdateViewerProps>) {
+  const { nomCommune } = signalement
   const { nom, parcelles, positions } = signalement.changesRequested as ToponymeChangesRequestedDTO
 
   const {
@@ -32,7 +31,7 @@ export default function SignalementToponymeUpdateViewer({
           <p>
             {existingNom}
             <br />
-            {commune}
+            {nomCommune}
           </p>
           <h6>Position : </h6>
           <b>{getPositionTypeLabel(existingPosition.type)}</b> :{' '}
@@ -52,7 +51,7 @@ export default function SignalementToponymeUpdateViewer({
           <p>
             {nom}
             <br />
-            {commune}
+            {nomCommune}
           </p>
           {positions && (
             <>

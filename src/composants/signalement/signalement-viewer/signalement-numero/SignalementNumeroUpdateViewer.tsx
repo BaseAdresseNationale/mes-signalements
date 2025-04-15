@@ -5,13 +5,12 @@ import { StyledRecapSection } from '../../signalement.styles'
 
 interface SignalementNumeroUpdateViewerProps {
   signalement: Signalement
-  commune: string
 }
 
 export default function SignalementNumeroUpdateViewer({
   signalement,
-  commune,
 }: Readonly<SignalementNumeroUpdateViewerProps>) {
+  const { nomCommune } = signalement
   const { numero, suffixe, nomVoie, nomComplement, positions, parcelles } =
     signalement.changesRequested as NumeroChangesRequestedDTO
 
@@ -33,7 +32,7 @@ export default function SignalementNumeroUpdateViewer({
             {`${existingNumero} ${existingSuffixe || ''}`} {existingNomVoie}{' '}
             {existingNomComplement && <br />}
             <br />
-            {commune}
+            {nomCommune}
           </p>
           <h6>Position : </h6>
           <b>{getPositionTypeLabel(existingPosition.type)}</b> :{' '}
@@ -59,7 +58,7 @@ export default function SignalementNumeroUpdateViewer({
               </>
             )}
             <br />
-            {commune}
+            {nomCommune}
           </p>
           {positions && (
             <>
