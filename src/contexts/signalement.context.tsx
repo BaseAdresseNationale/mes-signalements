@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useMemo, useState } from 'react'
-import { Signalement } from '../api/signalement'
-import { getInitialSignalement } from '../utils/signalement.utils'
+import { PositionDTO, Signalement } from '../api/signalement'
+import { getInitialSignalement, getPositionTypeLabel } from '../utils/signalement.utils'
 import { IBANPlateformeResult } from '../api/ban-plateforme/types'
 import { ChangesRequested } from '../types/signalement.types'
 
@@ -59,7 +59,15 @@ export function SignalementContextProvider(props: Readonly<SignalementContextPro
       setInitialSignalement(signalement)
       setSignalement(signalement)
       for (const [key, value] of Object.entries(changesRequested ?? {})) {
-        onEditSignalement('changesRequested', key)(value)
+        if (key === 'positions') {
+          const positions = (value as PositionDTO[]).map(({ point, type }) => ({
+            point,
+            type: getPositionTypeLabel(type) ? type : PositionDTO.type.ENTR_E,
+          }))
+          onEditSignalement('changesRequested', key)(positions)
+        } else {
+          onEditSignalement('changesRequested', key)(value)
+        }
       }
     },
     [setSignalement],

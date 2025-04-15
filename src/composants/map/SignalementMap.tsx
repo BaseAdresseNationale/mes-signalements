@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Layer, MapLayerMouseEvent, Source, useMap } from 'react-map-gl/maplibre'
 import { Position, Signalement } from '../../api/signalement'
 import { parcelleHoveredLayer, parcellesHighlightedLayer } from '../../config/map/layers'
-import { positionTypeOptions } from '../../utils/signalement.utils'
+import { getPositionTypeLabel } from '../../utils/signalement.utils'
 import { Marker } from './Marker'
 import { ChangesRequested } from '../../types/signalement.types'
 
@@ -129,9 +129,7 @@ function SignalementMap({
 
   const getSignalementPositionLabel = useCallback(
     (positionType: Position.type) => {
-      const positionTypeLabel = positionTypeOptions.find(
-        ({ value }) => value === positionType,
-      )?.label
+      const positionTypeLabel = getPositionTypeLabel(positionType)
       return signalementLabel ? `${signalementLabel} - ${positionTypeLabel}` : positionTypeLabel
     },
     [signalementLabel],

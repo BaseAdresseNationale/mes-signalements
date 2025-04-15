@@ -58,7 +58,7 @@ export const getModalTitle = (signalement: Signalement) => {
 }
 
 export const getPositionTypeLabel = (positionType: Position.type) => {
-  return positionTypeOptions.find(({ value }) => value === positionType)?.label ?? 'Inconnu'
+  return positionTypeOptions.find(({ value }) => value === positionType)?.label
 }
 
 export const getSignalementFromFeatureAPISignalement = (feature: any): Signalement => {
@@ -123,7 +123,7 @@ export const getSignalementLabel = (signalement: Signalement) => {
       label = 'Autre demande'
   }
 
-  return `${label} - ${signalement.codeCommune}`
+  return `${label} - ${signalement.nomCommune} (${signalement.codeCommune})`
 }
 
 export const getSignalementColor = (type: Signalement.type) => {
