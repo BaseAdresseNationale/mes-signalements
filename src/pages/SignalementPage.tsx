@@ -88,18 +88,20 @@ export function SignalementPage() {
     const changesRequested = searchParams.get('changesRequested')
 
     if (type) {
-      createSignalement(
-        type as Signalement.type,
-        adresse,
-        changesRequested
-          ? (JSON.parse(decodeURI(changesRequested)) as ChangesRequested)
-          : undefined,
-      )
+      if (mode !== SignalementMode.DISABLED) {
+        createSignalement(
+          type as Signalement.type,
+          adresse,
+          changesRequested
+            ? (JSON.parse(decodeURI(changesRequested)) as ChangesRequested)
+            : undefined,
+        )
+      }
       searchParams.delete('type')
       searchParams.delete('changesRequested')
       setSearchParams(searchParams)
     }
-  }, [searchParams, adresse, createSignalement])
+  }, [searchParams, adresse, createSignalement, mode])
 
   const handleCloseSignalementForm = () => {
     deleteSignalement()

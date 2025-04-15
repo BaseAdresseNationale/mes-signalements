@@ -5,13 +5,12 @@ import { StyledRecapSection } from '../../signalement.styles'
 
 interface SignalementNumeroDeleteViewerProps {
   signalement: Signalement
-  commune: string
 }
 
 export default function SignalementNumeroDeleteViewer({
   signalement,
-  commune,
 }: Readonly<SignalementNumeroDeleteViewerProps>) {
+  const { nomCommune } = signalement
   const {
     numero: existingNumero,
     suffixe: existingSuffixe,
@@ -35,7 +34,7 @@ export default function SignalementNumeroDeleteViewer({
               </>
             )}
             <br />
-            {commune}
+            {nomCommune}
           </p>
           <h6>Position : </h6>
           <b>{getPositionTypeLabel(existingPosition.type)}</b> :{' '}

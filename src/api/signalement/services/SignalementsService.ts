@@ -65,7 +65,6 @@ export class SignalementsService {
     }
     /**
      * Get tiles (with signalements features)
-     * @param sourceId
      * @param status
      * @param z
      * @param x
@@ -74,7 +73,6 @@ export class SignalementsService {
      * @throws ApiError
      */
     public static getTiles(
-        sourceId: string,
         status: string,
         z: string,
         x: string,
@@ -89,7 +87,6 @@ export class SignalementsService {
                 'y': y,
             },
             query: {
-                'sourceId': sourceId,
                 'status': status,
             },
         });

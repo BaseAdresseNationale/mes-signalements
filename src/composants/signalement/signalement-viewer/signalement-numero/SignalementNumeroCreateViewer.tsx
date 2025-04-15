@@ -5,13 +5,12 @@ import { StyledRecapSection } from '../../signalement.styles'
 
 interface SignalementNumeroCreateViewerProps {
   signalement: Signalement
-  commune: string
 }
 
 export default function SignalementNumeroCreateViewer({
   signalement,
-  commune,
 }: Readonly<SignalementNumeroCreateViewerProps>) {
+  const { nomCommune } = signalement
   const { numero, suffixe, nomVoie, nomComplement, positions, parcelles } =
     signalement.changesRequested as NumeroChangesRequestedDTO
 
@@ -29,7 +28,7 @@ export default function SignalementNumeroCreateViewer({
               </>
             )}
             <br />
-            {commune}
+            {nomCommune}
           </p>
           {positions && (
             <>

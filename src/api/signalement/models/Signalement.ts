@@ -18,6 +18,7 @@ export type Signalement = {
     updatedAt: string;
     deletedAt?: string | null;
     codeCommune: string;
+    nomCommune?: string | null;
     type: Signalement.type;
     author?: Author | null;
     existingLocation?: (ExistingNumero | ExistingVoie | ExistingToponyme) | null;
