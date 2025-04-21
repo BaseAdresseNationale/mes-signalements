@@ -1,8 +1,10 @@
-import React, { createContext, useCallback, useMemo, useState } from 'react'
-import { PositionDTO, Signalement } from '../api/signalement'
+import React, { createContext, useCallback, useContext, useMemo, useState } from 'react'
+import { Author, PositionDTO, Signalement, Source } from '../api/signalement'
 import { getInitialSignalement, getPositionTypeLabel } from '../utils/signalement.utils'
 import { IBANPlateformeResult } from '../api/ban-plateforme/types'
 import { ChangesRequested } from '../types/signalement.types'
+import { getValueFromLocalStorage, LocalStorageKeys } from '../utils/localStorage.utils'
+import SourceContext from './source.context'
 
 export interface SignalementContextValue {
   signalement: Signalement | null
@@ -31,6 +33,8 @@ interface SignalementContextProviderProps {
 export function SignalementContextProvider(props: Readonly<SignalementContextProviderProps>) {
   const [initialSignalement, setInitialSignalement] = useState<Signalement | null>(null)
   const [signalement, setSignalement] = useState<Signalement | null>(null)
+  const { source } = useContext(SourceContext)
+  const isPublicSource = source?.type !== Source.type.PRIVATE
 
   const onEditSignalement = useCallback(
     (property: keyof Signalement, key: string) => (value: any) => {
@@ -58,6 +62,8 @@ export function SignalementContextProvider(props: Readonly<SignalementContextPro
       const signalement = getInitialSignalement(adresse, signalementType)
       setInitialSignalement(signalement)
       setSignalement(signalement)
+
+      // Set the changesRequested if provided in query params
       for (const [key, value] of Object.entries(changesRequested ?? {})) {
         if (key === 'positions') {
           const positions = (value as PositionDTO[]).map(({ point, type }) => ({
@@ -69,8 +75,17 @@ export function SignalementContextProvider(props: Readonly<SignalementContextPro
           onEditSignalement('changesRequested', key)(value)
         }
       }
+
+      // Set author if provided in local storage
+      const authorContact = getValueFromLocalStorage<Author>(LocalStorageKeys.AUTHOR_CONTACT)
+      if (authorContact && isPublicSource) {
+        console.log('here')
+        onEditSignalement('author', 'firstName')(authorContact.firstName)
+        onEditSignalement('author', 'lastName')(authorContact.lastName)
+        onEditSignalement('author', 'email')(authorContact.email)
+      }
     },
-    [setSignalement],
+    [setSignalement, isPublicSource],
   )
 
   const deleteSignalement = useCallback(() => {
