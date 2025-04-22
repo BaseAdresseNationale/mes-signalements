@@ -16,5 +16,7 @@ export const getSignalementMode = (currentRevision: APIDepotRevision | null) => 
     return SignalementMode.FULL
   }
 
-  return SignalementMode.LIGHT
+  // Temporary fix : For now, the partners are not ready to receive the light signalement
+  return SignalementMode.DISABLED
+  // return SignalementMode.LIGHT
 }

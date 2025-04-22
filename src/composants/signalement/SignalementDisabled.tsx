@@ -1,27 +1,15 @@
-import Alert from '@codegouvfr/react-dsfr/Alert'
 import React from 'react'
+import Alert from '@codegouvfr/react-dsfr/Alert'
 
 export default function SignalementDisabled() {
   return (
     <Alert
       severity='info'
-      title='Les signalements sont désactivés pour votre commune'
+      title='Les signalements sont désactivés pour cette commune'
       description={
         <>
-          <p style={{ marginTop: '0.5rem' }}>
-            <b>Pourquoi ?</b>
-          </p>
-          <p style={{ marginBottom: '1rem' }}>
-            Votre commune n&apos;a pas encore publié sa{' '}
-            <a href='https://adresse.data.gouv.fr/programme-bal' target='_blank' rel='noreferrer'>
-              Base Adresse Locale
-            </a>
-          </p>
-          <p>
-            <b>Comment faire ?</b>
-          </p>
-          <p style={{ marginBottom: '1rem' }}>
-            Nous vous recommandons de contacter directement votre mairie.
+          <p style={{ marginBottom: '1rem', marginTop: '0.5rem' }}>
+            Nous vous recommandons de contacter directement la mairie.
           </p>
           <p>
             <a
