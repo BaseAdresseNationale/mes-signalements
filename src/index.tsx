@@ -40,13 +40,13 @@ const GlobalLayout = (props: { children: React.ReactNode }) => {
   const { children } = props
   return (
     <MapContextProvider>
-      <SignalementContextProvider>
-        <SourceContextProvider>
+      <SourceContextProvider>
+        <SignalementContextProvider>
           <SignalementViewerContextProvider>
             <MapLayout>{children}</MapLayout>
           </SignalementViewerContextProvider>
-        </SourceContextProvider>
-      </SignalementContextProvider>
+        </SignalementContextProvider>
+      </SourceContextProvider>
     </MapContextProvider>
   )
 }

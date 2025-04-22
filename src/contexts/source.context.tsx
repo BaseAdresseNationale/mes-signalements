@@ -1,6 +1,11 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { OpenAPI, Source, SourcesService } from '../api/signalement'
+import {
+  getValueFromLocalStorage,
+  LocalStorageKeys,
+  setValueInLocalStorage,
+} from '../utils/localStorage.utils'
 
 interface SourceContextValue {
   source?: Source
@@ -14,7 +19,7 @@ export const SourceContext = createContext<SourceContextValue>({
 export function SourceContextProvider(props: { children: React.ReactNode }) {
   const [searchParams] = useSearchParams()
   const [sourceId] = useState<string | null>(searchParams.get('sourceId'))
-  const [sourceToken] = useState<string | null>(localStorage.getItem('sourceToken'))
+  const [sourceToken] = useState(getValueFromLocalStorage<string>(LocalStorageKeys.SOURCE_TOKEN))
   const [source, setSource] = useState<Source>()
 
   const fetchSourceById = useCallback(async (sourceId: string) => {
@@ -26,7 +31,7 @@ export function SourceContextProvider(props: { children: React.ReactNode }) {
     const source = await SourcesService.getSourceByToken(sourceToken)
     setSource(source)
     Object.assign(OpenAPI, { TOKEN: sourceToken })
-    localStorage.setItem('sourceToken', sourceToken)
+    setValueInLocalStorage(LocalStorageKeys.SOURCE_TOKEN, sourceToken)
   }, [])
 
   useEffect(() => {

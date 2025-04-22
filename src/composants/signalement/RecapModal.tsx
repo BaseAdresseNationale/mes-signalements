@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react'
 import { StyledForm } from './signalement.styles'
-
 import {
   CreateSignalementDTO,
   Signalement,
@@ -17,6 +16,14 @@ import {
 } from '../../api/ban-plateforme/types'
 import SignalementDiffRecap from './SignalementDiffRecap'
 import { getModalTitle } from '../../utils/signalement.utils'
+import {
+  getValueFromLocalStorage,
+  LocalStorageKeys,
+  removeValueFromLocalStorage,
+  setValueInLocalStorage,
+} from '../../utils/localStorage.utils'
+import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox'
+import { Input } from '@codegouvfr/react-dsfr/Input'
 
 interface SignalementRecapModalProps {
   signalement: Signalement
@@ -35,6 +42,10 @@ export default function SignalementRecapModal({
 }: SignalementRecapModalProps) {
   const [submitStatus, setSubmitStatus] = useState<string | null>(null)
   const { source } = useContext(SourceContext)
+  const [saveContact, setSaveContact] = useState(
+    Boolean(getValueFromLocalStorage(LocalStorageKeys.AUTHOR_CONTACT)),
+  )
+
   const { CaptchaWidget } = useFriendlyCaptcha({
     siteKey: process.env.REACT_APP_FRIENDLY_CAPTCHA_SITE_KEY || '',
     showAttribution: false,
@@ -47,6 +58,15 @@ export default function SignalementRecapModal({
     try {
       const sourceId = source?.id || process.env.REACT_APP_API_SIGNALEMENT_SOURCE_ID
       await SignalementsService.createSignalement(signalement as CreateSignalementDTO, sourceId)
+      if (saveContact && signalement.author) {
+        setValueInLocalStorage(LocalStorageKeys.AUTHOR_CONTACT, {
+          lastName: signalement.author.lastName,
+          firstName: signalement.author.firstName,
+          email: signalement.author.email,
+        })
+      } else {
+        removeValueFromLocalStorage(LocalStorageKeys.AUTHOR_CONTACT)
+      }
       setSubmitStatus('success')
     } catch (error) {
       console.error(error)
@@ -69,45 +89,55 @@ export default function SignalementRecapModal({
               d&apos;avancement de votre signalement.
             </p>
             <div className='form-row'>
-              <div className='fr-input-group'>
-                <label className='fr-label' htmlFor='lastName'>
-                  Nom*
-                </label>
-                <input
-                  required
-                  name='lastName'
-                  className='fr-input'
-                  value={signalement.author?.lastName || ''}
-                  onChange={(event) => onEditSignalement('author', 'lastName')(event.target.value)}
-                />
-              </div>
-              <div className='fr-input-group'>
-                <label className='fr-label' htmlFor='firstName'>
-                  Prénom*
-                </label>
-                <input
-                  required
-                  name='firstName'
-                  className='fr-input'
-                  value={signalement.author?.firstName || ''}
-                  onChange={(event) => onEditSignalement('author', 'firstName')(event.target.value)}
-                />
-              </div>
+              <Input
+                label='Nom*'
+                nativeInputProps={{
+                  required: true,
+                  name: 'lastName',
+                  value: signalement.author?.lastName || '',
+                  onChange: (event) => onEditSignalement('author', 'lastName')(event.target.value),
+                }}
+              />
+              <Input
+                label='Prénom*'
+                nativeInputProps={{
+                  required: true,
+                  name: 'firstName',
+                  value: signalement.author?.firstName || '',
+                  onChange: (event) => onEditSignalement('author', 'firstName')(event.target.value),
+                }}
+              />
             </div>
             <div className='form-row'>
-              <div className='fr-input-group'>
-                <label className='fr-label' htmlFor='email'>
-                  Email*
-                </label>
-                <input
-                  required
-                  name='email'
-                  className='fr-input'
-                  type='email'
-                  value={signalement.author?.email || ''}
-                  onChange={(event) => onEditSignalement('author', 'email')(event.target.value)}
-                />
-              </div>
+              <Input
+                label='Email*'
+                nativeInputProps={{
+                  required: true,
+                  name: 'email',
+                  type: 'email',
+                  value: signalement.author?.email || '',
+                  onChange: (event) => onEditSignalement('author', 'email')(event.target.value),
+                }}
+              />
+            </div>
+            <div className='form-row'>
+              <Checkbox
+                small
+                options={[
+                  {
+                    label: 'Enregistrer ces informations',
+                    hintText:
+                      'Le formulaire de contact sera pré-rempli lors des prochains signalements',
+                    nativeInputProps: {
+                      name: 'save-contact',
+                      checked: saveContact,
+                      onChange: (event) => {
+                        setSaveContact(event.target.checked)
+                      },
+                    },
+                  },
+                ]}
+              />
             </div>
 
             <div className='captcha-wrapper'>
