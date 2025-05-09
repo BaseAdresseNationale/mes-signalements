@@ -26,6 +26,7 @@ export type Signalement = {
     status?: Signalement.status | null;
     source: Source;
     processedBy?: Client | null;
+    rejectionReason?: string;
     point: Record<string, any>;
 };
 export namespace Signalement {

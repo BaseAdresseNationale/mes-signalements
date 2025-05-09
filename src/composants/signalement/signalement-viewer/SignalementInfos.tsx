@@ -10,7 +10,8 @@ interface SignalementInfosProps {
 const MONTH_IN_MS = 1000 * 60 * 60 * 24 * 30
 
 export default function SignalementInfos({ signalement }: Readonly<SignalementInfosProps>) {
-  const { createdAt, source, changesRequested, status, updatedAt, processedBy } = signalement
+  const { createdAt, source, changesRequested, status, updatedAt, processedBy, rejectionReason } =
+    signalement
   return (
     <Alert
       severity={
@@ -72,6 +73,12 @@ export default function SignalementInfos({ signalement }: Readonly<SignalementIn
               {processedBy && (
                 <p>
                   via <b>{processedBy.nom}</b>
+                </p>
+              )}
+              {rejectionReason && (
+                <p>
+                  <b>Raison : </b>
+                  {rejectionReason}
                 </p>
               )}
             </>
