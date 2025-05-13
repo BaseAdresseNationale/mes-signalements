@@ -23,9 +23,9 @@ const safelyParseJSON = (jsonString: string | undefined): any => {
   try {
     return jsonString ? JSON.parse(jsonString) : null
   } catch (error) {
+    console.error("Failed to parse JSON:", { error, jsonString });
     return null
   }
-}
 
 const getSignalementFromFeature = (feature: any): Signalement => {
   const signalement = {
