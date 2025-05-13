@@ -19,11 +19,22 @@ interface SourceMapProps {
   setHoveredSignalement: (hoveredSignalement?: Signalement) => void
 }
 
+const safelyParseJSON = (jsonString: string | undefined): any => {
+  try {
+    return jsonString ? JSON.parse(jsonString) : null
+  } catch (error) {
+    console.error('Failed to parse JSON:', { error, jsonString })
+    return null
+  }
+}
+
 const getSignalementFromFeature = (feature: any): Signalement => {
   const signalement = {
     ...feature.properties,
-    changesRequested: JSON.parse(feature.properties.changesRequested),
-    existingLocation: JSON.parse(feature.properties.existingLocation),
+    changesRequested: safelyParseJSON(feature.properties.changesRequested),
+    existingLocation: safelyParseJSON(feature.properties.existingLocation),
+    source: safelyParseJSON(feature.properties.source),
+    processedBy: safelyParseJSON(feature.properties.processedBy),
     point: feature.geometry,
   }
 
