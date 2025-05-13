@@ -24,6 +24,8 @@ const getSignalementFromFeature = (feature: any): Signalement => {
     ...feature.properties,
     changesRequested: JSON.parse(feature.properties.changesRequested),
     existingLocation: JSON.parse(feature.properties.existingLocation),
+    source: JSON.parse(feature.properties.source),
+    processedBy: JSON.parse(feature.properties.processedBy),
     point: feature.geometry,
   }
 
