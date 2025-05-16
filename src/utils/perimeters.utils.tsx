@@ -3,8 +3,11 @@ import { SignalementMode } from '../types/signalement.types'
 
 const ObjectIdRE = new RegExp('^[0-9a-fA-F]{24}$')
 
-export const getSignalementMode = (currentRevision: APIDepotRevision | null) => {
-  if (!currentRevision) {
+export const getSignalementMode = (
+  currentRevision: APIDepotRevision | null,
+  isCommuneDisabled: boolean,
+) => {
+  if (!currentRevision || isCommuneDisabled) {
     return SignalementMode.DISABLED
   }
 

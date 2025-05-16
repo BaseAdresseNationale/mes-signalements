@@ -32,6 +32,7 @@ export { UpdateSignalementDTO } from './models/UpdateSignalementDTO';
 export type { VoieChangesRequestedDTO } from './models/VoieChangesRequestedDTO';
 
 export { ClientsService } from './services/ClientsService';
+export { SettingsService } from './services/SettingsService';
 export { SignalementsService } from './services/SignalementsService';
 export { SourcesService } from './services/SourcesService';
 export { StatsService } from './services/StatsService';
