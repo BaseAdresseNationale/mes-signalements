@@ -5,7 +5,7 @@ import { RouterProvider, createHashRouter } from 'react-router-dom'
 import { MapLayout } from './layouts/MapLayout'
 import { lookup } from './api/ban-plateforme'
 import { SignalementPage } from './pages/SignalementPage'
-import { OpenAPI } from './api/signalement'
+import { OpenAPI, SettingsService } from './api/signalement'
 
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { SourcePage } from './pages/SourcePage'
@@ -75,8 +75,9 @@ const router = createHashRouter([
         }
       }
       const codeCommune = params.code.split('_')[0]
+      const isCommuneDisabled = await SettingsService.isCommuneDisabled(codeCommune)
       const currentRevision = await getCurrentRevision(codeCommune)
-      const mode = getSignalementMode(currentRevision)
+      const mode = getSignalementMode(currentRevision, isCommuneDisabled)
       const adresse = await lookup(params.code)
 
       return {
