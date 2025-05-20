@@ -18,6 +18,7 @@ import { getCurrentRevision } from './api/api-depot'
 import { getSignalementMode } from './utils/perimeters.utils'
 import { startReactDsfr } from '@codegouvfr/react-dsfr/spa'
 import { SignalementViewerContextProvider } from './contexts/signalement-viewer.context'
+import { AllPage } from './pages/AllPage'
 startReactDsfr({ defaultColorScheme: 'light' })
 
 const API_SIGNALEMENT_URL = process.env.REACT_APP_API_SIGNALEMENT_URL
@@ -90,6 +91,14 @@ const router = createHashRouter([
     element: (
       <GlobalLayout>
         <SourcePage />
+      </GlobalLayout>
+    ),
+  },
+  {
+    path: '/all',
+    element: (
+      <GlobalLayout>
+        <AllPage />
       </GlobalLayout>
     ),
   },

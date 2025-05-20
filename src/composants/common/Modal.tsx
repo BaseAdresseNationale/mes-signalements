@@ -38,6 +38,7 @@ const StyledModal = styled.div`
 
     h3 {
       margin: 0;
+      margin-right: 1em;
     }
 
     button {

@@ -12,7 +12,7 @@ import {
 import SignalementCard from '../signalement/SignalementCard'
 import { clusterLayers, clusters, unclusteredPoint } from '../../config/map/layers'
 
-interface SourceMapProps {
+interface SignalementBrowserMapProps {
   signalements: Signalement[]
   onSelectSignalement: (signalement: Signalement) => void
   hoveredSignalement?: Signalement
@@ -41,12 +41,12 @@ const getSignalementFromFeature = (feature: any): Signalement => {
   return signalement as Signalement
 }
 
-export default function SourceMap({
+export default function SignalementBrowserMap({
   signalements,
   onSelectSignalement,
   hoveredSignalement,
   setHoveredSignalement,
-}: SourceMapProps) {
+}: SignalementBrowserMapProps) {
   const map = useMap()
 
   useEffect(() => {
