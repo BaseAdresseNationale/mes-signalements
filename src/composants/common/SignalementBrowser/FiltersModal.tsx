@@ -103,7 +103,7 @@ export function FiltersModal({
           hint={filterTypesOptions.map((option) => option.label).join(', ')}
         />
 
-        {sourceOptions?.length && sourceOptions.length > 0 && (
+        {sourceOptions?.length && sourceOptions.length > 0 ? (
           <MultiSelectInput
             label='Sources'
             value={value.sources}
@@ -116,7 +116,7 @@ export function FiltersModal({
             }
             hint='Sources de provenance des signalements'
           />
-        )}
+        ) : null}
 
         <AsyncMultiSelectInput
           label='Communes'
