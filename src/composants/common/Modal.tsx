@@ -55,6 +55,7 @@ const StyledModal = styled.div`
   }
 
   > .content {
+    overflow-x: hidden;
     overflow-y: auto;
     flex: 1;
   }
@@ -84,14 +85,15 @@ interface ModalProps {
   title: string
   children: React.ReactNode
   onClose: () => void
+  style?: React.CSSProperties
 }
 
-function Modal({ title, children, onClose }: ModalProps) {
+function Modal({ title, children, onClose, style }: ModalProps) {
   const rootElement = document.getElementById('root')
 
   return ReactDOM.createPortal(
     <StyledBackDrop onClick={onClose}>
-      <StyledModal onClick={(e) => e.stopPropagation()}>
+      <StyledModal onClick={(e) => e.stopPropagation()} style={style}>
         <div className='header'>
           <h3>{title}</h3>
           <button

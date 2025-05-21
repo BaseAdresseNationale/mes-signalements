@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { SignalementBrowser } from '../composants/common/SignalementBrowser'
 import SourceContext from '../contexts/source.context'
-import { Signalement } from '../api/signalement'
+import { filterStatusOptions } from '../composants/common/SignalementBrowser/FiltersModal'
 
 export function SourcePage() {
   const { source } = useContext(SourceContext)
@@ -10,9 +10,9 @@ export function SourcePage() {
     <SignalementBrowser
       initialFilter={{
         types: [],
-        status: [Signalement.status.PENDING],
+        status: [filterStatusOptions[0]],
         communes: [],
-        sources: [source.id],
+        sources: [{ value: source.id, label: source.nom }],
       }}
       hideSourceFilter
     />

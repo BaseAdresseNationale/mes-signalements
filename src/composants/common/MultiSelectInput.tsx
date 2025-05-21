@@ -12,8 +12,8 @@ type MultiSelectInputProps<T> = {
   label: string
   placeholder?: string
   options: Array<SelectOptionType<T>>
-  onChange: (value: T[]) => void
-  value?: T[]
+  onChange: (value: SelectOptionType<T>[]) => void
+  value: SelectOptionType<T>[]
   hint?: string
   isDisabled?: boolean
   noOptionsText?: string
@@ -53,14 +53,6 @@ export function MultiSelectInput<T>({
     return options
   }
 
-  const getValues = () => {
-    if (value) {
-      return options.filter((option) => value.includes(option.value))
-    }
-
-    return []
-  }
-
   return (
     <div
       className={`fr-select-group ${isDisabled ? 'fr-select-group--disabled' : ''}`}
@@ -72,12 +64,12 @@ export function MultiSelectInput<T>({
       </label>
       <StyledAutocomplete
         multiple
-        value={getValues()}
+        value={value}
         style={{ width: '100%' }}
         options={getOptions()}
         getOptionLabel={(option: any) => option.label}
         onChange={(event, values: any) => {
-          onChange(values.map(({ value }: any) => value))
+          onChange(values)
         }}
         renderInput={(params: any) => (
           <TextField {...params} variant='standard' placeholder={placeholder} />

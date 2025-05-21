@@ -62,10 +62,10 @@ const defaultFilters: SignalementBrowserFilter = {
 }
 
 export type SignalementBrowserFilter = {
-  types: Signalement.type[]
-  status: Signalement.status[]
-  communes: string[]
-  sources: string[]
+  types: SelectOptionType<Signalement.type>[]
+  status: SelectOptionType<Signalement.status>[]
+  communes: SelectOptionType<string>[]
+  sources: SelectOptionType<string>[]
 }
 
 interface SignalementBrowserProps {
@@ -94,10 +94,10 @@ export function SignalementBrowser({
     const paginatedSignalements = await SignalementsService.getSignalements(
       PAGE_SIZE,
       page,
-      status,
-      types,
-      sources,
-      communes,
+      status.map((s) => s.value),
+      types.map((t) => t.value),
+      sources.map((s) => s.value),
+      communes.map((c) => c.value),
     )
     setPaginatedSignalements(paginatedSignalements)
     setIsLoading(false)

@@ -9,7 +9,7 @@ import { AsyncMultiSelectInput } from '../AsyncMultiSelectInput'
 import { search as searchAPIAdresse } from '../../../api/api-adresse'
 import { APIAdressePropertyType } from '../../../api/api-adresse/types'
 
-const filterStatusOptions = [
+export const filterStatusOptions = [
   {
     label: 'En cours',
     value: Signalement.status.PENDING,
@@ -24,7 +24,7 @@ const filterStatusOptions = [
   },
 ]
 
-const filterTypesOptions = [
+export const filterTypesOptions = [
   {
     label: 'Modification',
     value: Signalement.type.LOCATION_TO_UPDATE,
@@ -75,7 +75,7 @@ export function FiltersModal({
   }
 
   return (
-    <Modal onClose={onClose} title='Filtrer les signalements'>
+    <Modal onClose={onClose} title='Filtrer les signalements' style={{ width: 600 }}>
       <StyledForm onSubmit={handleSubmit}>
         <MultiSelectInput
           label='Statuts'
@@ -84,7 +84,7 @@ export function FiltersModal({
           onChange={(newValue) =>
             setValue((prev: SignalementBrowserFilter) => ({
               ...prev,
-              status: newValue as Signalement.status[],
+              status: newValue as SelectOptionType<Signalement.status>[],
             }))
           }
           hint={filterStatusOptions.map((option) => option.label).join(', ')}
@@ -97,7 +97,7 @@ export function FiltersModal({
           onChange={(newValue) =>
             setValue((prev: SignalementBrowserFilter) => ({
               ...prev,
-              types: newValue as Signalement.type[],
+              types: newValue as SelectOptionType<Signalement.type>[],
             }))
           }
           hint={filterTypesOptions.map((option) => option.label).join(', ')}
@@ -111,7 +111,7 @@ export function FiltersModal({
             onChange={(newValue) =>
               setValue((prev: SignalementBrowserFilter) => ({
                 ...prev,
-                sources: newValue as string[],
+                sources: newValue as SelectOptionType<string>[],
               }))
             }
             hint='Sources de provenance des signalements'
@@ -124,7 +124,7 @@ export function FiltersModal({
           onChange={(newValue) =>
             setValue((prev: SignalementBrowserFilter) => ({
               ...prev,
-              communes: newValue as string[],
+              communes: newValue as SelectOptionType<string>[],
             }))
           }
           onFetchOptions={async (search: string) => {
@@ -146,14 +146,21 @@ export function FiltersModal({
         />
 
         <div className='form-actions'>
-          <Button type='submit' priority='primary'>
-            Appliquer
-          </Button>
-          {onReset && (
-            <Button type='button' priority='secondary' onClick={onReset}>
-              Réinitialiser
+          <div>
+            <Button type='submit' priority='primary'>
+              Appliquer
             </Button>
-          )}
+            {onReset && (
+              <Button
+                type='button'
+                priority='secondary'
+                onClick={onReset}
+                style={{ marginLeft: 30 }}
+              >
+                Réinitialiser
+              </Button>
+            )}
+          </div>
           <Button priority='tertiary no outline' onClick={onClose} type='button'>
             Annuler
           </Button>

@@ -79,7 +79,6 @@ export function SignalementContextProvider(props: Readonly<SignalementContextPro
       // Set author if provided in local storage
       const authorContact = getValueFromLocalStorage<Author>(LocalStorageKeys.AUTHOR_CONTACT)
       if (authorContact && isPublicSource) {
-        console.log('here')
         onEditSignalement('author', 'firstName')(authorContact.firstName)
         onEditSignalement('author', 'lastName')(authorContact.lastName)
         onEditSignalement('author', 'email')(authorContact.email)

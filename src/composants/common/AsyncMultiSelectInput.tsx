@@ -12,9 +12,9 @@ export type SelectOptionType<T> = {
 type AsyncMultiSelectInputProps<T> = {
   label: string
   placeholder?: string
-  onChange: (value: T[]) => void
+  onChange: (value: SelectOptionType<T>[]) => void
   onFetchOptions: (search: string) => Promise<SelectOptionType<T>[]>
-  value?: T[]
+  value: SelectOptionType<T>[]
   hint?: string
   isDisabled?: boolean
   noOptionsText?: string
@@ -45,30 +45,23 @@ export function AsyncMultiSelectInput<T>({
   searchMinLength,
 }: AsyncMultiSelectInputProps<T>) {
   const [searchValue, setSearchValue] = useState('')
-  const [options, setOptions] = useState<SelectOptionType<T>[]>([])
-  const [recordedOptions, setRecordedOptions] = useState<SelectOptionType<T>[]>([])
+  const [asyncOptions, setAsyncOptions] = useState<SelectOptionType<T>[]>([])
 
-  console.log('searchValue', searchValue)
-
-  console.log('options', options)
-
-  console.log('value', value)
-
-  console.log('recordedOptions', [...options, ...recordedOptions])
+  const options = [...asyncOptions, ...value]
 
   useEffect(() => {
     const fetchOptions = debounce(async () => {
       if (searchValue.length < (searchMinLength || 0)) {
-        setOptions([])
+        setAsyncOptions([])
         return
       }
 
       try {
         const fetchedOptions = await onFetchOptions(searchValue)
-        setOptions(fetchedOptions)
+        setAsyncOptions(fetchedOptions)
       } catch (error) {
         console.error('Error fetching options:', error)
-        setOptions([])
+        setAsyncOptions([])
       }
     }, 400)
 
@@ -87,13 +80,11 @@ export function AsyncMultiSelectInput<T>({
       <StyledAutocomplete
         multiple
         style={{ width: '100%' }}
-        value={value}
-        options={[...options, ...recordedOptions]}
+        value={value || []}
+        options={options}
         getOptionLabel={(option: any) => option.label}
         onChange={(event, values: any) => {
-          console.log('values', values)
-          setRecordedOptions((prev) => [...prev, ...values])
-          onChange(values.map(({ value }: any) => value))
+          onChange(values)
           setSearchValue('')
         }}
         inputValue={searchValue}
