@@ -54,13 +54,6 @@ const StyledWrapper = styled.div`
 
 const PAGE_SIZE = 20
 
-const defaultFilters: SignalementBrowserFilter = {
-  status: [],
-  types: [],
-  communes: [],
-  sources: [],
-}
-
 export type SignalementBrowserFilter = {
   types: SelectOptionType<Signalement.type>[]
   status: SelectOptionType<Signalement.status>[]
@@ -70,13 +63,10 @@ export type SignalementBrowserFilter = {
 
 interface SignalementBrowserProps {
   hideSourceFilter?: boolean
-  initialFilter?: SignalementBrowserFilter
+  initialFilter: SignalementBrowserFilter
 }
 
-export function SignalementBrowser({
-  initialFilter: _initialFilters,
-  hideSourceFilter,
-}: SignalementBrowserProps) {
+export function SignalementBrowser({ initialFilter, hideSourceFilter }: SignalementBrowserProps) {
   const { setViewedSignalement } = useContext(SignalementViewerContext)
   const [hoveredSignalement, setHoveredSignalement] = useState<Signalement>()
   const [isLoading, setIsLoading] = useState(false)
@@ -84,8 +74,7 @@ export function SignalementBrowser({
   const { setAdresseSearchMapLayersOptions, setSignalementSearchMapLayerOptions, mapRef } =
     useContext(MapContext)
   const [showFilters, setShowFilters] = useState(false)
-  const initialFilters = _initialFilters || defaultFilters
-  const [currentFilter, setCurrentFilter] = useState<SignalementBrowserFilter>(initialFilters)
+  const [currentFilter, setCurrentFilter] = useState<SignalementBrowserFilter>(initialFilter)
   const [currentPage, setCurrentPage] = useState(1)
   const [sourceOptions, setSourceOptions] = useState<SelectOptionType<string>[]>([])
 
@@ -182,15 +171,15 @@ export function SignalementBrowser({
   }, [paginatedSignalements, hoveredSignalement, handleSelectSignalement])
 
   const hasCustomFilters = useMemo(
-    () => JSON.stringify(currentFilter) !== JSON.stringify(initialFilters),
-    [currentFilter],
+    () => JSON.stringify(currentFilter) !== JSON.stringify(initialFilter),
+    [currentFilter, initialFilter],
   )
 
   const resetFilters = useCallback(() => {
-    setCurrentFilter(initialFilters)
+    setCurrentFilter(initialFilter)
     setCurrentPage(1)
     setShowFilters(false)
-  }, [])
+  }, [initialFilter])
 
   useMapContent(mapContent)
 

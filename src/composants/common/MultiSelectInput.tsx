@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
@@ -41,18 +41,6 @@ export function MultiSelectInput<T>({
   isDisabled,
   noOptionsText = 'Aucun résultat',
 }: MultiSelectInputProps<T>) {
-  const [searchValue] = useState('')
-
-  const getOptions = () => {
-    if (searchValue) {
-      return options.filter((option) =>
-        option.label.toLowerCase().includes(searchValue.toLowerCase()),
-      )
-    }
-
-    return options
-  }
-
   return (
     <div
       className={`fr-select-group ${isDisabled ? 'fr-select-group--disabled' : ''}`}
@@ -66,7 +54,7 @@ export function MultiSelectInput<T>({
         multiple
         value={value}
         style={{ width: '100%' }}
-        options={getOptions()}
+        options={options}
         getOptionLabel={(option: any) => option.label}
         onChange={(event, values: any) => {
           onChange(values)
