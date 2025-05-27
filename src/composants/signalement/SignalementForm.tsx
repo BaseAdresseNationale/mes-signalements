@@ -3,7 +3,7 @@ import SignalementToponymeForm from './signalement-form/signalement-toponyme/Sig
 import SignalementNumeroForm from './signalement-form/signalement-numero/SignalementNumeroForm'
 import RecapModal from './RecapModal'
 import SignalementNumeroDeleteForm from './signalement-form/signalement-numero/SignalementNumeroDeleteForm'
-import { Signalement } from '../../api/signalement'
+import { CommuneStatusDTO, Signalement } from '../../api/signalement'
 import {
   BANPlateformeResultTypeEnum,
   IBANPlateformeLieuDit,
@@ -13,7 +13,6 @@ import {
 import { MapRef } from 'react-map-gl/maplibre'
 import SignalementVoieForm from './signalement-form/signalement-voie/SignalementVoieForm'
 import MapContext from '../../contexts/map.context'
-import { SignalementMode } from '../../types/signalement.types'
 
 interface SignalementFormProps {
   signalement: Signalement
@@ -22,7 +21,7 @@ interface SignalementFormProps {
   onClose: () => void
   address: IBANPlateformeVoie | IBANPlateformeLieuDit | IBANPlateformeNumero
   hasSignalementChanged: boolean
-  mode: SignalementMode
+  mode: CommuneStatusDTO.mode
 }
 
 export default function SignalementForm({
