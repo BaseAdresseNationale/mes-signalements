@@ -1,11 +1,15 @@
 import { StyledForm } from '../../signalement.styles'
-import { Position, Signalement, ToponymeChangesRequestedDTO } from '../../../../api/signalement'
+import {
+  CommuneStatusDTO,
+  Position,
+  Signalement,
+  ToponymeChangesRequestedDTO,
+} from '../../../../api/signalement'
 import React from 'react'
 import { getAdresseLabel } from '../../../../utils/adresse.utils'
 import { IBANPlateformeLieuDit } from '../../../../api/ban-plateforme/types'
 import PositionInput from '../../../common/Position/PositionInput'
 import ParcelleInput from '../../../common/ParcelleInput'
-import { SignalementMode } from '../../../../types/signalement.types'
 
 interface SignalementToponymeFormProps {
   signalement: Signalement
@@ -15,7 +19,7 @@ interface SignalementToponymeFormProps {
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
   initialPositionCoords: number[]
   hasSignalementChanged: boolean
-  mode: SignalementMode
+  mode: CommuneStatusDTO.mode
 }
 
 export default function SignalementToponymeForm({
@@ -59,9 +63,9 @@ export default function SignalementToponymeForm({
           onChange={onEditSignalement('changesRequested', 'positions')}
           initialPositionCoords={initialPositionCoords}
           defaultPositionType={Position.type.SEGMENT}
-          multiPositionDisabled={mode !== SignalementMode.FULL}
+          multiPositionDisabled={mode !== CommuneStatusDTO.mode.FULL}
         />
-        {mode === SignalementMode.FULL && <ParcelleInput parcelles={parcelles} />}
+        {mode === CommuneStatusDTO.mode.FULL && <ParcelleInput parcelles={parcelles} />}
       </section>
       <section>
         <div className='form-row'>

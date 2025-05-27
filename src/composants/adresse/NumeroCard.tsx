@@ -10,9 +10,10 @@ import Badge from '@codegouvfr/react-dsfr/Badge'
 interface NumeroCardProps {
   adresse: IBANPlateformeNumero
   createSignalement?: (type: Signalement.type, adresse: IBANPlateformeResult) => void
+  disabledMessage?: string
 }
 
-export function NumeroCard({ adresse, createSignalement }: NumeroCardProps) {
+export function NumeroCard({ adresse, createSignalement, disabledMessage }: NumeroCardProps) {
   const { navigate } = useNavigateWithPreservedSearchParams()
 
   return (
@@ -83,7 +84,7 @@ export function NumeroCard({ adresse, createSignalement }: NumeroCardProps) {
           </button>
         </>
       ) : (
-        <SignalementDisabled />
+        <SignalementDisabled message={disabledMessage} />
       )}
     </Card>
   )
