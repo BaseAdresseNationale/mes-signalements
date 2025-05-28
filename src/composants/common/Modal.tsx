@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { MOBILE_BREAKPOINT } from '../../hooks/useWindowSize'
 
 const StyledBackDrop = styled.div`
-  height: 100vh;
+  height: 100dvh;
   position: fixed;
   background: rgb(24, 24, 24, 0.7);
   top: 0;
