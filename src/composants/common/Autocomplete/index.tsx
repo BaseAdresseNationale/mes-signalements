@@ -18,6 +18,23 @@ const Autocomplete = <T extends { code: string }>({
   const [hasFocus, setHasFocus] = useState(false)
   const [search, setSearch] = useState('')
   const [results, setResults] = useState<T[]>([])
+  const [resultListWidth, setResultListWidth] = useState(0)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleSetWidth = () => {
+      if (ref.current) {
+        const width = ref.current.getBoundingClientRect().width
+        setResultListWidth(width)
+      }
+    }
+    handleSetWidth()
+    window.addEventListener('resize', handleSetWidth)
+
+    return () => {
+      window.removeEventListener('resize', handleSetWidth)
+    }
+  }, [])
 
   useEffect(() => {
     async function fetch() {
@@ -45,7 +62,7 @@ const Autocomplete = <T extends { code: string }>({
   }
 
   return (
-    <StyledAutocomplete>
+    <StyledAutocomplete ref={ref} $resultListWidth={resultListWidth}>
       <div className='fr-search-bar' id='header-search' role='search'>
         <input
           className='fr-input'
