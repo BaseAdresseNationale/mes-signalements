@@ -1,7 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { StyledForm } from '../../signalement.styles'
 import PositionInput from '../../../common/Position/PositionInput'
-import { NumeroChangesRequestedDTO, Signalement } from '../../../../api/signalement'
+import {
+  CommuneStatusDTO,
+  NumeroChangesRequestedDTO,
+  Signalement,
+} from '../../../../api/signalement'
 import {
   BANPlateformeResultTypeEnum,
   IBANPlateformeCommune,
@@ -12,7 +16,6 @@ import ParcelleInput from '../../../common/ParcelleInput'
 import { getAdresseLabel } from '../../../../utils/adresse.utils'
 import { lookup as BANLookup } from '../../../../api/ban-plateforme'
 import SelectInput from '../../../common/SelectInput'
-import { SignalementMode } from '../../../../types/signalement.types'
 
 interface SignalementNumeroFormProps {
   signalement: Signalement
@@ -22,7 +25,7 @@ interface SignalementNumeroFormProps {
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
   initialPositionCoords: number[]
   hasSignalementChanged: boolean
-  mode: SignalementMode
+  mode: CommuneStatusDTO.mode
 }
 
 export default function SignalementNumeroForm({
@@ -136,7 +139,7 @@ export default function SignalementNumeroForm({
             />
           </div>
         </div>
-        {mode === SignalementMode.FULL && (
+        {mode === CommuneStatusDTO.mode.FULL && (
           <SelectInput
             label='Complément'
             defaultOption='-'
@@ -149,9 +152,9 @@ export default function SignalementNumeroForm({
           positions={positions}
           onChange={onEditSignalement('changesRequested', 'positions')}
           initialPositionCoords={initialPositionCoords}
-          multiPositionDisabled={mode !== SignalementMode.FULL}
+          multiPositionDisabled={mode !== CommuneStatusDTO.mode.FULL}
         />
-        {mode === SignalementMode.FULL && <ParcelleInput parcelles={parcelles} />}
+        {mode === CommuneStatusDTO.mode.FULL && <ParcelleInput parcelles={parcelles} />}
       </section>
       <section>
         <div className='form-row'>

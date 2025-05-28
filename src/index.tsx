@@ -14,8 +14,6 @@ import { AdresseSearchPage } from './pages/AdresseSearchPage'
 import GlobalStyle from './globalStyles'
 import { SourceContextProvider } from './contexts/source.context'
 import { SignalementContextProvider } from './contexts/signalement.context'
-import { getCurrentRevision } from './api/api-depot'
-import { getSignalementMode } from './utils/perimeters.utils'
 import { startReactDsfr } from '@codegouvfr/react-dsfr/spa'
 import { SignalementViewerContextProvider } from './contexts/signalement-viewer.context'
 import { AllPage } from './pages/AllPage'
@@ -74,14 +72,11 @@ const router = createHashRouter([
           adresse: null,
         }
       }
-      const codeCommune = params.code.split('_')[0]
-      const currentRevision = await getCurrentRevision(codeCommune)
-      const mode = getSignalementMode(currentRevision)
+
       const adresse = await lookup(params.code)
 
       return {
         adresse,
-        mode,
       }
     },
     errorElement: <div>Une erreur est survenue</div>,

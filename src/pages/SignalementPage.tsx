@@ -19,7 +19,7 @@ import useWindowSize from '../hooks/useWindowSize'
 import { MapContext } from '../contexts/map.context'
 import SignalementMap from '../composants/map/SignalementMap'
 import { useMapContent } from '../hooks/useMapContent'
-import { ChangesRequested, SignalementMode } from '../types/signalement.types'
+import { ChangesRequested } from '../types/signalement.types'
 import { FilterSpecification } from 'maplibre-gl'
 import { SignalementContext } from '../contexts/signalement.context'
 import {
@@ -31,6 +31,8 @@ import Alert from '@codegouvfr/react-dsfr/Alert'
 import { SignalementViewerContext } from '../contexts/signalement-viewer.context'
 import Button from '@codegouvfr/react-dsfr/Button'
 import { getAdresseString } from '../utils/adresse.utils'
+import { useCommuneStatus } from '../hooks/useCommuneStatus'
+import Loader from '../composants/common/Loader'
 
 export function SignalementPage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -43,9 +45,8 @@ export function SignalementPage() {
     setAdresseSearchMapLayersOptions,
     setSignalementSearchMapLayerOptions,
   } = useContext(MapContext)
-  const { adresse, mode } = useLoaderData() as {
+  const { adresse } = useLoaderData() as {
     adresse: IBANPlateformeVoie | IBANPlateformeLieuDit | IBANPlateformeNumero
-    mode: SignalementMode
   }
   const {
     signalement,
@@ -54,6 +55,10 @@ export function SignalementPage() {
     onEditSignalement,
     hasSignalementChanged,
   } = useContext(SignalementContext)
+
+  const { communeStatus, isCommuneStatusLoading } = useCommuneStatus({
+    codeCommune: adresse.commune.code,
+  })
 
   // Fly to location
   useEffect(() => {
@@ -88,7 +93,7 @@ export function SignalementPage() {
     const changesRequested = searchParams.get('changesRequested')
 
     if (type) {
-      if (mode !== SignalementMode.DISABLED) {
+      if (!communeStatus?.disabled) {
         createSignalement(
           type as Signalement.type,
           adresse,
@@ -101,7 +106,7 @@ export function SignalementPage() {
       searchParams.delete('changesRequested')
       setSearchParams(searchParams)
     }
-  }, [searchParams, adresse, createSignalement, mode])
+  }, [searchParams, adresse, createSignalement, communeStatus])
 
   const handleCloseSignalementForm = () => {
     deleteSignalement()
@@ -192,10 +197,14 @@ export function SignalementPage() {
 
   return (
     <>
-      {signalement ? (
+      {isCommuneStatusLoading ? (
+        <div className='loader-wrapper'>
+          <Loader />
+        </div>
+      ) : signalement && communeStatus.mode ? (
         <SignalementForm
           address={adresse}
-          mode={mode}
+          mode={communeStatus.mode}
           map={mapRef || null}
           signalement={signalement as Signalement}
           onEditSignalement={onEditSignalement}
@@ -228,8 +237,10 @@ export function SignalementPage() {
           {adresse.type === BANPlateformeResultTypeEnum.NUMERO && (
             <NumeroCard
               adresse={adresse}
-              {...(mode === SignalementMode.DISABLED
-                ? {}
+              {...(communeStatus.disabled
+                ? {
+                    disabledMessage: communeStatus.message,
+                  }
                 : {
                     createSignalement,
                   })}
@@ -238,8 +249,10 @@ export function SignalementPage() {
           {adresse.type === BANPlateformeResultTypeEnum.VOIE && (
             <VoieCard
               adresse={adresse}
-              {...(mode === SignalementMode.DISABLED
-                ? {}
+              {...(communeStatus.disabled
+                ? {
+                    disabledMessage: communeStatus.message,
+                  }
                 : {
                     createSignalement,
                   })}
@@ -248,8 +261,10 @@ export function SignalementPage() {
           {adresse.type === BANPlateformeResultTypeEnum.LIEU_DIT && (
             <LieuDitCard
               adresse={adresse}
-              {...(mode === SignalementMode.DISABLED
-                ? {}
+              {...(communeStatus.disabled
+                ? {
+                    disabledMessage: communeStatus.message,
+                  }
                 : {
                     createSignalement,
                   })}
