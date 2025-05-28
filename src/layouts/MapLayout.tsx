@@ -24,7 +24,7 @@ const Layout = styled.div`
   display: flex;
   flex-direction: column;
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
 
   > header {
     flex: 0 0 auto;
