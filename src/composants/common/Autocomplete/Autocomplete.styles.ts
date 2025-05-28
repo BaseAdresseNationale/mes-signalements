@@ -1,15 +1,15 @@
 import styled from 'styled-components'
 import { MOBILE_BREAKPOINT } from '../../../hooks/useWindowSize'
 
-export const StyledAutocomplete = styled.div`
+export const StyledAutocomplete = styled.div<{ $resultListWidth: number }>`
   position: relative;
   input:focus {
     outline: none;
   }
   .results {
-    position: absolute;
+    position: fixed;
+    width: ${(props) => props.$resultListWidth}px;
     background-color: #fff;
-    width: 100%;
     border: 1px solid #ccc;
     border-top: none;
     z-index: 100;
