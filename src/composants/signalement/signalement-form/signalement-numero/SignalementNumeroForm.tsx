@@ -113,6 +113,8 @@ export default function SignalementNumeroForm({
             </label>
             <input
               name='suffixe'
+              pattern='/^[\da-z]/i'
+              maxLength={9}
               className='fr-input'
               value={suffixe as string}
               placeholder={'bis, ter...'}
