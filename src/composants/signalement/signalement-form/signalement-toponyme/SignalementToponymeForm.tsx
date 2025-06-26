@@ -50,6 +50,8 @@ export default function SignalementToponymeForm({
             </label>
             <input
               name='nom'
+              maxLength={200}
+              minLength={3}
               required
               type='text'
               className='fr-input'

@@ -131,6 +131,8 @@ export default function SignalementNumeroForm({
             </label>
             <input
               className='fr-input'
+              maxLength={200}
+              minLength={3}
               name='nomVoie'
               required
               disabled={isCreation}
