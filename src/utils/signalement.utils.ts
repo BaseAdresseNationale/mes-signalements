@@ -289,10 +289,8 @@ export const getInitialSignalement = (
         parcelles: [],
         comment: '',
       }
-      initialSignalement.existingLocation = {
-        type: ExistingLocation.type.VOIE,
-        nom: address.nomVoie,
-      }
+
+      initialSignalement.existingLocation = getExistingLocation(address)
       break
     case Signalement.type.LOCATION_TO_UPDATE:
       if (address.type === BANPlateformeResultTypeEnum.VOIE) {
