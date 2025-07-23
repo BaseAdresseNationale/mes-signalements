@@ -194,7 +194,6 @@ export const getSignalementTypeLabel = (type: Signalement.type) => {
 export function getExistingLocation(
   address: any,
 ): ExistingNumero | ExistingVoie | ExistingToponyme {
-  console.log('getExistingLocation', address)
   switch (address.type) {
     case BANPlateformeResultTypeEnum.VOIE:
       return {
