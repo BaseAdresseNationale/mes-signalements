@@ -194,6 +194,7 @@ export const getSignalementTypeLabel = (type: Signalement.type) => {
 export function getExistingLocation(
   address: any,
 ): ExistingNumero | ExistingVoie | ExistingToponyme {
+  console.log('getExistingLocation', address)
   switch (address.type) {
     case BANPlateformeResultTypeEnum.VOIE:
       return {
@@ -289,10 +290,8 @@ export const getInitialSignalement = (
         parcelles: [],
         comment: '',
       }
-      initialSignalement.existingLocation = {
-        type: ExistingLocation.type.VOIE,
-        nom: address.nomVoie,
-      }
+
+      initialSignalement.existingLocation = getExistingLocation(address)
       break
     case Signalement.type.LOCATION_TO_UPDATE:
       if (address.type === BANPlateformeResultTypeEnum.VOIE) {
