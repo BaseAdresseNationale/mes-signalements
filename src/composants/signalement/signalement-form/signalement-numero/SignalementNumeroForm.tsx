@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { StyledForm } from '../../signalement.styles'
 import PositionInput from '../../../common/Position/PositionInput'
 import {
@@ -16,12 +16,15 @@ import ParcelleInput from '../../../common/ParcelleInput'
 import { getAdresseLabel } from '../../../../utils/adresse.utils'
 import { lookup as BANLookup } from '../../../../api/ban-plateforme'
 import SelectInput from '../../../common/SelectInput'
+import { MuiSelectInput, SelectOptionType } from '../../../common/MuiSelectInput'
+import { getExistingLocation } from '../../../../utils/signalement.utils'
+import MapContext from '../../../../contexts/map.context'
 
 interface SignalementNumeroFormProps {
   signalement: Signalement
   onEditSignalement: (property: keyof Signalement, key: string) => (value: any) => void
   onClose: () => void
-  address: IBANPlateformeNumero | IBANPlateformeVoie
+  address: IBANPlateformeNumero | IBANPlateformeVoie | IBANPlateformeCommune
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
   initialPositionCoords: number[]
   hasSignalementChanged: boolean
@@ -38,33 +41,82 @@ export default function SignalementNumeroForm({
   hasSignalementChanged,
   mode,
 }: SignalementNumeroFormProps) {
+  const { mapRef } = useContext(MapContext)
   const isCreation = signalement.type === Signalement.type.LOCATION_TO_CREATE
 
-  const [complementsOpts, setComplementsOpts] = useState<{ value: string; label: string }[]>([])
+  const [voiesOpts, setVoiesOpts] = useState<SelectOptionType<string>[]>([])
+  const [complementsOpts, setComplementsOpts] = useState<SelectOptionType<string>[]>([])
+
+  const [selectedVoie, setSelectedVoie] = useState<SelectOptionType<string> | null>()
+
+  const flyToVoie = useCallback(
+    (voie: IBANPlateformeVoie) => {
+      if (!mapRef) {
+        return
+      }
+
+      if (voie.displayBBox) {
+        mapRef.flyTo({
+          center: [
+            (voie.displayBBox[0] + voie.displayBBox[2]) / 2,
+            (voie.displayBBox[1] + voie.displayBBox[3]) / 2,
+          ],
+          zoom: 18,
+          maxDuration: 3000,
+        })
+      }
+    },
+    [mapRef],
+  )
 
   useEffect(() => {
-    if (address) {
-      const fetchComplements = async () => {
-        try {
-          const { commune } = address
+    const fetchOptions = async () => {
+      try {
+        const results = await BANLookup(signalement.codeCommune)
+        const mappedComplements = (results as IBANPlateformeCommune).voies
+          .filter(({ type }) => type === BANPlateformeResultTypeEnum.LIEU_DIT)
+          .map(({ nomVoie, id }) => ({ value: id, label: nomVoie }))
+        setComplementsOpts(mappedComplements)
 
-          const results = await BANLookup(commune.code)
-          const mappedResults = (results as unknown as IBANPlateformeCommune).voies
-            .filter(({ type }) => type === BANPlateformeResultTypeEnum.LIEU_DIT)
-            .map(({ nomVoie }) => ({ value: nomVoie, label: nomVoie }))
-          setComplementsOpts(mappedResults)
+        const mappedVoies = (results as IBANPlateformeCommune).voies
+          .filter(({ type }) => type === BANPlateformeResultTypeEnum.VOIE)
+          .map(({ nomVoie, id }) => ({ value: id, label: nomVoie }))
+        setVoiesOpts(mappedVoies)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    fetchOptions()
+  }, [signalement])
+
+  useEffect(() => {
+    const fetchVoie = async () => {
+      if (selectedVoie?.value) {
+        try {
+          const voie = await BANLookup(selectedVoie?.value)
+          onEditSignalement('changesRequested', 'nomVoie')(selectedVoie.label)
+          signalement.existingLocation = getExistingLocation(voie)
+          flyToVoie(voie as IBANPlateformeVoie)
         } catch (error) {
           console.error(error)
         }
+      } else {
+        onEditSignalement('changesRequested', 'nomVoie')('')
+        signalement.existingLocation = null
       }
-
-      fetchComplements()
     }
-  }, [address])
+
+    if (selectedVoie) {
+      fetchVoie()
+    }
+  }, [selectedVoie, flyToVoie])
 
   const isSubmitDisabled = useMemo(() => {
     const { changesRequested } = signalement
-    const isDisabled = (changesRequested as NumeroChangesRequestedDTO).positions?.length === 0
+    const isDisabled =
+      (changesRequested as NumeroChangesRequestedDTO).positions?.length === 0 ||
+      !(changesRequested as NumeroChangesRequestedDTO).nomVoie
     if (isCreation) {
       return isDisabled
     }
@@ -125,23 +177,12 @@ export default function SignalementNumeroForm({
           </div>
         </div>
         <div className='form-row'>
-          <div className='fr-input-group'>
-            <label className='fr-label' htmlFor='nomVoie'>
-              Nom de la voie*
-            </label>
-            <input
-              className='fr-input'
-              maxLength={200}
-              minLength={3}
-              name='nomVoie'
-              required
-              disabled={isCreation}
-              value={nomVoie as string}
-              onChange={(event) =>
-                onEditSignalement('changesRequested', 'nomVoie')(event.target.value)
-              }
-            />
-          </div>
+          <MuiSelectInput
+            label='Nom de la voie*'
+            options={voiesOpts}
+            value={{ label: nomVoie, value: nomVoie }}
+            onChange={(event) => setSelectedVoie(event as SelectOptionType<string>)}
+          />
         </div>
         {mode === CommuneStatusDTO.mode.FULL && (
           <SelectInput

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Modal from '../Modal'
-import { MultiSelectInput, SelectOptionType } from '../MultiSelectInput'
+import { MuiSelectInput, SelectOptionType } from '../MuiSelectInput'
 import { Signalement } from '../../../api/signalement'
 import { SignalementBrowserFilter } from '.'
 import styled from 'styled-components'
@@ -77,7 +77,8 @@ export function FiltersModal({
   return (
     <Modal onClose={onClose} title='Filtrer les signalements' style={{ width: 600 }}>
       <StyledForm onSubmit={handleSubmit}>
-        <MultiSelectInput
+        <MuiSelectInput
+          isMultiSelect
           label='Statuts'
           value={value.status}
           options={filterStatusOptions}
@@ -90,7 +91,8 @@ export function FiltersModal({
           hint={filterStatusOptions.map((option) => option.label).join(', ')}
         />
 
-        <MultiSelectInput
+        <MuiSelectInput
+          isMultiSelect
           label='Types'
           value={value.types}
           options={filterTypesOptions}
@@ -104,7 +106,8 @@ export function FiltersModal({
         />
 
         {sourceOptions?.length && sourceOptions.length > 0 ? (
-          <MultiSelectInput
+          <MuiSelectInput
+            isMultiSelect
             label='Sources'
             value={value.sources}
             options={sourceOptions}

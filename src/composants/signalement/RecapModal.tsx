@@ -9,11 +9,7 @@ import {
 import Modal from '../common/Modal'
 import SourceContext from '../../contexts/source.context'
 import { useFriendlyCaptcha } from '../../hooks/useFriendlyCaptcha'
-import {
-  IBANPlateformeLieuDit,
-  IBANPlateformeNumero,
-  IBANPlateformeVoie,
-} from '../../api/ban-plateforme/types'
+import { IBANPlateformeResult } from '../../api/ban-plateforme/types'
 import SignalementDiffRecap from './SignalementDiffRecap'
 import { getModalTitle } from '../../utils/signalement.utils'
 import {
@@ -29,7 +25,7 @@ interface SignalementRecapModalProps {
   signalement: Signalement
   onEditSignalement: (property: keyof Signalement, key: string) => (event: string) => void
   onCloseModal: () => void
-  address: IBANPlateformeNumero | IBANPlateformeVoie | IBANPlateformeLieuDit
+  address: IBANPlateformeResult
   onClose: () => void
 }
 

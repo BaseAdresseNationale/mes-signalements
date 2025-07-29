@@ -8,15 +8,16 @@ export type SelectOptionType<T> = {
   value: T
 }
 
-type MultiSelectInputProps<T> = {
+type MuiSelectInputProps<T> = {
   label: string
   placeholder?: string
   options: Array<SelectOptionType<T>>
-  onChange: (value: SelectOptionType<T>[]) => void
-  value: SelectOptionType<T>[]
+  onChange: (value: SelectOptionType<T> | SelectOptionType<T>[]) => void
+  value: SelectOptionType<T> | SelectOptionType<T>[]
   hint?: string
   isDisabled?: boolean
   noOptionsText?: string
+  isMultiSelect?: boolean
 }
 
 const StyledAutocomplete = styled(Autocomplete)`
@@ -31,7 +32,7 @@ const StyledAutocomplete = styled(Autocomplete)`
   }
 `
 
-export function MultiSelectInput<T>({
+export function MuiSelectInput<T>({
   label,
   placeholder,
   options,
@@ -40,7 +41,8 @@ export function MultiSelectInput<T>({
   hint,
   isDisabled,
   noOptionsText = 'Aucun résultat',
-}: MultiSelectInputProps<T>) {
+  isMultiSelect = false,
+}: MuiSelectInputProps<T>) {
   return (
     <div
       className={`fr-select-group ${isDisabled ? 'fr-select-group--disabled' : ''}`}
@@ -51,7 +53,7 @@ export function MultiSelectInput<T>({
         {hint && <span className='fr-hint-text'>{hint}</span>}
       </label>
       <StyledAutocomplete
-        multiple
+        multiple={isMultiSelect}
         value={value}
         style={{ width: '100%' }}
         options={options}

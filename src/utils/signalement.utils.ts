@@ -6,7 +6,14 @@ import {
   Position,
   Signalement,
 } from '../api/signalement'
-import { BANPlateformeResultTypeEnum } from '../api/ban-plateforme/types'
+import {
+  BANPlateformeResultTypeEnum,
+  IBANPlateformeCommune,
+  IBANPlateformeLieuDit,
+  IBANPlateformeNumero,
+  IBANPlateformeResult,
+  IBANPlateformeVoie,
+} from '../api/ban-plateforme/types'
 import { ChangesRequested } from '../types/signalement.types'
 
 export const positionTypeOptions = [
@@ -247,21 +254,8 @@ export function getExistingLocation(
   }
 }
 
-export function getExistingLocationType(type: string) {
-  switch (type) {
-    case BANPlateformeResultTypeEnum.VOIE:
-      return ExistingLocation.type.VOIE
-    case BANPlateformeResultTypeEnum.LIEU_DIT:
-      return ExistingLocation.type.TOPONYME
-    case BANPlateformeResultTypeEnum.NUMERO:
-      return ExistingLocation.type.NUMERO
-    default:
-      throw new Error(`Impossible de créer un signalement pour le type : ${type}`)
-  }
-}
-
 export const getInitialSignalement = (
-  address: any,
+  address: IBANPlateformeResult,
   signalementType: Signalement.type,
 ): Signalement | null => {
   if (!address) {
@@ -270,7 +264,10 @@ export const getInitialSignalement = (
 
   const initialSignalement: Partial<Signalement> = {
     type: signalementType,
-    codeCommune: address.commune.code,
+    codeCommune:
+      address.type === BANPlateformeResultTypeEnum.COMMUNE
+        ? (address as IBANPlateformeCommune).codeCommune
+        : (address as IBANPlateformeNumero).commune.code,
     author: {
       firstName: '',
       lastName: '',
@@ -281,42 +278,53 @@ export const getInitialSignalement = (
 
   switch (signalementType) {
     case Signalement.type.LOCATION_TO_CREATE:
-      initialSignalement.changesRequested = {
-        suffixe: '',
-        nomVoie: address.nomVoie,
-        nomComplement: '',
-        positions: [],
-        parcelles: [],
-        comment: '',
+      if (address.type === BANPlateformeResultTypeEnum.COMMUNE) {
+        initialSignalement.changesRequested = {
+          suffixe: '',
+          nomVoie: '',
+          nomComplement: '',
+          positions: [],
+          parcelles: [],
+          comment: '',
+        }
+        initialSignalement.existingLocation = null
+      } else if (address.type === BANPlateformeResultTypeEnum.VOIE) {
+        initialSignalement.changesRequested = {
+          suffixe: '',
+          nomVoie: (address as IBANPlateformeVoie).nomVoie,
+          nomComplement: '',
+          positions: [],
+          parcelles: [],
+          comment: '',
+        }
+        initialSignalement.existingLocation = getExistingLocation(address)
       }
-
-      initialSignalement.existingLocation = getExistingLocation(address)
       break
     case Signalement.type.LOCATION_TO_UPDATE:
       if (address.type === BANPlateformeResultTypeEnum.VOIE) {
         initialSignalement.changesRequested = {
-          nom: address.nomVoie,
+          nom: (address as IBANPlateformeVoie).nomVoie,
           comment: '',
         }
       } else if (address.type === BANPlateformeResultTypeEnum.LIEU_DIT) {
         initialSignalement.changesRequested = {
-          nom: address.nomVoie,
+          nom: (address as IBANPlateformeLieuDit).nomVoie,
           comment: '',
           positions: [
             {
-              point: address.position,
+              point: (address as IBANPlateformeLieuDit).position,
               type: Position.type.SEGMENT,
             },
           ],
-          parcelles: address.parcelles,
+          parcelles: (address as IBANPlateformeLieuDit).parcelles,
         }
       } else {
         initialSignalement.changesRequested = {
-          numero: address.numero,
-          suffixe: address.suffixe || '',
-          nomVoie: address.voie.nomVoie,
-          nomComplement: address.lieuDitComplementNom || '',
-          positions: address.positions.map(
+          numero: (address as IBANPlateformeNumero).numero,
+          suffixe: (address as IBANPlateformeNumero).suffixe || '',
+          nomVoie: (address as IBANPlateformeNumero).voie.nomVoie,
+          nomComplement: (address as IBANPlateformeNumero).lieuDitComplementNom || '',
+          positions: (address as IBANPlateformeNumero).positions.map(
             ({ position, positionType }: { position: any; positionType: Position.type }) => ({
               point: {
                 type: 'Point',
@@ -325,7 +333,7 @@ export const getInitialSignalement = (
               type: positionType || Position.type.ENTR_E,
             }),
           ),
-          parcelles: address.parcelles,
+          parcelles: (address as IBANPlateformeNumero).parcelles,
           comment: '',
         }
       }

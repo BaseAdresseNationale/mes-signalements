@@ -1,15 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Autocomplete from '../common/Autocomplete'
 import Loader from '../common/Loader'
 import Modal from '../common/Modal'
 import styled from 'styled-components'
 import { APIAdressePropertyType } from '../../api/api-adresse/types'
-import { search as searchAPIAdresse } from '../../api/api-adresse'
-import { lookup as BANLookup } from '../../api/ban-plateforme'
-import { IBANPlateformeVoie } from '../../api/ban-plateforme/types'
 import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
 import { Signalement } from '../../api/signalement'
 import { StyledResultList } from '../common/Autocomplete/Autocomplete.styles'
+import { useSearchAPIAdresse } from '../../hooks/useSearchAPIAdresse'
 
 export const StyledAdvancedSearchContent = styled.div`
   .step {
@@ -55,55 +53,9 @@ export const AdvancedSearchModal = ({ onClose }: AdvancedSearchModalProps) => {
   })
 
   const [numeros, setNumeros] = useState<{ label: string; code: string }[]>([])
-  const [isLoading, setIsLoading] = useState(false)
   const { navigate } = useNavigateWithPreservedSearchParams()
 
-  const fetchAPIAdresse = useCallback(
-    (type: APIAdressePropertyType, citycode?: string) => async (search: string) => {
-      setIsLoading(true)
-      try {
-        const data = await searchAPIAdresse({
-          q: search,
-          type,
-          limit: 10,
-          citycode,
-        })
-
-        return data.features.map(
-          ({ properties }: { properties: { id: string; name: string; postcode?: string } }) => ({
-            code: properties.id,
-            nom: properties.name,
-            ...(properties.postcode && { postcode: properties.postcode }),
-          }),
-        )
-      } catch (error) {
-        console.error(error)
-        return []
-      } finally {
-        setIsLoading(false)
-      }
-    },
-    [],
-  )
-
-  const fetchNumeros = useCallback(async (streetCode: string) => {
-    setIsLoading(true)
-    try {
-      const data = (await BANLookup(streetCode)) as IBANPlateformeVoie
-      const numeros =
-        data?.numeros.map(({ numero, suffixe, id }) => ({
-          label: suffixe ? `${numero} ${suffixe}` : `${numero}`,
-          code: id,
-        })) || []
-
-      return numeros
-    } catch (error) {
-      console.error(error)
-      return []
-    } finally {
-      setIsLoading(false)
-    }
-  }, [])
+  const { fetchAPIAdresse, fetchNumeros, isLoading } = useSearchAPIAdresse()
 
   useEffect(() => {
     if (adresse.municipality && adresse.street) {

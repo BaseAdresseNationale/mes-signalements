@@ -3,18 +3,20 @@ import { useLoaderData, useSearchParams } from 'react-router-dom'
 import {
   IBANPlateformeNumero,
   BANPlateformeResultTypeEnum,
-  IBANPlateformeVoie,
+  IBANPlateformeResult,
+  IBANPlateformeCommune,
   IBANPlateformeLieuDit,
+  IBANPlateformeVoie,
 } from '../api/ban-plateforme/types'
-import { NumeroCard } from '../composants/adresse/NumeroCard'
+import { NumeroCard } from '../composants/adresse/Cards/NumeroCard'
 import SignalementForm from '../composants/signalement/SignalementForm'
 import {
   NumeroChangesRequestedDTO,
   Signalement,
   ToponymeChangesRequestedDTO,
 } from '../api/signalement'
-import { VoieCard } from '../composants/adresse/VoieCard'
-import { LieuDitCard } from '../composants/adresse/LieuDitCard'
+import { VoieCard } from '../composants/adresse/Cards/VoieCard'
+import { LieuDitCard } from '../composants/adresse/Cards/LieuDitCard'
 import useWindowSize from '../hooks/useWindowSize'
 import { MapContext } from '../contexts/map.context'
 import SignalementMap from '../composants/map/SignalementMap'
@@ -33,6 +35,7 @@ import Button from '@codegouvfr/react-dsfr/Button'
 import { getAdresseString } from '../utils/adresse.utils'
 import { useCommuneStatus } from '../hooks/useCommuneStatus'
 import Loader from '../composants/common/Loader'
+import { CommuneCard } from '../composants/adresse/Cards/CommuneCard'
 
 export function SignalementPage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -46,7 +49,7 @@ export function SignalementPage() {
     setSignalementSearchMapLayerOptions,
   } = useContext(MapContext)
   const { adresse } = useLoaderData() as {
-    adresse: IBANPlateformeVoie | IBANPlateformeLieuDit | IBANPlateformeNumero
+    adresse: IBANPlateformeResult
   }
   const {
     signalement,
@@ -57,7 +60,10 @@ export function SignalementPage() {
   } = useContext(SignalementContext)
 
   const { communeStatus, isCommuneStatusLoading } = useCommuneStatus({
-    codeCommune: adresse.commune.code,
+    codeCommune:
+      adresse.type === BANPlateformeResultTypeEnum.COMMUNE
+        ? (adresse as IBANPlateformeCommune).codeCommune
+        : (adresse as IBANPlateformeNumero).commune.code,
   })
 
   // Fly to location
@@ -67,10 +73,7 @@ export function SignalementPage() {
     }
 
     let position
-    const isVoieOrLieuDit =
-      adresse.type === BANPlateformeResultTypeEnum.VOIE ||
-      adresse.type === BANPlateformeResultTypeEnum.LIEU_DIT
-    if (isVoieOrLieuDit && adresse.displayBBox) {
+    if (adresse.displayBBox) {
       position = [
         (adresse.displayBBox[0] + adresse.displayBBox[2]) / 2,
         (adresse.displayBBox[1] + adresse.displayBBox[3]) / 2,
@@ -82,7 +85,12 @@ export function SignalementPage() {
     mapRef.flyTo({
       center: position as [number, number],
       offset: [0, isMobile ? -100 : 0],
-      zoom: isVoieOrLieuDit ? 18 : 20,
+      zoom:
+        adresse.type === BANPlateformeResultTypeEnum.COMMUNE
+          ? 12
+          : adresse.type === BANPlateformeResultTypeEnum.NUMERO
+            ? 20
+            : 18,
       maxDuration: 3000,
     })
   }, [mapRef, adresse, isMobile])
@@ -119,7 +127,7 @@ export function SignalementPage() {
         ? ([
             'in',
             ['get', 'id'],
-            ['literal', adresse.numeros.map((numero) => numero.id)],
+            ['literal', (adresse as IBANPlateformeLieuDit).numeros.map((numero) => numero.id)],
           ] as FilterSpecification)
         : (['in', adresse.id, ['get', 'id']] as FilterSpecification)
 
@@ -236,7 +244,7 @@ export function SignalementPage() {
           )}
           {adresse.type === BANPlateformeResultTypeEnum.NUMERO && (
             <NumeroCard
-              adresse={adresse}
+              adresse={adresse as IBANPlateformeNumero}
               {...(communeStatus.disabled
                 ? {
                     disabledMessage: communeStatus.message,
@@ -248,7 +256,7 @@ export function SignalementPage() {
           )}
           {adresse.type === BANPlateformeResultTypeEnum.VOIE && (
             <VoieCard
-              adresse={adresse}
+              adresse={adresse as IBANPlateformeVoie}
               {...(communeStatus.disabled
                 ? {
                     disabledMessage: communeStatus.message,
@@ -260,7 +268,19 @@ export function SignalementPage() {
           )}
           {adresse.type === BANPlateformeResultTypeEnum.LIEU_DIT && (
             <LieuDitCard
-              adresse={adresse}
+              adresse={adresse as IBANPlateformeLieuDit}
+              {...(communeStatus.disabled
+                ? {
+                    disabledMessage: communeStatus.message,
+                  }
+                : {
+                    createSignalement,
+                  })}
+            />
+          )}
+          {adresse.type === BANPlateformeResultTypeEnum.COMMUNE && (
+            <CommuneCard
+              adresse={adresse as IBANPlateformeCommune}
               {...(communeStatus.disabled
                 ? {
                     disabledMessage: communeStatus.message,

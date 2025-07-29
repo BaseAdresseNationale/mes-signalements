@@ -3,7 +3,7 @@ import { CommuneStatusDTO, SettingsService } from '../api/signalement'
 import SourceContext from '../contexts/source.context'
 
 type UseCommuneStatusParams = {
-  codeCommune: string
+  codeCommune?: string
 }
 
 export function useCommuneStatus({ codeCommune }: UseCommuneStatusParams): {
@@ -18,7 +18,7 @@ export function useCommuneStatus({ codeCommune }: UseCommuneStatusParams): {
   const sourceId = source?.id || process.env.REACT_APP_API_SIGNALEMENT_SOURCE_ID
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchCommuneStatus() {
       if (!codeCommune || !sourceId) {
         console.warn('Code commune or source ID is missing')
         return
@@ -36,7 +36,9 @@ export function useCommuneStatus({ codeCommune }: UseCommuneStatusParams): {
       }
     }
 
-    fetchData()
+    if (codeCommune) {
+      fetchCommuneStatus()
+    }
   }, [codeCommune, sourceId])
 
   return { communeStatus, isCommuneStatusLoading }

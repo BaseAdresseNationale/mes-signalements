@@ -2,12 +2,14 @@ import React, { useContext, useState } from 'react'
 import SignalementToponymeForm from './signalement-form/signalement-toponyme/SignalementToponymeForm'
 import SignalementNumeroForm from './signalement-form/signalement-numero/SignalementNumeroForm'
 import RecapModal from './RecapModal'
-import SignalementNumeroDeleteForm from './signalement-form/signalement-numero/SignalementNumeroDeleteForm'
+import SignalementDeleteForm from './signalement-form/SignalementDeleteForm'
 import { CommuneStatusDTO, Signalement } from '../../api/signalement'
 import {
   BANPlateformeResultTypeEnum,
+  IBANPlateformeCommune,
   IBANPlateformeLieuDit,
   IBANPlateformeNumero,
+  IBANPlateformeResult,
   IBANPlateformeVoie,
 } from '../../api/ban-plateforme/types'
 import { MapRef } from 'react-map-gl/maplibre'
@@ -19,7 +21,7 @@ interface SignalementFormProps {
   map: MapRef | null
   onEditSignalement: (property: keyof Signalement, key: string) => (value: any) => void
   onClose: () => void
-  address: IBANPlateformeVoie | IBANPlateformeLieuDit | IBANPlateformeNumero
+  address: IBANPlateformeResult
   hasSignalementChanged: boolean
   mode: CommuneStatusDTO.mode
 }
@@ -47,63 +49,71 @@ export default function SignalementForm({
   return (
     <>
       {signalement?.type === Signalement.type.LOCATION_TO_UPDATE &&
-        address.type === BANPlateformeResultTypeEnum.LIEU_DIT && (
+        (address.type === BANPlateformeResultTypeEnum.LIEU_DIT ? (
           <SignalementToponymeForm
             onClose={onClose}
             onSubmit={handleSubmit}
             onEditSignalement={onEditSignalement}
             signalement={signalement}
-            address={address}
+            address={address as IBANPlateformeLieuDit}
             initialPositionCoords={[map?.getCenter()?.lng || 0, map?.getCenter()?.lat || 0]}
             hasSignalementChanged={hasSignalementChanged}
             mode={mode}
           />
-        )}
-
-      {signalement?.type === Signalement.type.LOCATION_TO_UPDATE &&
-        address.type === BANPlateformeResultTypeEnum.VOIE && (
+        ) : address.type === BANPlateformeResultTypeEnum.VOIE ? (
           <SignalementVoieForm
             onClose={onClose}
             onSubmit={handleSubmit}
             onEditSignalement={onEditSignalement}
             signalement={signalement}
-            address={address}
+            address={address as IBANPlateformeVoie}
             hasSignalementChanged={hasSignalementChanged}
           />
-        )}
-
-      {signalement?.type === Signalement.type.LOCATION_TO_CREATE &&
-        address.type === BANPlateformeResultTypeEnum.VOIE && (
+        ) : (
           <SignalementNumeroForm
             onClose={onClose}
             onSubmit={handleSubmit}
             onEditSignalement={onEditSignalement}
             signalement={signalement}
-            address={address}
+            address={address as IBANPlateformeNumero}
+            initialPositionCoords={[
+              (address as IBANPlateformeNumero).lon,
+              (address as IBANPlateformeNumero).lat,
+            ]}
+            hasSignalementChanged={hasSignalementChanged}
+            mode={mode}
+          />
+        ))}
+
+      {signalement?.type === Signalement.type.LOCATION_TO_CREATE &&
+        (address.type === BANPlateformeResultTypeEnum.VOIE ? (
+          <SignalementNumeroForm
+            onClose={onClose}
+            onSubmit={handleSubmit}
+            onEditSignalement={onEditSignalement}
+            signalement={signalement}
+            address={address as IBANPlateformeVoie}
             initialPositionCoords={[map?.getCenter()?.lng || 0, map?.getCenter()?.lat || 0]}
             hasSignalementChanged={hasSignalementChanged}
             mode={mode}
           />
-        )}
-
-      {signalement?.type === Signalement.type.LOCATION_TO_UPDATE &&
-        address.type === BANPlateformeResultTypeEnum.NUMERO && (
+        ) : (
           <SignalementNumeroForm
             onClose={onClose}
             onSubmit={handleSubmit}
             onEditSignalement={onEditSignalement}
             signalement={signalement}
-            address={address}
-            initialPositionCoords={[address.lon, address.lat]}
+            address={address as IBANPlateformeCommune}
+            initialPositionCoords={[map?.getCenter()?.lng || 0, map?.getCenter()?.lat || 0]}
             hasSignalementChanged={hasSignalementChanged}
             mode={mode}
           />
-        )}
+        ))}
 
       {signalement?.type === Signalement.type.LOCATION_TO_DELETE && (
-        <SignalementNumeroDeleteForm
+        <SignalementDeleteForm
           signalement={signalement}
-          address={address as IBANPlateformeNumero}
+          address={address}
           onClose={onClose}
           onSubmit={handleSubmit}
           onEditSignalement={onEditSignalement}
