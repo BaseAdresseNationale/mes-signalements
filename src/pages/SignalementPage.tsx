@@ -213,7 +213,6 @@ export function SignalementPage() {
         <SignalementForm
           address={adresse}
           mode={communeStatus.mode}
-          map={mapRef || null}
           signalement={signalement as Signalement}
           onEditSignalement={onEditSignalement}
           onClose={handleCloseSignalementForm}

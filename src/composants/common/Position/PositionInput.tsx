@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import styled from 'styled-components'
 import PositionItem from './PositionItem'
 import { Position } from '../../../api/signalement'
 import { blurPosition } from '../../../utils/position.utils'
+import MapContext from '../../../contexts/map.context'
 
 const StyledContainer = styled.div`
   margin-top: 1.5rem;
@@ -14,7 +15,7 @@ const StyledContainer = styled.div`
 
 interface PositionInputProps {
   positions: Position[]
-  initialPositionCoords: number[]
+  initialPositionCoords?: number[]
   onChange: (positions: Position[]) => void
   defaultPositionType?: Position.type
   multiPositionDisabled?: boolean
@@ -27,6 +28,9 @@ export default function PositionInput({
   defaultPositionType = Position.type.ENTR_E,
   multiPositionDisabled,
 }: Readonly<PositionInputProps>) {
+  const { mapRef } = useContext(MapContext)
+  const getInitialCoords = () => [mapRef?.getCenter()?.lng || 0, mapRef?.getCenter()?.lat || 0]
+
   return (
     <StyledContainer>
       <p>{`Position${multiPositionDisabled ? '' : 's'}*`}</p>
@@ -61,7 +65,7 @@ export default function PositionInput({
                 {
                   point: {
                     type: 'Point',
-                    coordinates: blurPosition(initialPositionCoords),
+                    coordinates: blurPosition(initialPositionCoords || getInitialCoords()),
                   },
                   type: defaultPositionType,
                 },

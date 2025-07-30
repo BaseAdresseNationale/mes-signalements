@@ -55,6 +55,14 @@ export default function SignalementDiffRecap({
       case BANPlateformeResultTypeEnum.COMMUNE:
         return (
           <>
+            {numero} {suffixe} {nomVoie}{' '}
+            {nomComplement && (
+              <>
+                <br />
+                {nomComplement}
+              </>
+            )}
+            <br />
             {(address as IBANPlateformeCommune).codesPostaux.join(', ')}{' '}
             {(address as IBANPlateformeCommune).nomCommune}
           </>

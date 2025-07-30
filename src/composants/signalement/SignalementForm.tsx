@@ -12,13 +12,11 @@ import {
   IBANPlateformeResult,
   IBANPlateformeVoie,
 } from '../../api/ban-plateforme/types'
-import { MapRef } from 'react-map-gl/maplibre'
 import SignalementVoieForm from './signalement-form/signalement-voie/SignalementVoieForm'
 import MapContext from '../../contexts/map.context'
 
 interface SignalementFormProps {
   signalement: Signalement
-  map: MapRef | null
   onEditSignalement: (property: keyof Signalement, key: string) => (value: any) => void
   onClose: () => void
   address: IBANPlateformeResult
@@ -28,7 +26,6 @@ interface SignalementFormProps {
 
 export default function SignalementForm({
   signalement,
-  map,
   onEditSignalement,
   onClose,
   address,
@@ -56,7 +53,6 @@ export default function SignalementForm({
             onEditSignalement={onEditSignalement}
             signalement={signalement}
             address={address as IBANPlateformeLieuDit}
-            initialPositionCoords={[map?.getCenter()?.lng || 0, map?.getCenter()?.lat || 0]}
             hasSignalementChanged={hasSignalementChanged}
             mode={mode}
           />
@@ -93,7 +89,6 @@ export default function SignalementForm({
             onEditSignalement={onEditSignalement}
             signalement={signalement}
             address={address as IBANPlateformeVoie}
-            initialPositionCoords={[map?.getCenter()?.lng || 0, map?.getCenter()?.lat || 0]}
             hasSignalementChanged={hasSignalementChanged}
             mode={mode}
           />
@@ -104,7 +99,6 @@ export default function SignalementForm({
             onEditSignalement={onEditSignalement}
             signalement={signalement}
             address={address as IBANPlateformeCommune}
-            initialPositionCoords={[map?.getCenter()?.lng || 0, map?.getCenter()?.lat || 0]}
             hasSignalementChanged={hasSignalementChanged}
             mode={mode}
           />

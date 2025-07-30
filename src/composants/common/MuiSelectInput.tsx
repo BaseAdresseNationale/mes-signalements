@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
+import { FilterOptionsState } from '@mui/material'
 
 export type SelectOptionType<T> = {
   label: string
@@ -18,6 +19,10 @@ type MuiSelectInputProps<T> = {
   isDisabled?: boolean
   noOptionsText?: string
   isMultiSelect?: boolean
+  filterOptions?: (
+    options: SelectOptionType<string>[],
+    params: FilterOptionsState<SelectOptionType<string>>,
+  ) => SelectOptionType<string>[]
 }
 
 const StyledAutocomplete = styled(Autocomplete)`
@@ -26,6 +31,12 @@ const StyledAutocomplete = styled(Autocomplete)`
   border-top-right-radius: 4px;
 
   .MuiInputBase-root {
+    &::before {
+      border-bottom: 2px solid var(--border-plain-grey);
+    }
+    &::after {
+      border-bottom: 2px solid var(--background-action-high-blue-france);
+    }
     > input.MuiInputBase-input {
       padding: 0.5rem 1rem;
     }
@@ -42,6 +53,7 @@ export function MuiSelectInput<T>({
   isDisabled,
   noOptionsText = 'Aucun résultat',
   isMultiSelect = false,
+  filterOptions,
 }: MuiSelectInputProps<T>) {
   return (
     <div
@@ -66,6 +78,7 @@ export function MuiSelectInput<T>({
         )}
         disablePortal
         noOptionsText={noOptionsText}
+        filterOptions={filterOptions as any}
       />
     </div>
   )

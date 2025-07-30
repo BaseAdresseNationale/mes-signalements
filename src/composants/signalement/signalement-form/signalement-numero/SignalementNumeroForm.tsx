@@ -15,10 +15,12 @@ import {
 import ParcelleInput from '../../../common/ParcelleInput'
 import { getAdresseLabel } from '../../../../utils/adresse.utils'
 import { lookup as BANLookup } from '../../../../api/ban-plateforme'
-import SelectInput from '../../../common/SelectInput'
 import { MuiSelectInput, SelectOptionType } from '../../../common/MuiSelectInput'
 import { getExistingLocation } from '../../../../utils/signalement.utils'
 import MapContext from '../../../../contexts/map.context'
+import Input from '@codegouvfr/react-dsfr/Input'
+import { createFilterOptions } from '@mui/material/Autocomplete'
+import { FilterOptionsState } from '@mui/material'
 
 interface SignalementNumeroFormProps {
   signalement: Signalement
@@ -26,10 +28,12 @@ interface SignalementNumeroFormProps {
   onClose: () => void
   address: IBANPlateformeNumero | IBANPlateformeVoie | IBANPlateformeCommune
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
-  initialPositionCoords: number[]
+  initialPositionCoords?: number[]
   hasSignalementChanged: boolean
   mode: CommuneStatusDTO.mode
 }
+
+const filter = createFilterOptions<SelectOptionType<string>>()
 
 export default function SignalementNumeroForm({
   signalement,
@@ -47,7 +51,7 @@ export default function SignalementNumeroForm({
   const [voiesOpts, setVoiesOpts] = useState<SelectOptionType<string>[]>([])
   const [complementsOpts, setComplementsOpts] = useState<SelectOptionType<string>[]>([])
 
-  const [selectedVoie, setSelectedVoie] = useState<SelectOptionType<string> | null>()
+  const [selectedVoie, setSelectedVoie] = useState<SelectOptionType<string>>()
 
   const flyToVoie = useCallback(
     (voie: IBANPlateformeVoie) => {
@@ -91,8 +95,12 @@ export default function SignalementNumeroForm({
   }, [signalement])
 
   useEffect(() => {
-    const fetchVoie = async () => {
-      if (selectedVoie?.value) {
+    const updateVoie = async () => {
+      if (!selectedVoie) {
+        return
+      }
+
+      if (selectedVoie.value.startsWith(signalement.codeCommune)) {
         try {
           const voie = await BANLookup(selectedVoie?.value)
           onEditSignalement('changesRequested', 'nomVoie')(selectedVoie.label)
@@ -102,13 +110,13 @@ export default function SignalementNumeroForm({
           console.error(error)
         }
       } else {
-        onEditSignalement('changesRequested', 'nomVoie')('')
+        onEditSignalement('changesRequested', 'nomVoie')(selectedVoie.value)
         signalement.existingLocation = null
       }
     }
 
     if (selectedVoie) {
-      fetchVoie()
+      updateVoie()
     }
   }, [selectedVoie, flyToVoie])
 
@@ -177,28 +185,65 @@ export default function SignalementNumeroForm({
           </div>
         </div>
         <div className='form-row'>
-          <MuiSelectInput
-            label='Nom de la voie*'
-            options={voiesOpts}
-            value={{ label: nomVoie, value: nomVoie }}
-            onChange={(event) => setSelectedVoie(event as SelectOptionType<string>)}
-          />
+          {isCreation ? (
+            <MuiSelectInput
+              label='Nom de la voie*'
+              options={voiesOpts}
+              value={{ label: nomVoie, value: nomVoie }}
+              onChange={(event) => setSelectedVoie(event as SelectOptionType<string>)}
+              filterOptions={(
+                options: SelectOptionType<string>[],
+                params: FilterOptionsState<SelectOptionType<string>>,
+              ) => {
+                const filtered = filter(options, params)
+
+                const { inputValue } = params
+                const isExisting = options.some((option) => inputValue === option.label)
+                const isValid = inputValue.length > 3 && inputValue.length < 200
+                if (inputValue !== '' && !isExisting && isValid) {
+                  filtered.push({
+                    value: inputValue,
+                    label: `Créer la voie "${inputValue}"`,
+                  })
+                }
+
+                return filtered
+              }}
+            />
+          ) : (
+            <Input
+              label='Nom de la voie*'
+              nativeInputProps={{
+                maxLength: 200,
+                minLength: 3,
+                name: 'nomVoie',
+                required: true,
+                value: nomVoie,
+                onChange: (event) =>
+                  onEditSignalement('changesRequested', 'nomVoie')(event.target.value),
+              }}
+            />
+          )}
         </div>
-        {mode === CommuneStatusDTO.mode.FULL && (
-          <SelectInput
-            label='Complément'
-            defaultOption='-'
-            value={nomComplement}
-            options={complementsOpts}
-            handleChange={(value) => onEditSignalement('changesRequested', 'nomComplement')(value)}
-          />
-        )}
         <PositionInput
           positions={positions}
           onChange={onEditSignalement('changesRequested', 'positions')}
           initialPositionCoords={initialPositionCoords}
           multiPositionDisabled={mode !== CommuneStatusDTO.mode.FULL}
         />
+        {mode === CommuneStatusDTO.mode.FULL && (
+          <MuiSelectInput
+            label='Complément'
+            options={complementsOpts}
+            value={{ label: nomComplement || '', value: nomComplement }}
+            onChange={(event) =>
+              onEditSignalement(
+                'changesRequested',
+                'nomComplement',
+              )((event as SelectOptionType<string>)?.label || '')
+            }
+          />
+        )}
         {mode === CommuneStatusDTO.mode.FULL && <ParcelleInput parcelles={parcelles} />}
       </section>
       <section>

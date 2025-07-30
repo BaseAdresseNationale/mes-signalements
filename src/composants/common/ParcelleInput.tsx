@@ -3,6 +3,8 @@ import styled from 'styled-components'
 import MapContext from '../../contexts/map.context'
 
 const StyledContainer = styled.div`
+  margin-top: 1.5rem;
+
   .parcelles-wrapper {
     display: flex;
     flex-wrap: wrap;

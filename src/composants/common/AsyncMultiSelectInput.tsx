@@ -27,6 +27,12 @@ const StyledAutocomplete = styled(Autocomplete)`
   border-top-right-radius: 4px;
 
   .MuiInputBase-root {
+    &::before {
+      border-bottom: 2px solid var(--border-plain-grey);
+    }
+    &::after {
+      border-bottom: 2px solid var(--background-action-high-blue-france);
+    }
     > input.MuiInputBase-input {
       padding: 0.5rem 1rem;
     }

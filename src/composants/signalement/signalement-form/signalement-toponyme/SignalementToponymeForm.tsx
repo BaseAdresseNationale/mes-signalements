@@ -17,7 +17,6 @@ interface SignalementToponymeFormProps {
   onClose: () => void
   address: IBANPlateformeLieuDit
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
-  initialPositionCoords: number[]
   hasSignalementChanged: boolean
   mode: CommuneStatusDTO.mode
 }
@@ -28,7 +27,6 @@ export default function SignalementToponymeForm({
   onClose,
   address,
   onSubmit,
-  initialPositionCoords,
   hasSignalementChanged,
   mode,
 }: SignalementToponymeFormProps) {
@@ -63,7 +61,6 @@ export default function SignalementToponymeForm({
         <PositionInput
           positions={positions}
           onChange={onEditSignalement('changesRequested', 'positions')}
-          initialPositionCoords={initialPositionCoords}
           defaultPositionType={Position.type.SEGMENT}
           multiPositionDisabled={mode !== CommuneStatusDTO.mode.FULL}
         />
