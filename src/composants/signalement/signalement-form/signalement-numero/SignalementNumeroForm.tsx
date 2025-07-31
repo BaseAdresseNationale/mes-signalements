@@ -138,10 +138,10 @@ export default function SignalementNumeroForm({
   return (
     <StyledForm onSubmit={onSubmit}>
       {isCreation ? (
-        <h5>Demande de création d&apos;une adresse</h5>
+        <h4>Demande de création d&apos;une adresse</h4>
       ) : (
         <>
-          <h5>Demande de modification pour l&apos;adresse</h5>
+          <h4>Demande de modification pour l&apos;adresse</h4>
           <section>
             <div>{getAdresseLabel(address)}</div>
           </section>

@@ -1,11 +1,6 @@
 import React, { useContext, useState } from 'react'
 import { StyledForm } from './signalement.styles'
-import {
-  CreateSignalementDTO,
-  Signalement,
-  SignalementsService,
-  Source,
-} from '../../api/signalement'
+import { Signalement, SignalementsService, Source } from '../../api/signalement'
 import Modal from '../common/Modal'
 import SourceContext from '../../contexts/source.context'
 import { useFriendlyCaptcha } from '../../hooks/useFriendlyCaptcha'
@@ -53,7 +48,7 @@ export default function SignalementRecapModal({
     setSubmitStatus('loading')
     try {
       const sourceId = source?.id || process.env.REACT_APP_API_SIGNALEMENT_SOURCE_ID
-      await SignalementsService.createSignalement(signalement as CreateSignalementDTO, sourceId)
+      await SignalementsService.createSignalement(signalement, sourceId)
       if (saveContact && signalement.author) {
         setValueInLocalStorage(LocalStorageKeys.AUTHOR_CONTACT, {
           lastName: signalement.author.lastName,

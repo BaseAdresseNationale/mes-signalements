@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { Signalement } from '../../api/signalement'
-import { getPositionTypeLabel } from '../../utils/signalement.utils'
+import { getPositionTypeLabel, isToponymeChangesRequested } from '../../utils/signalement.utils'
 import { getAdresseLabel } from '../../utils/adresse.utils'
 import { ChangesRequested } from '../../types/signalement.types'
 import {
@@ -53,7 +53,14 @@ export default function SignalementDiffRecap({
           </>
         )
       case BANPlateformeResultTypeEnum.COMMUNE:
-        return (
+        return isToponymeChangesRequested(signalement.changesRequested) ? (
+          <>
+            {nom}
+            <br />
+            {(address as IBANPlateformeCommune).codesPostaux.join(', ')}{' '}
+            {(address as IBANPlateformeCommune).nomCommune}
+          </>
+        ) : (
           <>
             {numero} {suffixe} {nomVoie}{' '}
             {nomComplement && (

@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react'
-import { Author, PositionDTO, Signalement, Source } from '../api/signalement'
+import { Author, ExistingLocation, PositionDTO, Signalement, Source } from '../api/signalement'
 import { getInitialSignalement, getPositionTypeLabel } from '../utils/signalement.utils'
 import { IBANPlateformeResult } from '../api/ban-plateforme/types'
 import { ChangesRequested } from '../types/signalement.types'
@@ -12,6 +12,7 @@ export interface SignalementContextValue {
     signalementType: Signalement.type,
     adresse: IBANPlateformeResult,
     changesRequested?: ChangesRequested,
+    creationType?: ExistingLocation.type,
   ) => void
   deleteSignalement: () => void
   onEditSignalement: (property: keyof Signalement, key: string) => (value: any) => void
@@ -58,8 +59,9 @@ export function SignalementContextProvider(props: Readonly<SignalementContextPro
       signalementType: Signalement.type,
       adresse: IBANPlateformeResult,
       changesRequested?: ChangesRequested,
+      creationType?: ExistingLocation.type,
     ) => {
-      const signalement = getInitialSignalement(adresse, signalementType)
+      const signalement = getInitialSignalement(adresse, signalementType, creationType)
       setInitialSignalement(signalement)
       setSignalement(signalement)
 

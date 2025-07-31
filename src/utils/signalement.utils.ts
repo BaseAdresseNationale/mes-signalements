@@ -5,6 +5,7 @@ import {
   ExistingVoie,
   Position,
   Signalement,
+  ToponymeChangesRequestedDTO,
 } from '../api/signalement'
 import {
   BANPlateformeResultTypeEnum,
@@ -15,6 +16,7 @@ import {
   IBANPlateformeVoie,
 } from '../api/ban-plateforme/types'
 import { ChangesRequested } from '../types/signalement.types'
+import { isDefined } from '../api/signalement/core/request'
 
 export const positionTypeOptions = [
   {
@@ -257,6 +259,7 @@ export function getExistingLocation(
 export const getInitialSignalement = (
   address: IBANPlateformeResult,
   signalementType: Signalement.type,
+  creationType?: ExistingLocation.type,
 ): Signalement | null => {
   if (!address) {
     return null
@@ -279,14 +282,22 @@ export const getInitialSignalement = (
   switch (signalementType) {
     case Signalement.type.LOCATION_TO_CREATE:
       if (address.type === BANPlateformeResultTypeEnum.COMMUNE) {
-        initialSignalement.changesRequested = {
-          suffixe: '',
-          nomVoie: '',
-          nomComplement: '',
-          positions: [],
-          parcelles: [],
-          comment: '',
-        }
+        initialSignalement.changesRequested =
+          creationType === ExistingLocation.type.TOPONYME
+            ? {
+                nom: '',
+                comment: '',
+                positions: [],
+                parcelles: [],
+              }
+            : {
+                suffixe: '',
+                nomVoie: '',
+                nomComplement: '',
+                positions: [],
+                parcelles: [],
+                comment: '',
+              }
         initialSignalement.existingLocation = null
       } else if (address.type === BANPlateformeResultTypeEnum.VOIE) {
         initialSignalement.changesRequested = {
@@ -351,4 +362,12 @@ export const getInitialSignalement = (
   }
 
   return initialSignalement as Signalement
+}
+
+export const isToponymeChangesRequested = (
+  changesRequested: any,
+): changesRequested is ToponymeChangesRequestedDTO => {
+  const { nom, parcelles, positions } = changesRequested as ToponymeChangesRequestedDTO
+
+  return isDefined(nom) && Array.isArray(parcelles) && Array.isArray(positions)
 }

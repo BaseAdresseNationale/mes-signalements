@@ -5,7 +5,7 @@ import {
   Signalement,
   ToponymeChangesRequestedDTO,
 } from '../../../../api/signalement'
-import React from 'react'
+import React, { useMemo } from 'react'
 import { getAdresseLabel } from '../../../../utils/adresse.utils'
 import { IBANPlateformeLieuDit } from '../../../../api/ban-plateforme/types'
 import PositionInput from '../../../common/Position/PositionInput'
@@ -30,17 +30,36 @@ export default function SignalementToponymeForm({
   hasSignalementChanged,
   mode,
 }: SignalementToponymeFormProps) {
+  const isCreation = signalement.type === Signalement.type.LOCATION_TO_CREATE
+
+  const isSubmitDisabled = useMemo(() => {
+    const { changesRequested } = signalement
+    const isDisabled = (changesRequested as ToponymeChangesRequestedDTO).positions?.length === 0
+    if (isCreation) {
+      return isDisabled
+    }
+
+    return isDisabled || !hasSignalementChanged
+  }, [hasSignalementChanged, signalement, isCreation])
+
   const { nom, positions, parcelles, comment } =
     signalement.changesRequested as ToponymeChangesRequestedDTO
 
   return (
     <StyledForm onSubmit={onSubmit}>
-      <h4>Demande de modification du lieu-dit</h4>
+      {isCreation ? (
+        <h4>Demande de création d&apos;un lieu-dit</h4>
+      ) : (
+        <>
+          <h4>Demande de modification du lieu-dit</h4>
+          <section>
+            <div>{getAdresseLabel(address)}</div>
+          </section>
+        </>
+      )}
+
       <section>
-        <div>{getAdresseLabel(address)}</div>
-      </section>
-      <section>
-        <h5>Modifications demandées</h5>
+        {!isCreation && <h5>Modifications demandées</h5>}
         <div className='form-row'>
           <div className='fr-input-group'>
             <label className='fr-label' htmlFor='nom'>
@@ -87,7 +106,7 @@ export default function SignalementToponymeForm({
       <div className='form-controls'>
         <button
           className='fr-btn'
-          disabled={!hasSignalementChanged}
+          disabled={isSubmitDisabled}
           style={{ color: 'white' }}
           type='submit'
         >

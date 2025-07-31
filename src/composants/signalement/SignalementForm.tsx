@@ -14,6 +14,7 @@ import {
 } from '../../api/ban-plateforme/types'
 import SignalementVoieForm from './signalement-form/signalement-voie/SignalementVoieForm'
 import MapContext from '../../contexts/map.context'
+import { isToponymeChangesRequested } from '../../utils/signalement.utils'
 
 interface SignalementFormProps {
   signalement: Signalement
@@ -82,13 +83,13 @@ export default function SignalementForm({
         ))}
 
       {signalement?.type === Signalement.type.LOCATION_TO_CREATE &&
-        (address.type === BANPlateformeResultTypeEnum.VOIE ? (
-          <SignalementNumeroForm
+        (isToponymeChangesRequested(signalement.changesRequested) ? (
+          <SignalementToponymeForm
             onClose={onClose}
             onSubmit={handleSubmit}
             onEditSignalement={onEditSignalement}
             signalement={signalement}
-            address={address as IBANPlateformeVoie}
+            address={address as IBANPlateformeLieuDit}
             hasSignalementChanged={hasSignalementChanged}
             mode={mode}
           />
