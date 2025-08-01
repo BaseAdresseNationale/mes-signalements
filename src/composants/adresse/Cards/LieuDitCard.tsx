@@ -19,9 +19,6 @@ export function LieuDitCard({ adresse, createSignalement }: LieuDitCardProps) {
   return (
     <Card>
       <h1>{getAdresseLabel(adresse, { navigateFn: navigate })}</h1>
-      <h2>
-        {adresse.commune.nom} - {adresse.commune.code}
-      </h2>
       <ul>
         <li>
           Région : <b>{adresse.commune.region.nom}</b>
@@ -63,7 +60,7 @@ export function LieuDitCard({ adresse, createSignalement }: LieuDitCardProps) {
         noFilterMatchMessage='Aucun numéro ne correspond à ce filtrage'
         title={
           adresse.numeros.length === 0
-            ? "Aucun numéro n'est répertorié pour cette commune"
+            ? "Aucun numéro n'est répertorié pour ce lieu-dit"
             : adresse.numeros.length === 1
               ? '1 numéro répertorié'
               : `${adresse.numeros.length} numéros répertoriées`

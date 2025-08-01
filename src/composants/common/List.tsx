@@ -79,37 +79,41 @@ export function List<T>({
   return (
     <StyledList>
       <h3>{title}</h3>
-      <div className='fr-search-bar' id='header-search' role='search'>
-        <input
-          className='fr-input'
-          onChange={(e) => setSearch(e.target.value)}
-          type='search'
-          id='list-filter'
-          name='list-filter'
-          placeholder={filter.placeholder}
-        />
-      </div>
-      {filteredItems.length > 0 ? (
-        <div className='fr-table'>
-          <div className='fr-table__wrapper'>
-            <div className='fr-table__container'>
-              <div className='fr-table__content'>
-                <table>
-                  <thead>
-                    <tr>
-                      {headers.map((header) => (
-                        <th key={header}>{header}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>{filteredItems.map((item) => renderItem(item))}</tbody>
-                </table>
+      {items.length > 0 && (
+        <>
+          <div className='fr-search-bar' id='header-search' role='search'>
+            <input
+              className='fr-input'
+              onChange={(e) => setSearch(e.target.value)}
+              type='search'
+              id='list-filter'
+              name='list-filter'
+              placeholder={filter.placeholder}
+            />
+          </div>
+          {filteredItems.length > 0 ? (
+            <div className='fr-table'>
+              <div className='fr-table__wrapper'>
+                <div className='fr-table__container'>
+                  <div className='fr-table__content'>
+                    <table>
+                      <thead>
+                        <tr>
+                          {headers.map((header) => (
+                            <th key={header}>{header}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>{filteredItems.map((item) => renderItem(item))}</tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      ) : (
-        <p>{noFilterMatchMessage}</p>
+          ) : (
+            <p>{noFilterMatchMessage}</p>
+          )}
+        </>
       )}
     </StyledList>
   )

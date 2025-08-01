@@ -38,6 +38,8 @@ export interface IBANPlateformeCommune extends IBANPlateformeResult {
 
 export interface IBANPlateformeNumero extends IBANPlateformeResult {
   type: BANPlateformeResultTypeEnum.NUMERO
+  banIdMainCommonToponym?: string
+  banIdSecondaryCommonToponyms?: string
   numero: number
   suffixe: string
   positions: {

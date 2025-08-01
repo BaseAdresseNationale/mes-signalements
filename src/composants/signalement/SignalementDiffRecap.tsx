@@ -219,9 +219,7 @@ export default function SignalementDiffRecap({
               ) : (address as IBANPlateformeLieuDit).position ? (
                 <>
                   <h6>Position : </h6>
-                  <b>
-                    {getPositionTypeLabel((address as IBANPlateformeLieuDit).position.type)}
-                  </b> : {(address as IBANPlateformeLieuDit).position.coordinates[0]},{' '}
+                  <b>Segment</b> : {(address as IBANPlateformeLieuDit).position.coordinates[0]},{' '}
                   {(address as IBANPlateformeLieuDit).position.coordinates[1]}
                   <br />
                 </>

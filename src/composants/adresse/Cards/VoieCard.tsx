@@ -69,7 +69,7 @@ export function VoieCard({ adresse, createSignalement }: VoieCardProps) {
         noFilterMatchMessage='Aucun numéro ne correspond à ce filtrage'
         title={
           adresse.numeros.length === 0
-            ? "Aucun numéro n'est répertorié pour cette commune"
+            ? "Aucun numéro n'est répertorié pour cette voie"
             : adresse.numeros.length === 1
               ? '1 numéro répertorié'
               : `${adresse.numeros.length} numéros répertoriées`

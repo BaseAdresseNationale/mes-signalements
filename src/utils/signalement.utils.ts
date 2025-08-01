@@ -71,20 +71,23 @@ export const getPositionTypeLabel = (positionType: Position.type) => {
 }
 
 export const getSignalementFromFeatureAPISignalement = (feature: any): Signalement => {
+  const { createdAt, updatedAt, changesRequested, existingLocation, source } = feature.properties
   return {
     ...feature.properties,
-    createdAt: JSON.parse(feature.properties.createdAt),
-    updatedAt: JSON.parse(feature.properties.updatedAt),
-    changesRequested: JSON.parse(feature.properties.changesRequested),
-    existingLocation: JSON.parse(feature.properties.existingLocation),
-    source: JSON.parse(feature.properties.source),
+    createdAt: JSON.parse(createdAt),
+    updatedAt: JSON.parse(updatedAt),
+    changesRequested: JSON.parse(changesRequested),
+    existingLocation: existingLocation ? JSON.parse(existingLocation) : undefined,
+    source: JSON.parse(source),
   }
 }
 
 export const getRequestedLocationLabel = (changesRequested: any) => {
-  return `${changesRequested.numero} ${
-    changesRequested.suffixe ? `${changesRequested.suffixe} ` : ''
-  }${changesRequested.nomVoie}`
+  return isToponymeChangesRequested(changesRequested)
+    ? changesRequested.nom
+    : `${changesRequested.numero} ${
+        changesRequested.suffixe ? `${changesRequested.suffixe} ` : ''
+      }${changesRequested.nomVoie}`
 }
 
 export const getExistingLocationLabel = (
@@ -248,6 +251,7 @@ export function getExistingLocation(
         toponyme: {
           type: ExistingLocation.type.VOIE,
           nom: address.voie.nomVoie,
+          banId: address.banIdMainCommonToponym,
         },
         nomComplement: address.lieuDitComplementNom,
       } as ExistingNumero
