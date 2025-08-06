@@ -7,7 +7,7 @@ import {
 } from '../../../../api/signalement'
 import React, { useMemo } from 'react'
 import { getAdresseLabel } from '../../../../utils/adresse.utils'
-import { IBANPlateformeLieuDit } from '../../../../api/ban-plateforme/types'
+import { IBANPlateformeCommune, IBANPlateformeLieuDit } from '../../../../api/ban-plateforme/types'
 import PositionInput from '../../../common/Position/PositionInput'
 import ParcelleInput from '../../../common/ParcelleInput'
 
@@ -15,7 +15,7 @@ interface SignalementToponymeFormProps {
   signalement: Signalement
   onEditSignalement: (property: keyof Signalement, key: string) => (value: any) => void
   onClose: () => void
-  address: IBANPlateformeLieuDit
+  address: IBANPlateformeLieuDit | IBANPlateformeCommune
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
   hasSignalementChanged: boolean
   mode: CommuneStatusDTO.mode

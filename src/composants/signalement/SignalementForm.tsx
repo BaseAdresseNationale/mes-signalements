@@ -89,7 +89,7 @@ export default function SignalementForm({
             onSubmit={handleSubmit}
             onEditSignalement={onEditSignalement}
             signalement={signalement}
-            address={address as IBANPlateformeLieuDit}
+            address={address as IBANPlateformeCommune}
             hasSignalementChanged={hasSignalementChanged}
             mode={mode}
           />

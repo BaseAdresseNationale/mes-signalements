@@ -11,7 +11,7 @@ export interface SignalementContextValue {
   createSignalement: (
     signalementType: Signalement.type,
     adresse: IBANPlateformeResult,
-    changesRequested?: ChangesRequested,
+    changesRequested?: Partial<ChangesRequested>,
     creationType?: ExistingLocation.type,
   ) => void
   deleteSignalement: () => void
@@ -58,7 +58,7 @@ export function SignalementContextProvider(props: Readonly<SignalementContextPro
     (
       signalementType: Signalement.type,
       adresse: IBANPlateformeResult,
-      changesRequested?: ChangesRequested,
+      changesRequested?: Partial<ChangesRequested>,
       creationType?: ExistingLocation.type,
     ) => {
       const signalement = getInitialSignalement(adresse, signalementType, creationType)

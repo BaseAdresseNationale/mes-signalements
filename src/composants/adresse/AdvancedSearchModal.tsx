@@ -132,31 +132,43 @@ export const AdvancedSearchModal = ({ onClose }: AdvancedSearchModalProps) => {
                 />
               </div>
             ) : (
-              <Autocomplete
-                inputProps={{ placeholder: 'Rechercher ma voie' }}
-                fetchResults={fetchAPIAdresse(
-                  APIAdressePropertyType.STREET,
-                  adresse.municipality.code,
-                )}
-                renderResultList={(results, onBlur) => (
-                  <StyledResultList>
-                    {results.map((result) => (
-                      <div key={result.code} className='result-item'>
-                        <button
-                          tabIndex={0}
-                          type='button'
-                          onClick={() => {
-                            setAdresse((adresse) => ({ ...adresse, street: result }))
-                            onBlur()
-                          }}
-                        >
-                          {result.nom}
-                        </button>
-                      </div>
-                    ))}
-                  </StyledResultList>
-                )}
-              />
+              <>
+                <Autocomplete
+                  inputProps={{ placeholder: 'Rechercher ma voie' }}
+                  fetchResults={fetchAPIAdresse(
+                    APIAdressePropertyType.STREET,
+                    adresse.municipality.code,
+                  )}
+                  renderResultList={(results, onBlur) => (
+                    <StyledResultList>
+                      {results.map((result) => (
+                        <div key={result.code} className='result-item'>
+                          <button
+                            tabIndex={0}
+                            type='button'
+                            onClick={() => {
+                              setAdresse((adresse) => ({ ...adresse, street: result }))
+                              onBlur()
+                            }}
+                          >
+                            {result.nom}
+                          </button>
+                        </div>
+                      ))}
+                    </StyledResultList>
+                  )}
+                />
+                <button
+                  type='button'
+                  className='fr-btn fr-btn--secondary fr-btn--sm not-found'
+                  onClick={() => {
+                    onClose()
+                    navigate(`/${adresse.municipality?.code}`)
+                  }}
+                >
+                  Ma voie n&apos;est pas répertoriée
+                </button>
+              </>
             )}
           </div>
         )}

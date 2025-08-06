@@ -5,7 +5,7 @@ import { Signalement } from '../../../api/signalement'
 import { SignalementBrowserFilter } from '.'
 import styled from 'styled-components'
 import Button from '@codegouvfr/react-dsfr/Button'
-import { AsyncMultiSelectInput } from '../AsyncMultiSelectInput'
+import { MuiAsyncSelectInput } from '../MuiAsyncSelectInput'
 import { search as searchAPIAdresse } from '../../../api/api-adresse'
 import { APIAdressePropertyType } from '../../../api/api-adresse/types'
 
@@ -121,8 +121,9 @@ export function FiltersModal({
           />
         ) : null}
 
-        <AsyncMultiSelectInput
+        <MuiAsyncSelectInput
           label='Communes'
+          isMultiSelect
           value={value.communes}
           onChange={(newValue) =>
             setValue((prev: SignalementBrowserFilter) => ({
