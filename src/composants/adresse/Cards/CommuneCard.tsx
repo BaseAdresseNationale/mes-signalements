@@ -16,9 +16,10 @@ interface CommuneCardProps {
     changesRequested?: ChangesRequested,
     creationType?: ExistingLocation.type,
   ) => void
+  disabledMessage?: string
 }
 
-export function CommuneCard({ adresse, createSignalement }: CommuneCardProps) {
+export function CommuneCard({ adresse, createSignalement, disabledMessage }: CommuneCardProps) {
   const { navigate } = useNavigateWithPreservedSearchParams()
 
   return (
@@ -63,7 +64,7 @@ export function CommuneCard({ adresse, createSignalement }: CommuneCardProps) {
           </Button>
         </>
       ) : (
-        <SignalementDisabled />
+        <SignalementDisabled message={disabledMessage} codeCommune={adresse.codeCommune} />
       )}
       <List
         items={adresse.voies}

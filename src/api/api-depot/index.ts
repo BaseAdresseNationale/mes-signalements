@@ -21,3 +21,15 @@ export async function getCurrentRevision(codeCommune: string): Promise<APIDepotR
 
   return response.json()
 }
+
+export async function getEmailsCommune(codeCommune: string): Promise<string[]> {
+  const url = `${API_DEPOT_URL}/communes/${codeCommune}/emails`
+
+  const response = await fetch(url)
+
+  if (!response.ok) {
+    throw new Error('Une erreur est survenue')
+  }
+
+  return response.json()
+}

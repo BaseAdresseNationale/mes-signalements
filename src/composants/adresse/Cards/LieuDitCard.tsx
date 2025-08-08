@@ -11,9 +11,10 @@ import { List } from '../../common/List'
 interface LieuDitCardProps {
   adresse: IBANPlateformeLieuDit
   createSignalement?: (type: Signalement.type, adresse: IBANPlateformeResult) => void
+  disabledMessage?: string
 }
 
-export function LieuDitCard({ adresse, createSignalement }: LieuDitCardProps) {
+export function LieuDitCard({ adresse, createSignalement, disabledMessage }: LieuDitCardProps) {
   const { navigate } = useNavigateWithPreservedSearchParams()
 
   return (
@@ -51,7 +52,7 @@ export function LieuDitCard({ adresse, createSignalement }: LieuDitCardProps) {
           </Button>
         </>
       ) : (
-        <SignalementDisabled />
+        <SignalementDisabled message={disabledMessage} codeCommune={adresse.commune.code} />
       )}
 
       <List

@@ -84,7 +84,7 @@ export function NumeroCard({ adresse, createSignalement, disabledMessage }: Nume
           </Button>
         </>
       ) : (
-        <SignalementDisabled message={disabledMessage} />
+        <SignalementDisabled message={disabledMessage} codeCommune={adresse.commune.code} />
       )}
     </Card>
   )

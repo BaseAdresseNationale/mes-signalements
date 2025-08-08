@@ -11,9 +11,10 @@ import { List } from '../../common/List'
 interface VoieCardProps {
   adresse: IBANPlateformeVoie
   createSignalement?: (type: Signalement.type, adresse: IBANPlateformeResult) => void
+  disabledMessage?: string
 }
 
-export function VoieCard({ adresse, createSignalement }: VoieCardProps) {
+export function VoieCard({ adresse, createSignalement, disabledMessage }: VoieCardProps) {
   const { navigate } = useNavigateWithPreservedSearchParams()
 
   return (
@@ -60,7 +61,7 @@ export function VoieCard({ adresse, createSignalement }: VoieCardProps) {
           </Button>
         </>
       ) : (
-        <SignalementDisabled />
+        <SignalementDisabled message={disabledMessage} codeCommune={adresse.commune.code} />
       )}
 
       <List

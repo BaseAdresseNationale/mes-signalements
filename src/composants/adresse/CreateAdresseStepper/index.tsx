@@ -64,7 +64,9 @@ const CreateAdresseStepper = () => {
           />
         )}
       </div>
-      {commune && !isCommuneStatusLoading && communeStatus.disabled && <SignalementDisabled />}
+      {commune && !isCommuneStatusLoading && communeStatus.disabled && (
+        <SignalementDisabled codeCommune={commune.code} />
+      )}
     </StyledCreateAdresseStepper>
   )
 }
