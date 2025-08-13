@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { StyledForm } from '../../signalement.styles'
 import PositionInput from '../../../common/Position/PositionInput'
 import {
@@ -16,11 +16,11 @@ import ParcelleInput from '../../../common/ParcelleInput'
 import { getAdresseLabel } from '../../../../utils/adresse.utils'
 import { lookup as BANLookup } from '../../../../api/ban-plateforme'
 import { MuiSelectInput, SelectOptionType } from '../../../common/MuiSelectInput'
-import { getExistingLocation } from '../../../../utils/signalement.utils'
-import MapContext from '../../../../contexts/map.context'
 import Input from '@codegouvfr/react-dsfr/Input'
 import { createFilterOptions } from '@mui/material/Autocomplete'
 import { FilterOptionsState } from '@mui/material'
+import useNavigateWithPreservedSearchParams from '../../../../hooks/useNavigateWithPreservedSearchParams'
+import { useParams } from 'react-router-dom'
 
 interface SignalementNumeroFormProps {
   signalement: Signalement
@@ -45,33 +45,12 @@ export default function SignalementNumeroForm({
   hasSignalementChanged,
   mode,
 }: SignalementNumeroFormProps) {
-  const { mapRef } = useContext(MapContext)
   const isCreation = signalement.type === Signalement.type.LOCATION_TO_CREATE
+  const { navigate } = useNavigateWithPreservedSearchParams()
+  const routerParams = useParams()
 
   const [voiesOpts, setVoiesOpts] = useState<SelectOptionType<string>[]>([])
   const [complementsOpts, setComplementsOpts] = useState<SelectOptionType<string>[]>([])
-
-  const [selectedVoie, setSelectedVoie] = useState<SelectOptionType<string>>()
-
-  const flyToVoie = useCallback(
-    (voie: IBANPlateformeVoie) => {
-      if (!mapRef) {
-        return
-      }
-
-      if (voie.displayBBox) {
-        mapRef.flyTo({
-          center: [
-            (voie.displayBBox[0] + voie.displayBBox[2]) / 2,
-            (voie.displayBBox[1] + voie.displayBBox[3]) / 2,
-          ],
-          zoom: 18,
-          maxDuration: 3000,
-        })
-      }
-    },
-    [mapRef],
-  )
 
   useEffect(() => {
     const fetchOptions = async () => {
@@ -94,31 +73,33 @@ export default function SignalementNumeroForm({
     fetchOptions()
   }, [signalement])
 
-  useEffect(() => {
-    const updateVoie = async () => {
-      if (!selectedVoie) {
+  const handleChangeVoie = useCallback(
+    async (selectedVoie: SelectOptionType<string>) => {
+      if (!selectedVoie || selectedVoie.value === address.id) {
         return
       }
 
       if (selectedVoie.value.startsWith(signalement.codeCommune)) {
         try {
           const voie = await BANLookup(selectedVoie?.value)
-          onEditSignalement('changesRequested', 'nomVoie')(selectedVoie.label)
-          onEditSignalement('existingLocation')(getExistingLocation(voie))
-          flyToVoie(voie as IBANPlateformeVoie)
+          navigate(`/${voie.id}?type=${Signalement.type.LOCATION_TO_CREATE}`)
         } catch (error) {
           console.error(error)
         }
-      } else {
+      } else if (routerParams['code'] === signalement.codeCommune) {
         onEditSignalement('changesRequested', 'nomVoie')(selectedVoie.value)
-        onEditSignalement('existingLocation')(null)
+      } else {
+        navigate(
+          `/${signalement.codeCommune}?type=${Signalement.type.LOCATION_TO_CREATE}&changesRequested=${JSON.stringify(
+            {
+              nomVoie: selectedVoie.value,
+            },
+          )}`,
+        )
       }
-    }
-
-    if (selectedVoie) {
-      updateVoie()
-    }
-  }, [selectedVoie, flyToVoie, onEditSignalement, signalement.codeCommune])
+    },
+    [signalement.codeCommune, navigate, onEditSignalement, address.id],
+  )
 
   const isSubmitDisabled = useMemo(() => {
     const { changesRequested } = signalement
@@ -190,7 +171,7 @@ export default function SignalementNumeroForm({
               label='Nom de la voie*'
               options={voiesOpts}
               value={{ label: nomVoie, value: nomVoie }}
-              onChange={(event) => setSelectedVoie(event as SelectOptionType<string>)}
+              onChange={(event) => handleChangeVoie(event as SelectOptionType<string>)}
               filterOptions={(
                 options: SelectOptionType<string>[],
                 params: FilterOptionsState<SelectOptionType<string>>,

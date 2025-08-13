@@ -97,6 +97,10 @@ export function SignalementPage() {
 
   // Create a signalement from search params
   useEffect(() => {
+    if (isCommuneStatusLoading) {
+      return
+    }
+
     const type = searchParams.get('type')
     const changesRequested = searchParams.get('changesRequested')
 
@@ -114,7 +118,7 @@ export function SignalementPage() {
       searchParams.delete('changesRequested')
       setSearchParams(searchParams)
     }
-  }, [searchParams, adresse, createSignalement, communeStatus])
+  }, [searchParams, adresse, createSignalement, communeStatus, isCommuneStatusLoading])
 
   const handleCloseSignalementForm = () => {
     deleteSignalement()
