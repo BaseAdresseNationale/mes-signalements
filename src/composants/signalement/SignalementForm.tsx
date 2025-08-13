@@ -18,7 +18,7 @@ import { isToponymeChangesRequested } from '../../utils/signalement.utils'
 
 interface SignalementFormProps {
   signalement: Signalement
-  onEditSignalement: (property: keyof Signalement, key: string) => (value: any) => void
+  onEditSignalement: (property: keyof Signalement, key?: string) => (value: any) => void
   onClose: () => void
   address: IBANPlateformeResult
   hasSignalementChanged: boolean

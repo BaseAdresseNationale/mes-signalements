@@ -18,7 +18,7 @@ import { Input } from '@codegouvfr/react-dsfr/Input'
 
 interface SignalementRecapModalProps {
   signalement: Signalement
-  onEditSignalement: (property: keyof Signalement, key: string) => (event: string) => void
+  onEditSignalement: (property: keyof Signalement, key?: string) => (event: string) => void
   onCloseModal: () => void
   address: IBANPlateformeResult
   onClose: () => void

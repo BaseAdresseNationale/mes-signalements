@@ -15,7 +15,7 @@ export interface SignalementContextValue {
     creationType?: ExistingLocation.type,
   ) => void
   deleteSignalement: () => void
-  onEditSignalement: (property: keyof Signalement, key: string) => (value: any) => void
+  onEditSignalement: (property: keyof Signalement, key?: string) => (value: any) => void
   hasSignalementChanged: boolean
 }
 
@@ -38,18 +38,22 @@ export function SignalementContextProvider(props: Readonly<SignalementContextPro
   const isPublicSource = source?.type !== Source.type.PRIVATE
 
   const onEditSignalement = useCallback(
-    (property: keyof Signalement, key: string) => (value: any) => {
-      setSignalement(
-        (state) =>
-          state &&
-          ({
-            ...state,
-            [property]: {
-              ...(state[property] as object),
-              [key]: value,
-            },
-          } as Signalement),
-      )
+    (property: keyof Signalement, key?: string) => (value: any) => {
+      if (key) {
+        setSignalement(
+          (state) =>
+            state &&
+            ({
+              ...state,
+              [property]: {
+                ...(state[property] as object),
+                [key]: value,
+              },
+            } as Signalement),
+        )
+      } else {
+        setSignalement((state) => state && ({ ...state, [property]: value } as Signalement))
+      }
     },
     [setSignalement],
   )

@@ -24,7 +24,7 @@ import { FilterOptionsState } from '@mui/material'
 
 interface SignalementNumeroFormProps {
   signalement: Signalement
-  onEditSignalement: (property: keyof Signalement, key: string) => (value: any) => void
+  onEditSignalement: (property: keyof Signalement, key?: string) => (value: any) => void
   onClose: () => void
   address: IBANPlateformeNumero | IBANPlateformeVoie | IBANPlateformeCommune
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
@@ -104,21 +104,21 @@ export default function SignalementNumeroForm({
         try {
           const voie = await BANLookup(selectedVoie?.value)
           onEditSignalement('changesRequested', 'nomVoie')(selectedVoie.label)
-          signalement.existingLocation = getExistingLocation(voie)
+          onEditSignalement('existingLocation')(getExistingLocation(voie))
           flyToVoie(voie as IBANPlateformeVoie)
         } catch (error) {
           console.error(error)
         }
       } else {
         onEditSignalement('changesRequested', 'nomVoie')(selectedVoie.value)
-        signalement.existingLocation = null
+        onEditSignalement('existingLocation')(null)
       }
     }
 
     if (selectedVoie) {
       updateVoie()
     }
-  }, [selectedVoie, flyToVoie])
+  }, [selectedVoie, flyToVoie, onEditSignalement, signalement.codeCommune])
 
   const isSubmitDisabled = useMemo(() => {
     const { changesRequested } = signalement

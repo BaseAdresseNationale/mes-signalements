@@ -6,7 +6,7 @@ import { IBANPlateformeVoie } from '../../../../api/ban-plateforme/types'
 
 interface SignalementVoieFormProps {
   signalement: Signalement
-  onEditSignalement: (property: keyof Signalement, key: string) => (event: string) => void
+  onEditSignalement: (property: keyof Signalement, key?: string) => (event: string) => void
   onClose: () => void
   address: IBANPlateformeVoie
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void

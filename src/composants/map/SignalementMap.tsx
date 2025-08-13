@@ -8,7 +8,7 @@ import { ChangesRequested } from '../../types/signalement.types'
 
 interface SignalementMapProps {
   signalement: Signalement
-  onEditSignalement: (property: keyof Signalement, key: string) => (value: any) => void
+  onEditSignalement: (property: keyof Signalement, key?: string) => (value: any) => void
   isEditParcellesMode: boolean
 }
 

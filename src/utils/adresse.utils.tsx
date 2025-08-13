@@ -30,12 +30,12 @@ export function getAdresseLabel(
                 fontWeight: 'inherit',
                 textDecoration: 'underline',
               }}
-              onClick={() => navigate(`/${(address as IBANPlateformeNumero).commune.id}`)}
+              onClick={() => navigate(`/${(address as IBANPlateformeVoie).commune.id}`)}
             >
-              {(address as IBANPlateformeNumero).commune.nom}
+              {(address as IBANPlateformeVoie).commune.nom}
             </button>
           ) : (
-            (address as IBANPlateformeNumero).commune.nom
+            (address as IBANPlateformeVoie).commune.nom
           )}
         </>
       )
@@ -54,12 +54,12 @@ export function getAdresseLabel(
                 fontWeight: 'inherit',
                 textDecoration: 'underline',
               }}
-              onClick={() => navigate(`/${(address as IBANPlateformeNumero).commune.id}`)}
+              onClick={() => navigate(`/${(address as IBANPlateformeLieuDit).commune.id}`)}
             >
-              {(address as IBANPlateformeNumero).commune.nom}
+              {(address as IBANPlateformeLieuDit).commune.nom}
             </button>
           ) : (
-            (address as IBANPlateformeNumero).commune.nom
+            (address as IBANPlateformeLieuDit).commune.nom
           )}
         </>
       )

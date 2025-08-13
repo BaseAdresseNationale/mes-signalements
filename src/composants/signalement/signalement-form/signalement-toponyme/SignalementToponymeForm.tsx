@@ -13,7 +13,7 @@ import ParcelleInput from '../../../common/ParcelleInput'
 
 interface SignalementToponymeFormProps {
   signalement: Signalement
-  onEditSignalement: (property: keyof Signalement, key: string) => (value: any) => void
+  onEditSignalement: (property: keyof Signalement, key?: string) => (value: any) => void
   onClose: () => void
   address: IBANPlateformeLieuDit | IBANPlateformeCommune
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
