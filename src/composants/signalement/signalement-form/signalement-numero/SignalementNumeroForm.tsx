@@ -21,6 +21,7 @@ import { createFilterOptions } from '@mui/material/Autocomplete'
 import { FilterOptionsState } from '@mui/material'
 import useNavigateWithPreservedSearchParams from '../../../../hooks/useNavigateWithPreservedSearchParams'
 import { useParams } from 'react-router-dom'
+import { useAsyncBalValidator } from '../../../../hooks/useAsyncBALValidator'
 
 interface SignalementNumeroFormProps {
   signalement: Signalement
@@ -51,6 +52,10 @@ export default function SignalementNumeroForm({
 
   const [voiesOpts, setVoiesOpts] = useState<SelectOptionType<string>[]>([])
   const [complementsOpts, setComplementsOpts] = useState<SelectOptionType<string>[]>([])
+
+  const { validationErrors, onValidate } = useAsyncBalValidator<NumeroChangesRequestedDTO>({
+    onSubmit,
+  })
 
   useEffect(() => {
     const fetchOptions = async () => {
@@ -117,7 +122,7 @@ export default function SignalementNumeroForm({
     signalement.changesRequested as NumeroChangesRequestedDTO
 
   return (
-    <StyledForm onSubmit={onSubmit}>
+    <StyledForm onSubmit={(event) => onValidate(event)(signalement.changesRequested)}>
       {isCreation ? (
         <h4>Demande de création d&apos;une adresse</h4>
       ) : (
@@ -131,39 +136,38 @@ export default function SignalementNumeroForm({
       <section>
         {!isCreation && <h5>Modifications demandées</h5>}
         <div className='form-row' style={{ marginBottom: 0 }}>
-          <div className='fr-input-group'>
-            <label className='fr-label' htmlFor='numero'>
-              Numéro*
-            </label>
-            <input
-              className='fr-input'
-              name='numero'
-              required
-              min={1}
-              max={9998}
-              type='number'
-              value={numero || ''}
-              onChange={(event) =>
-                onEditSignalement('changesRequested', 'numero')(event.target.value)
-              }
-            />
-          </div>
-          <div className='fr-input-group'>
-            <label className='fr-label' htmlFor='suffixe'>
-              Suffixe
-            </label>
-            <input
-              name='suffixe'
-              pattern='^[\da-zA-Z]+$'
-              maxLength={9}
-              className='fr-input'
-              value={suffixe as string}
-              placeholder={'bis, ter...'}
-              onChange={(event) =>
-                onEditSignalement('changesRequested', 'suffixe')(event.target.value)
-              }
-            />
-          </div>
+          <Input
+            label='Numéro*'
+            nativeInputProps={{
+              required: true,
+              min: 1,
+              type: 'number',
+              name: 'numero',
+              value: numero || '',
+              onChange: (event) =>
+                onEditSignalement('changesRequested', 'numero')(event.target.value),
+            }}
+            {...(validationErrors?.numero && {
+              stateRelatedMessage: validationErrors.numero,
+              state: 'error',
+            })}
+          />
+          <Input
+            label='Suffixe'
+            nativeInputProps={{
+              maxLength: 9,
+              pattern: '^[da-zA-Z]+$',
+              name: 'suffixe',
+              placeholder: 'bis, ter...',
+              value: suffixe as string,
+              onChange: (event) =>
+                onEditSignalement('changesRequested', 'suffixe')(event.target.value),
+            }}
+            {...(validationErrors?.suffixe && {
+              stateRelatedMessage: validationErrors.suffixe,
+              state: 'error',
+            })}
+          />
         </div>
         <div className='form-row'>
           {isCreation ? (
@@ -203,6 +207,10 @@ export default function SignalementNumeroForm({
                 onChange: (event) =>
                   onEditSignalement('changesRequested', 'nomVoie')(event.target.value),
               }}
+              {...(validationErrors?.nomVoie && {
+                stateRelatedMessage: validationErrors.nomVoie,
+                state: 'error',
+              })}
             />
           )}
         </div>

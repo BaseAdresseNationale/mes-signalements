@@ -10,6 +10,8 @@ import { getAdresseLabel } from '../../../../utils/adresse.utils'
 import { IBANPlateformeCommune, IBANPlateformeLieuDit } from '../../../../api/ban-plateforme/types'
 import PositionInput from '../../../common/Position/PositionInput'
 import ParcelleInput from '../../../common/ParcelleInput'
+import { useAsyncBalValidator } from '../../../../hooks/useAsyncBALValidator'
+import { Input } from '@codegouvfr/react-dsfr/Input'
 
 interface SignalementToponymeFormProps {
   signalement: Signalement
@@ -45,8 +47,14 @@ export default function SignalementToponymeForm({
   const { nom, positions, parcelles, comment } =
     signalement.changesRequested as ToponymeChangesRequestedDTO
 
+  const { validationErrors, onValidate } = useAsyncBalValidator<ToponymeChangesRequestedDTO>({
+    onSubmit,
+  })
+
+  console.log('validationError:', validationErrors)
+
   return (
-    <StyledForm onSubmit={onSubmit}>
+    <StyledForm onSubmit={(event) => onValidate(event)(signalement.changesRequested)}>
       {isCreation ? (
         <h4>Demande de création d&apos;un lieu-dit</h4>
       ) : (
@@ -61,21 +69,19 @@ export default function SignalementToponymeForm({
       <section>
         {!isCreation && <h5>Modifications demandées</h5>}
         <div className='form-row'>
-          <div className='fr-input-group'>
-            <label className='fr-label' htmlFor='nom'>
-              Nom*
-            </label>
-            <input
-              name='nom'
-              maxLength={200}
-              minLength={3}
-              required
-              type='text'
-              className='fr-input'
-              value={nom as string}
-              onChange={(event) => onEditSignalement('changesRequested', 'nom')(event.target.value)}
-            />
-          </div>
+          <Input
+            label='Nom*'
+            nativeInputProps={{
+              required: true,
+              name: 'nom',
+              value: nom as string,
+              onChange: (event) => onEditSignalement('changesRequested', 'nom')(event.target.value),
+            }}
+            {...(validationErrors?.nom && {
+              stateRelatedMessage: validationErrors.nom,
+              state: 'error',
+            })}
+          />
         </div>
         <PositionInput
           positions={positions}
@@ -87,20 +93,17 @@ export default function SignalementToponymeForm({
       </section>
       <section>
         <div className='form-row'>
-          <div className='fr-input-group'>
-            <label className='fr-label' htmlFor='comment'>
-              Informations complémentaires
-            </label>
-            <textarea
-              className='fr-input'
-              name='comment'
-              value={comment as string}
-              onChange={(event) =>
-                onEditSignalement('changesRequested', 'comment')(event.target.value)
-              }
-              placeholder='Merci de ne pas indiquer de données personnelles'
-            />
-          </div>
+          <Input
+            textArea
+            label='Informations complémentaires'
+            nativeTextAreaProps={{
+              name: 'comment',
+              value: comment as string,
+              onChange: (event) =>
+                onEditSignalement('changesRequested', 'comment')(event.target.value),
+              placeholder: 'Merci de ne pas indiquer de données personnelles',
+            }}
+          />
         </div>
       </section>
       <div className='form-controls'>
