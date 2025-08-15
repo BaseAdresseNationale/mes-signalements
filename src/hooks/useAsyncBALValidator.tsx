@@ -1,8 +1,9 @@
-import { useState } from 'react'
-import { ChangesRequested, SignalementsService } from '../api/signalement'
+import { useCallback, useState } from 'react'
+import { ChangesRequested, Signalement, SignalementsService } from '../api/signalement'
 
 type UseAsyncBalValidatorParams = {
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
+  onEditSignalement: (property: keyof Signalement, key?: string) => (value: any) => void
 }
 
 type UseAsyncBalValidatorReturn<T> = {
@@ -10,10 +11,12 @@ type UseAsyncBalValidatorReturn<T> = {
   onValidate: (
     event: React.FormEvent<HTMLFormElement>,
   ) => (changesRequested: ChangesRequested) => Promise<void>
+  onEdit: (property: keyof Signalement, key?: string) => (value: any) => void
 }
 
 export function useAsyncBalValidator<T>({
   onSubmit,
+  onEditSignalement,
 }: UseAsyncBalValidatorParams): UseAsyncBalValidatorReturn<T> {
   const [validationErrors, setValidationErrors] = useState<{ [key in keyof T]?: string }>({})
 
@@ -43,5 +46,13 @@ export function useAsyncBalValidator<T>({
       }
     }
 
-  return { validationErrors, onValidate }
+  const onEdit = useCallback(
+    (property: keyof Signalement, key?: string) => (value: any) => {
+      onEditSignalement(property, key)(value)
+      setValidationErrors((prevErrors) => ({ ...prevErrors, [key as keyof T]: undefined }))
+    },
+    [onEditSignalement],
+  )
+
+  return { validationErrors, onValidate, onEdit }
 }

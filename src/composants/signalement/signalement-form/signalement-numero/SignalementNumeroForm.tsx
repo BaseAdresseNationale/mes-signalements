@@ -53,8 +53,9 @@ export default function SignalementNumeroForm({
   const [voiesOpts, setVoiesOpts] = useState<SelectOptionType<string>[]>([])
   const [complementsOpts, setComplementsOpts] = useState<SelectOptionType<string>[]>([])
 
-  const { validationErrors, onValidate } = useAsyncBalValidator<NumeroChangesRequestedDTO>({
+  const { validationErrors, onValidate, onEdit } = useAsyncBalValidator<NumeroChangesRequestedDTO>({
     onSubmit,
+    onEditSignalement,
   })
 
   useEffect(() => {
@@ -92,7 +93,7 @@ export default function SignalementNumeroForm({
           console.error(error)
         }
       } else if (routerParams['code'] === signalement.codeCommune) {
-        onEditSignalement('changesRequested', 'nomVoie')(selectedVoie.value)
+        onEdit('changesRequested', 'nomVoie')(selectedVoie.value)
       } else {
         navigate(
           `/${signalement.codeCommune}?type=${Signalement.type.LOCATION_TO_CREATE}&changesRequested=${JSON.stringify(
@@ -103,7 +104,7 @@ export default function SignalementNumeroForm({
         )
       }
     },
-    [signalement.codeCommune, navigate, onEditSignalement, address.id],
+    [signalement.codeCommune, navigate, onEdit, address.id],
   )
 
   const isSubmitDisabled = useMemo(() => {
@@ -144,8 +145,7 @@ export default function SignalementNumeroForm({
               type: 'number',
               name: 'numero',
               value: numero || '',
-              onChange: (event) =>
-                onEditSignalement('changesRequested', 'numero')(event.target.value),
+              onChange: (event) => onEdit('changesRequested', 'numero')(event.target.value),
             }}
             {...(validationErrors?.numero && {
               stateRelatedMessage: validationErrors.numero,
@@ -160,8 +160,7 @@ export default function SignalementNumeroForm({
               name: 'suffixe',
               placeholder: 'bis, ter...',
               value: suffixe as string,
-              onChange: (event) =>
-                onEditSignalement('changesRequested', 'suffixe')(event.target.value),
+              onChange: (event) => onEdit('changesRequested', 'suffixe')(event.target.value),
             }}
             {...(validationErrors?.suffixe && {
               stateRelatedMessage: validationErrors.suffixe,
@@ -194,6 +193,9 @@ export default function SignalementNumeroForm({
 
                 return filtered
               }}
+              {...(validationErrors?.nomVoie && {
+                errorMessage: validationErrors.nomVoie,
+              })}
             />
           ) : (
             <Input
@@ -204,8 +206,7 @@ export default function SignalementNumeroForm({
                 name: 'nomVoie',
                 required: true,
                 value: nomVoie,
-                onChange: (event) =>
-                  onEditSignalement('changesRequested', 'nomVoie')(event.target.value),
+                onChange: (event) => onEdit('changesRequested', 'nomVoie')(event.target.value),
               }}
               {...(validationErrors?.nomVoie && {
                 stateRelatedMessage: validationErrors.nomVoie,
@@ -216,9 +217,12 @@ export default function SignalementNumeroForm({
         </div>
         <PositionInput
           positions={positions}
-          onChange={onEditSignalement('changesRequested', 'positions')}
+          onChange={onEdit('changesRequested', 'positions')}
           initialPositionCoords={initialPositionCoords}
           multiPositionDisabled={mode !== CommuneStatusDTO.mode.FULL}
+          {...(validationErrors?.positions && {
+            errorMessage: validationErrors.positions,
+          })}
         />
         {mode === CommuneStatusDTO.mode.FULL && (
           <MuiSelectInput
@@ -226,14 +230,24 @@ export default function SignalementNumeroForm({
             options={complementsOpts}
             value={{ label: nomComplement || '', value: nomComplement }}
             onChange={(event) =>
-              onEditSignalement(
+              onEdit(
                 'changesRequested',
                 'nomComplement',
               )((event as SelectOptionType<string>)?.label || '')
             }
+            {...(validationErrors?.nomComplement && {
+              errorMessage: validationErrors.nomComplement,
+            })}
           />
         )}
-        {mode === CommuneStatusDTO.mode.FULL && <ParcelleInput parcelles={parcelles} />}
+        {mode === CommuneStatusDTO.mode.FULL && (
+          <ParcelleInput
+            parcelles={parcelles}
+            {...(validationErrors?.parcelles && {
+              errorMessage: validationErrors.parcelles,
+            })}
+          />
+        )}
       </section>
       <section>
         <div className='form-row'>
@@ -245,9 +259,7 @@ export default function SignalementNumeroForm({
               className='fr-input'
               name='comment'
               value={comment as string}
-              onChange={(event) =>
-                onEditSignalement('changesRequested', 'comment')(event.target.value)
-              }
+              onChange={(event) => onEdit('changesRequested', 'comment')(event.target.value)}
               placeholder='Merci de ne pas indiquer de données personnelles'
             />
           </div>

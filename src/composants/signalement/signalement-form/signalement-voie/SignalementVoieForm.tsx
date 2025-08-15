@@ -24,8 +24,9 @@ export default function SignalementVoieForm({
   hasSignalementChanged,
 }: SignalementVoieFormProps) {
   const { nom, comment } = signalement.changesRequested as VoieChangesRequestedDTO
-  const { validationErrors, onValidate } = useAsyncBalValidator<VoieChangesRequestedDTO>({
+  const { validationErrors, onValidate, onEdit } = useAsyncBalValidator<VoieChangesRequestedDTO>({
     onSubmit,
+    onEditSignalement,
   })
 
   return (
@@ -42,7 +43,7 @@ export default function SignalementVoieForm({
               required: true,
               name: 'nom',
               value: nom as string,
-              onChange: (event) => onEditSignalement('changesRequested', 'nom')(event.target.value),
+              onChange: (event) => onEdit('changesRequested', 'nom')(event.target.value),
             }}
             {...(validationErrors?.nom && {
               stateRelatedMessage: validationErrors.nom,
@@ -53,20 +54,16 @@ export default function SignalementVoieForm({
       </section>
       <section>
         <div className='form-row'>
-          <div className='fr-input-group'>
-            <label className='fr-label' htmlFor='comment'>
-              Informations complémentaires
-            </label>
-            <textarea
-              className='fr-input'
-              name='comment'
-              value={comment as string}
-              onChange={(event) =>
-                onEditSignalement('changesRequested', 'comment')(event.target.value)
-              }
-              placeholder='Merci de ne pas indiquer de données personnelles'
-            />
-          </div>
+          <Input
+            textArea
+            label='Informations complémentaires'
+            nativeTextAreaProps={{
+              name: 'comment',
+              value: comment as string,
+              onChange: (event) => onEdit('changesRequested', 'comment')(event.target.value),
+              placeholder: 'Merci de ne pas indiquer de données personnelles',
+            }}
+          />
         </div>
       </section>
       <div className='form-controls'>

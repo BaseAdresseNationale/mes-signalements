@@ -23,6 +23,7 @@ type MuiSelectInputProps<T> = {
     options: SelectOptionType<string>[],
     params: FilterOptionsState<SelectOptionType<string>>,
   ) => SelectOptionType<string>[]
+  errorMessage?: string
 }
 
 const StyledAutocomplete = styled(Autocomplete)`
@@ -54,10 +55,11 @@ export function MuiSelectInput<T>({
   noOptionsText = 'Aucun résultat',
   isMultiSelect = false,
   filterOptions,
+  errorMessage,
 }: MuiSelectInputProps<T>) {
   return (
     <div
-      className={`fr-select-group ${isDisabled ? 'fr-select-group--disabled' : ''}`}
+      className={`fr-select-group${isDisabled ? ' fr-select-group--disabled' : ''}`}
       style={{ marginBottom: 0 }}
     >
       <label className='fr-label' htmlFor={`select-${label}`}>
@@ -80,6 +82,11 @@ export function MuiSelectInput<T>({
         noOptionsText={noOptionsText}
         filterOptions={filterOptions as any}
       />
+      {errorMessage && (
+        <div className='fr-messages-group' aria-live='polite'>
+          <p className='fr-message fr-message--error'>{errorMessage}</p>
+        </div>
+      )}
     </div>
   )
 }

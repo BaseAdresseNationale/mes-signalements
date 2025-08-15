@@ -47,11 +47,11 @@ export default function SignalementToponymeForm({
   const { nom, positions, parcelles, comment } =
     signalement.changesRequested as ToponymeChangesRequestedDTO
 
-  const { validationErrors, onValidate } = useAsyncBalValidator<ToponymeChangesRequestedDTO>({
-    onSubmit,
-  })
-
-  console.log('validationError:', validationErrors)
+  const { validationErrors, onValidate, onEdit } =
+    useAsyncBalValidator<ToponymeChangesRequestedDTO>({
+      onSubmit,
+      onEditSignalement,
+    })
 
   return (
     <StyledForm onSubmit={(event) => onValidate(event)(signalement.changesRequested)}>
@@ -75,7 +75,7 @@ export default function SignalementToponymeForm({
               required: true,
               name: 'nom',
               value: nom as string,
-              onChange: (event) => onEditSignalement('changesRequested', 'nom')(event.target.value),
+              onChange: (event) => onEdit('changesRequested', 'nom')(event.target.value),
             }}
             {...(validationErrors?.nom && {
               stateRelatedMessage: validationErrors.nom,
@@ -85,11 +85,21 @@ export default function SignalementToponymeForm({
         </div>
         <PositionInput
           positions={positions}
-          onChange={onEditSignalement('changesRequested', 'positions')}
+          onChange={onEdit('changesRequested', 'positions')}
           defaultPositionType={Position.type.SEGMENT}
           multiPositionDisabled={mode !== CommuneStatusDTO.mode.FULL}
+          {...(validationErrors?.positions && {
+            errorMessage: validationErrors.positions,
+          })}
         />
-        {mode === CommuneStatusDTO.mode.FULL && <ParcelleInput parcelles={parcelles} />}
+        {mode === CommuneStatusDTO.mode.FULL && (
+          <ParcelleInput
+            parcelles={parcelles}
+            {...(validationErrors?.parcelles && {
+              errorMessage: validationErrors.parcelles,
+            })}
+          />
+        )}
       </section>
       <section>
         <div className='form-row'>
@@ -99,8 +109,7 @@ export default function SignalementToponymeForm({
             nativeTextAreaProps={{
               name: 'comment',
               value: comment as string,
-              onChange: (event) =>
-                onEditSignalement('changesRequested', 'comment')(event.target.value),
+              onChange: (event) => onEdit('changesRequested', 'comment')(event.target.value),
               placeholder: 'Merci de ne pas indiquer de données personnelles',
             }}
           />

@@ -19,6 +19,7 @@ interface PositionInputProps {
   onChange: (positions: Position[]) => void
   defaultPositionType?: Position.type
   multiPositionDisabled?: boolean
+  errorMessage?: string
 }
 
 export default function PositionInput({
@@ -27,6 +28,7 @@ export default function PositionInput({
   onChange,
   defaultPositionType = Position.type.ENTR_E,
   multiPositionDisabled,
+  errorMessage,
 }: Readonly<PositionInputProps>) {
   const { mapRef } = useContext(MapContext)
   const getInitialCoords = () => [mapRef?.getCenter()?.lng || 0, mapRef?.getCenter()?.lat || 0]
@@ -74,6 +76,11 @@ export default function PositionInput({
           >
             Ajouter une position
           </button>
+        </div>
+      )}
+      {errorMessage && (
+        <div className='fr-messages-group' aria-live='polite'>
+          <p className='fr-message fr-message--error'>{errorMessage}</p>
         </div>
       )}
     </StyledContainer>
