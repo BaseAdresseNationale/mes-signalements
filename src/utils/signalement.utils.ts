@@ -67,7 +67,7 @@ export const getModalTitle = (signalement: Signalement) => {
 }
 
 export const getPositionTypeLabel = (positionType: Position.type) => {
-  return positionTypeOptions.find(({ value }) => value === positionType)?.label
+  return positionTypeOptions.find(({ value }) => value === positionType)?.label || 'Segment'
 }
 
 export const getSignalementFromFeatureAPISignalement = (feature: any): Signalement => {

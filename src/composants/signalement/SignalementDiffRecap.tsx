@@ -31,7 +31,19 @@ export default function SignalementDiffRecap({
       case BANPlateformeResultTypeEnum.LIEU_DIT:
         return (
           <>
-            {nom}
+            {signalement.type === Signalement.type.LOCATION_TO_CREATE ? (
+              <>
+                {numero} {suffixe} {nomVoie}{' '}
+                {nomComplement && (
+                  <>
+                    <br />
+                    {nomComplement}
+                  </>
+                )}
+              </>
+            ) : (
+              nom
+            )}
             <br />
             {(address as IBANPlateformeLieuDit).codePostal}{' '}
             {(address as IBANPlateformeLieuDit).commune.nom}
