@@ -156,7 +156,7 @@ export default function SignalementNumeroForm({
             label='Suffixe'
             nativeInputProps={{
               maxLength: 9,
-              pattern: '^[da-zA-Z]+$',
+              pattern: '^[\\da-zA-Z]+$',
               name: 'suffixe',
               placeholder: 'bis, ter...',
               value: suffixe as string,

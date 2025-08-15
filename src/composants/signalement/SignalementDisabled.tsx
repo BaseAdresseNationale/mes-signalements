@@ -21,7 +21,7 @@ export default function SignalementDisabled({ message, codeCommune }: Signalemen
     }
 
     fetchCommuneEmails()
-  }, [])
+  }, [codeCommune])
 
   return (
     <Alert
