@@ -36,6 +36,7 @@ import { getAdresseString } from '../utils/adresse.utils'
 import { useCommuneStatus } from '../hooks/useCommuneStatus'
 import Loader from '../composants/common/Loader'
 import { CommuneCard } from '../composants/adresse/Cards/CommuneCard'
+import { DEFAULT_COLOR_LIGHT } from '../config/map/layers'
 
 export function SignalementPage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -135,13 +136,18 @@ export function SignalementPage() {
           ] as FilterSpecification)
         : (['in', adresse.id, ['get', 'id']] as FilterSpecification)
 
-    if (
-      (signalement?.changesRequested as NumeroChangesRequestedDTO | ToponymeChangesRequestedDTO)
-        ?.positions
-    ) {
+    // When signalement is created, we switch adresse map to read only mode
+    if (signalement) {
       setAdresseSearchMapLayersOptions({
         adresse: { layout: { visibility: 'none' } },
-        'adresse-label': { layout: { visibility: 'none' } },
+        'adresse-label': {
+          filter,
+          paint: {
+            'text-opacity': 0.5,
+            'text-halo-color': DEFAULT_COLOR_LIGHT,
+            'text-halo-width': 2,
+          },
+        },
         voie: { layout: { visibility: 'none' } },
         toponyme: { layout: { visibility: 'none' } },
       })

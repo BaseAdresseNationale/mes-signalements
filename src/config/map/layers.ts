@@ -154,7 +154,12 @@ export const parcelleHoveredLayer = {
   },
 }
 
-export const allBANLayers = [adresseCircleLayer, adresseLabelLayer, voieLayer, toponymeLayer]
+export const allBANLayers = [
+  { layer: adresseCircleLayer, interactive: true },
+  { layer: adresseLabelLayer },
+  { layer: voieLayer, interactive: true },
+  { layer: toponymeLayer, interactive: true },
+]
 
 export const staticCadastreLayers = [
   {
@@ -303,7 +308,6 @@ export const clusterLayers = [clusters, clusterCount, unclusteredPoint]
 
 export const interactiveLayers = [
   adresseCircleLayer,
-  adresseLabelLayer,
   voieLayer,
   toponymeLayer,
   parcelleHoveredLayer,

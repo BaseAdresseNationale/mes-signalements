@@ -64,18 +64,22 @@ export function AdresseSearchMap({ options }: Readonly<AdresseSearchMapProps>) {
       }
     }
 
-    allBANLayers.forEach((layer) => {
+    allBANLayers.forEach(({ layer, interactive }) => {
       if (map?.current) {
-        map.current.on('click', layer.id, handleSelect)
+        if (interactive) {
+          map.current.on('click', layer.id, handleSelect)
+        }
         map.current.on('mousemove', layer.id, handleMouseMove)
         map.current.on('mouseleave', layer.id, handleMouseLeave)
       }
     })
 
     return () => {
-      allBANLayers.forEach((layer) => {
+      allBANLayers.forEach(({ layer, interactive }) => {
         if (map?.current) {
-          map.current.off('click', layer.id, handleSelect)
+          if (interactive) {
+            map.current.off('click', layer.id, handleSelect)
+          }
           map.current.off('mousemove', layer.id, handleMouseMove)
           map.current.off('mouseleave', layer.id, handleMouseLeave)
         }
@@ -92,7 +96,7 @@ export function AdresseSearchMap({ options }: Readonly<AdresseSearchMapProps>) {
       maxzoom={14}
       promoteId='id'
     >
-      {allBANLayers.map((layer) => (
+      {allBANLayers.map(({ layer }) => (
         <Layer key={layer.id} {...(layer as any)} {...options[layer.id]} />
       ))}
     </Source>
