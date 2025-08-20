@@ -49,6 +49,23 @@ export class SettingsService {
         });
     }
     /**
+     * Delete commune settings for the given codeCommune
+     * @param codeCommune
+     * @returns boolean
+     * @throws ApiError
+     */
+    public static deleteCommuneSettings(
+        codeCommune: string,
+    ): CancelablePromise<boolean> {
+        return __request(OpenAPI, {
+            method: 'DELETE',
+            url: '/settings/commune-settings/{codeCommune}',
+            path: {
+                'codeCommune': codeCommune,
+            },
+        });
+    }
+    /**
      * Set the communes settings for the given codeCommune
      * @param codeCommune
      * @param requestBody

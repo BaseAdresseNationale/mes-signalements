@@ -1,19 +1,21 @@
 import React from 'react'
 
 import { Signalement } from '../../api/signalement'
-import { getPositionTypeLabel } from '../../utils/signalement.utils'
+import { getPositionTypeLabel, isToponymeChangesRequested } from '../../utils/signalement.utils'
 import { getAdresseLabel } from '../../utils/adresse.utils'
 import { ChangesRequested } from '../../types/signalement.types'
 import {
+  BANPlateformeResultTypeEnum,
+  IBANPlateformeCommune,
   IBANPlateformeLieuDit,
   IBANPlateformeNumero,
-  IBANPlateformeVoie,
+  IBANPlateformeResult,
 } from '../../api/ban-plateforme/types'
 import { StyledRecapSection } from './signalement.styles'
 
 interface SignalementDiffRecapProps {
   signalement: Signalement
-  address: IBANPlateformeNumero | IBANPlateformeVoie | IBANPlateformeLieuDit
+  address: IBANPlateformeResult
 }
 
 export default function SignalementDiffRecap({
@@ -24,25 +26,68 @@ export default function SignalementDiffRecap({
     signalement.changesRequested as ChangesRequested
 
   const getChangesRequestedLabel = () => {
-    return numero ? (
-      <>
-        {numero} {suffixe} {nomVoie}{' '}
-        {nomComplement && (
+    switch (address.type) {
+      case BANPlateformeResultTypeEnum.VOIE:
+      case BANPlateformeResultTypeEnum.LIEU_DIT:
+        return (
           <>
+            {signalement.type === Signalement.type.LOCATION_TO_CREATE ? (
+              <>
+                {numero} {suffixe} {nomVoie}{' '}
+                {nomComplement && (
+                  <>
+                    <br />
+                    {nomComplement}
+                  </>
+                )}
+              </>
+            ) : (
+              nom
+            )}
             <br />
-            {nomComplement}
+            {(address as IBANPlateformeLieuDit).codePostal}{' '}
+            {(address as IBANPlateformeLieuDit).commune.nom}
           </>
-        )}
-        <br />
-        {address.codePostal} {address.commune.nom}
-      </>
-    ) : (
-      <>
-        {nom}
-        <br />
-        {address.codePostal} {address.commune.nom}
-      </>
-    )
+        )
+      case BANPlateformeResultTypeEnum.NUMERO:
+        return (
+          <>
+            {numero} {suffixe} {nomVoie}{' '}
+            {nomComplement && (
+              <>
+                <br />
+                {nomComplement}
+              </>
+            )}
+            <br />
+            {(address as IBANPlateformeNumero).codePostal}{' '}
+            {(address as IBANPlateformeNumero).commune.nom}
+          </>
+        )
+      case BANPlateformeResultTypeEnum.COMMUNE:
+        return isToponymeChangesRequested(signalement.changesRequested) ? (
+          <>
+            {nom}
+            <br />
+            {(address as IBANPlateformeCommune).codesPostaux.join(', ')}{' '}
+            {(address as IBANPlateformeCommune).nomCommune}
+          </>
+        ) : (
+          <>
+            {numero} {suffixe} {nomVoie}{' '}
+            {nomComplement && (
+              <>
+                <br />
+                {nomComplement}
+              </>
+            )}
+            <br />
+            {(address as IBANPlateformeCommune).codesPostaux.join(', ')}{' '}
+            {(address as IBANPlateformeCommune).nomCommune}
+          </>
+        )
+      default:
+    }
   }
 
   return (
@@ -53,10 +98,10 @@ export default function SignalementDiffRecap({
             <div>
               <h5>Lieu concerné</h5>
               <p>{getAdresseLabel(address)}</p>
-              {(address as IBANPlateformeNumero | IBANPlateformeLieuDit).positions && (
+              {(address as IBANPlateformeNumero).positions ? (
                 <>
                   <h6>Positions : </h6>
-                  {(address as IBANPlateformeNumero | IBANPlateformeLieuDit).positions.map(
+                  {(address as IBANPlateformeNumero).positions.map(
                     ({ position, positionType }, index) => {
                       return (
                         <React.Fragment key={index}>
@@ -68,7 +113,16 @@ export default function SignalementDiffRecap({
                     },
                   )}
                 </>
-              )}
+              ) : (address as IBANPlateformeLieuDit).position ? (
+                <>
+                  <h6>Position : </h6>
+                  <b>
+                    {getPositionTypeLabel((address as IBANPlateformeLieuDit).position.type)}
+                  </b> : {(address as IBANPlateformeLieuDit).position.coordinates[0]},{' '}
+                  {(address as IBANPlateformeLieuDit).position.coordinates[1]}
+                  <br />
+                </>
+              ) : null}
               {(address as IBANPlateformeNumero | IBANPlateformeLieuDit).parcelles?.length > 0 && (
                 <>
                   <h6>Parcelles : </h6>
@@ -159,10 +213,10 @@ export default function SignalementDiffRecap({
             <div>
               <h5>Lieu concerné</h5>
               <p>{getAdresseLabel(address)}</p>
-              {(address as IBANPlateformeNumero | IBANPlateformeLieuDit).positions && (
+              {(address as IBANPlateformeNumero).positions ? (
                 <>
                   <h6>Positions : </h6>
-                  {(address as IBANPlateformeNumero | IBANPlateformeLieuDit).positions.map(
+                  {(address as IBANPlateformeNumero).positions.map(
                     ({ position, positionType }, index) => {
                       return (
                         <React.Fragment key={index}>
@@ -174,7 +228,14 @@ export default function SignalementDiffRecap({
                     },
                   )}
                 </>
-              )}
+              ) : (address as IBANPlateformeLieuDit).position ? (
+                <>
+                  <h6>Position : </h6>
+                  <b>Segment</b> : {(address as IBANPlateformeLieuDit).position.coordinates[0]},{' '}
+                  {(address as IBANPlateformeLieuDit).position.coordinates[1]}
+                  <br />
+                </>
+              ) : null}
               {(address as IBANPlateformeNumero | IBANPlateformeLieuDit).parcelles?.length > 0 && (
                 <>
                   <h6>Parcelles : </h6>

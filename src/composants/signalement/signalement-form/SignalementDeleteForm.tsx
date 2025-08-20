@@ -1,29 +1,29 @@
 import React from 'react'
-import { StyledForm } from '../../signalement.styles'
-import { Signalement } from '../../../../api/signalement'
-import { getAdresseLabel } from '../../../../utils/adresse.utils'
-import { IBANPlateformeNumero } from '../../../../api/ban-plateforme/types'
+import { StyledForm } from '../signalement.styles'
+import { Signalement } from '../../../api/signalement'
+import { getAdresseLabel } from '../../../utils/adresse.utils'
+import { IBANPlateformeResult } from '../../../api/ban-plateforme/types'
 
-interface SignalementNumeroDeleteFormProps {
+interface SignalementDeleteFormProps {
   signalement: Signalement
-  onEditSignalement: (property: keyof Signalement, key: string) => (event: string) => void
+  onEditSignalement: (property: keyof Signalement, key?: string) => (event: string) => void
   onClose: () => void
-  address: IBANPlateformeNumero
+  address: IBANPlateformeResult
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
 }
 
-export default function SignalementNumeroDeleteForm({
+export default function SignalementDeleteForm({
   signalement,
   onEditSignalement,
   onClose,
   address,
   onSubmit,
-}: SignalementNumeroDeleteFormProps) {
+}: SignalementDeleteFormProps) {
   const { comment } = signalement.changesRequested
 
   return (
     <StyledForm onSubmit={onSubmit}>
-      <h4>Demande de suppression d&apos;un numéro</h4>
+      <h4>Demande de suppression</h4>
       <section>
         <h5>Adresse concernée</h5>
         <div>{getAdresseLabel(address)}</div>
@@ -48,7 +48,12 @@ export default function SignalementNumeroDeleteForm({
         </div>
       </section>
       <div className='form-controls'>
-        <button className='fr-btn' disabled={!comment?.trim()} style={{ color: 'white' }} type='submit'>
+        <button
+          className='fr-btn'
+          disabled={!comment?.trim()}
+          style={{ color: 'white' }}
+          type='submit'
+        >
           Envoyer le signalement
         </button>
         <button className='fr-btn' type='button' onClick={onClose}>

@@ -1,6 +1,7 @@
 import React from 'react'
 import {
   BANPlateformeResultTypeEnum,
+  IBANPlateformeCommune,
   IBANPlateformeLieuDit,
   IBANPlateformeNumero,
   IBANPlateformeResult,
@@ -9,9 +10,8 @@ import {
 
 export function getAdresseLabel(
   address: IBANPlateformeResult,
-  opts?: { withVoieLink: boolean; navigateFn: (path: string) => void },
+  opts?: { navigateFn: (path: string) => void },
 ) {
-  const withVoieLink = opts?.withVoieLink || false
   const navigate = opts?.navigateFn
 
   switch (address.type) {
@@ -20,7 +20,23 @@ export function getAdresseLabel(
         <>
           {(address as IBANPlateformeVoie).nomVoie}
           <br />
-          {(address as IBANPlateformeVoie).codePostal} {(address as IBANPlateformeVoie).commune.nom}
+          {(address as IBANPlateformeVoie).codePostal}{' '}
+          {navigate ? (
+            <button
+              className='fr-link'
+              style={{
+                color: 'inherit',
+                fontSize: 'inherit',
+                fontWeight: 'inherit',
+                textDecoration: 'underline',
+              }}
+              onClick={() => navigate(`/${(address as IBANPlateformeVoie).commune.id}`)}
+            >
+              {(address as IBANPlateformeVoie).commune.nom}
+            </button>
+          ) : (
+            (address as IBANPlateformeVoie).commune.nom
+          )}
         </>
       )
     case BANPlateformeResultTypeEnum.LIEU_DIT:
@@ -29,14 +45,29 @@ export function getAdresseLabel(
           {(address as IBANPlateformeLieuDit).nomVoie}
           <br />
           {(address as IBANPlateformeLieuDit).codePostal}{' '}
-          {(address as IBANPlateformeLieuDit).commune.nom}
+          {navigate ? (
+            <button
+              className='fr-link'
+              style={{
+                color: 'inherit',
+                fontSize: 'inherit',
+                fontWeight: 'inherit',
+                textDecoration: 'underline',
+              }}
+              onClick={() => navigate(`/${(address as IBANPlateformeLieuDit).commune.id}`)}
+            >
+              {(address as IBANPlateformeLieuDit).commune.nom}
+            </button>
+          ) : (
+            (address as IBANPlateformeLieuDit).commune.nom
+          )}
         </>
       )
     case BANPlateformeResultTypeEnum.NUMERO:
       return (
         <>
           {`${(address as IBANPlateformeNumero).numero} ${(address as IBANPlateformeNumero).suffixe || ''}`}{' '}
-          {navigate && withVoieLink ? (
+          {navigate ? (
             <button
               className='fr-link'
               style={{
@@ -56,7 +87,22 @@ export function getAdresseLabel(
           {(address as IBANPlateformeNumero).lieuDitComplementNom}
           <br />
           {(address as IBANPlateformeNumero).codePostal}{' '}
-          {(address as IBANPlateformeNumero).commune.nom}
+          {navigate ? (
+            <button
+              className='fr-link'
+              style={{
+                color: 'inherit',
+                fontSize: 'inherit',
+                fontWeight: 'inherit',
+                textDecoration: 'underline',
+              }}
+              onClick={() => navigate(`/${(address as IBANPlateformeNumero).commune.id}`)}
+            >
+              {(address as IBANPlateformeNumero).commune.nom}
+            </button>
+          ) : (
+            (address as IBANPlateformeNumero).commune.nom
+          )}
         </>
       )
     default:
@@ -67,8 +113,11 @@ export function getAdresseLabel(
 export function getAdresseString(address: IBANPlateformeResult) {
   switch (address.type) {
     case BANPlateformeResultTypeEnum.NUMERO:
-      return `${(address as IBANPlateformeNumero).numero}${(address as IBANPlateformeNumero).suffixe ? ` ${(address as IBANPlateformeNumero).suffixe}` : ''} ${(address as IBANPlateformeNumero).voie.nomVoie} ${address.commune.code}`
+      return `${(address as IBANPlateformeNumero).numero}${(address as IBANPlateformeNumero).suffixe ? ` ${(address as IBANPlateformeNumero).suffixe}` : ''} ${(address as IBANPlateformeNumero).voie.nomVoie} ${(address as IBANPlateformeNumero).commune.code}`
+    case BANPlateformeResultTypeEnum.VOIE:
+    case BANPlateformeResultTypeEnum.LIEU_DIT:
+      return `${(address as IBANPlateformeLieuDit).nomVoie} ${(address as IBANPlateformeLieuDit).commune.code}`
     default:
-      return `${(address as IBANPlateformeLieuDit).nomVoie} ${address.commune.code}`
+      return `${(address as IBANPlateformeCommune).nomCommune} (${(address as IBANPlateformeCommune).codeCommune})`
   }
 }

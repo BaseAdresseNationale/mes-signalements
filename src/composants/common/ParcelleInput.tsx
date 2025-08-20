@@ -3,6 +3,8 @@ import styled from 'styled-components'
 import MapContext from '../../contexts/map.context'
 
 const StyledContainer = styled.div`
+  margin-top: 1.5rem;
+
   .parcelles-wrapper {
     display: flex;
     flex-wrap: wrap;
@@ -19,9 +21,10 @@ const StyledContainer = styled.div`
 
 interface ParcelleInputProps {
   parcelles: string[]
+  errorMessage?: string
 }
 
-export default function ParcelleInput({ parcelles }: Readonly<ParcelleInputProps>) {
+export default function ParcelleInput({ parcelles, errorMessage }: Readonly<ParcelleInputProps>) {
   const { setShowCadastre, showCadastre, editParcelles, setEditParcelles } = useContext(MapContext)
 
   const enableParcellesEdition = () => {
@@ -52,6 +55,11 @@ export default function ParcelleInput({ parcelles }: Readonly<ParcelleInputProps
           {editParcelles ? 'Masquer le cadastre' : 'Modifier les parcelles'}
         </button>
       </div>
+      {errorMessage && (
+        <div className='fr-messages-group' aria-live='polite'>
+          <p className='fr-message fr-message--error'>{errorMessage}</p>
+        </div>
+      )}
     </StyledContainer>
   )
 }

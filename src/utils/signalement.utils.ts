@@ -5,9 +5,18 @@ import {
   ExistingVoie,
   Position,
   Signalement,
+  ToponymeChangesRequestedDTO,
 } from '../api/signalement'
-import { BANPlateformeResultTypeEnum } from '../api/ban-plateforme/types'
+import {
+  BANPlateformeResultTypeEnum,
+  IBANPlateformeCommune,
+  IBANPlateformeLieuDit,
+  IBANPlateformeNumero,
+  IBANPlateformeResult,
+  IBANPlateformeVoie,
+} from '../api/ban-plateforme/types'
 import { ChangesRequested } from '../types/signalement.types'
+import { isDefined } from '../api/signalement/core/request'
 
 export const positionTypeOptions = [
   {
@@ -58,24 +67,27 @@ export const getModalTitle = (signalement: Signalement) => {
 }
 
 export const getPositionTypeLabel = (positionType: Position.type) => {
-  return positionTypeOptions.find(({ value }) => value === positionType)?.label
+  return positionTypeOptions.find(({ value }) => value === positionType)?.label || 'Segment'
 }
 
 export const getSignalementFromFeatureAPISignalement = (feature: any): Signalement => {
+  const { createdAt, updatedAt, changesRequested, existingLocation, source } = feature.properties
   return {
     ...feature.properties,
-    createdAt: JSON.parse(feature.properties.createdAt),
-    updatedAt: JSON.parse(feature.properties.updatedAt),
-    changesRequested: JSON.parse(feature.properties.changesRequested),
-    existingLocation: JSON.parse(feature.properties.existingLocation),
-    source: JSON.parse(feature.properties.source),
+    createdAt: JSON.parse(createdAt),
+    updatedAt: JSON.parse(updatedAt),
+    changesRequested: JSON.parse(changesRequested),
+    existingLocation: existingLocation ? JSON.parse(existingLocation) : undefined,
+    source: JSON.parse(source),
   }
 }
 
 export const getRequestedLocationLabel = (changesRequested: any) => {
-  return `${changesRequested.numero} ${
-    changesRequested.suffixe ? `${changesRequested.suffixe} ` : ''
-  }${changesRequested.nomVoie}`
+  return isToponymeChangesRequested(changesRequested)
+    ? changesRequested.nom
+    : `${changesRequested.numero} ${
+        changesRequested.suffixe ? `${changesRequested.suffixe} ` : ''
+      }${changesRequested.nomVoie}`
 }
 
 export const getExistingLocationLabel = (
@@ -239,6 +251,7 @@ export function getExistingLocation(
         toponyme: {
           type: ExistingLocation.type.VOIE,
           nom: address.voie.nomVoie,
+          banId: address.banIdMainCommonToponym,
         },
         nomComplement: address.lieuDitComplementNom,
       } as ExistingNumero
@@ -247,22 +260,10 @@ export function getExistingLocation(
   }
 }
 
-export function getExistingLocationType(type: string) {
-  switch (type) {
-    case BANPlateformeResultTypeEnum.VOIE:
-      return ExistingLocation.type.VOIE
-    case BANPlateformeResultTypeEnum.LIEU_DIT:
-      return ExistingLocation.type.TOPONYME
-    case BANPlateformeResultTypeEnum.NUMERO:
-      return ExistingLocation.type.NUMERO
-    default:
-      throw new Error(`Impossible de créer un signalement pour le type : ${type}`)
-  }
-}
-
 export const getInitialSignalement = (
-  address: any,
+  address: IBANPlateformeResult,
   signalementType: Signalement.type,
+  creationType?: ExistingLocation.type,
 ): Signalement | null => {
   if (!address) {
     return null
@@ -270,7 +271,10 @@ export const getInitialSignalement = (
 
   const initialSignalement: Partial<Signalement> = {
     type: signalementType,
-    codeCommune: address.commune.code,
+    codeCommune:
+      address.type === BANPlateformeResultTypeEnum.COMMUNE
+        ? (address as IBANPlateformeCommune).codeCommune
+        : (address as IBANPlateformeNumero).commune.code,
     author: {
       firstName: '',
       lastName: '',
@@ -281,42 +285,61 @@ export const getInitialSignalement = (
 
   switch (signalementType) {
     case Signalement.type.LOCATION_TO_CREATE:
-      initialSignalement.changesRequested = {
-        suffixe: '',
-        nomVoie: address.nomVoie,
-        nomComplement: '',
-        positions: [],
-        parcelles: [],
-        comment: '',
+      if (address.type === BANPlateformeResultTypeEnum.COMMUNE) {
+        initialSignalement.changesRequested =
+          creationType === ExistingLocation.type.TOPONYME
+            ? {
+                nom: '',
+                comment: '',
+                positions: [],
+                parcelles: [],
+              }
+            : {
+                suffixe: '',
+                nomVoie: '',
+                nomComplement: '',
+                positions: [],
+                parcelles: [],
+                comment: '',
+              }
+        initialSignalement.existingLocation = null
+      } else if (address.type === BANPlateformeResultTypeEnum.VOIE) {
+        initialSignalement.changesRequested = {
+          suffixe: '',
+          nomVoie: (address as IBANPlateformeVoie).nomVoie,
+          nomComplement: '',
+          positions: [],
+          parcelles: [],
+          comment: '',
+        }
+        initialSignalement.existingLocation = getExistingLocation(address)
       }
-
-      initialSignalement.existingLocation = getExistingLocation(address)
       break
     case Signalement.type.LOCATION_TO_UPDATE:
       if (address.type === BANPlateformeResultTypeEnum.VOIE) {
         initialSignalement.changesRequested = {
-          nom: address.nomVoie,
+          nom: (address as IBANPlateformeVoie).nomVoie,
           comment: '',
         }
       } else if (address.type === BANPlateformeResultTypeEnum.LIEU_DIT) {
         initialSignalement.changesRequested = {
-          nom: address.nomVoie,
+          nom: (address as IBANPlateformeLieuDit).nomVoie,
           comment: '',
           positions: [
             {
-              point: address.position,
+              point: (address as IBANPlateformeLieuDit).position,
               type: Position.type.SEGMENT,
             },
           ],
-          parcelles: address.parcelles,
+          parcelles: (address as IBANPlateformeLieuDit).parcelles,
         }
       } else {
         initialSignalement.changesRequested = {
-          numero: address.numero,
-          suffixe: address.suffixe || '',
-          nomVoie: address.voie.nomVoie,
-          nomComplement: address.lieuDitComplementNom || '',
-          positions: address.positions.map(
+          numero: (address as IBANPlateformeNumero).numero,
+          suffixe: (address as IBANPlateformeNumero).suffixe || '',
+          nomVoie: (address as IBANPlateformeNumero).voie.nomVoie,
+          nomComplement: (address as IBANPlateformeNumero).lieuDitComplementNom || '',
+          positions: (address as IBANPlateformeNumero).positions.map(
             ({ position, positionType }: { position: any; positionType: Position.type }) => ({
               point: {
                 type: 'Point',
@@ -325,7 +348,7 @@ export const getInitialSignalement = (
               type: positionType || Position.type.ENTR_E,
             }),
           ),
-          parcelles: address.parcelles,
+          parcelles: (address as IBANPlateformeNumero).parcelles,
           comment: '',
         }
       }
@@ -343,4 +366,12 @@ export const getInitialSignalement = (
   }
 
   return initialSignalement as Signalement
+}
+
+export const isToponymeChangesRequested = (
+  changesRequested: any,
+): changesRequested is ToponymeChangesRequestedDTO => {
+  const { nom, parcelles, positions } = changesRequested as ToponymeChangesRequestedDTO
+
+  return isDefined(nom) && Array.isArray(parcelles) && Array.isArray(positions)
 }

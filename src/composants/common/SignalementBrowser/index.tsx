@@ -15,7 +15,7 @@ import { SignalementViewerContext } from '../../../contexts/signalement-viewer.c
 import SignalementBrowserMap from '../../map/SignalementBrowserMap'
 import Button from '@codegouvfr/react-dsfr/Button'
 import { FiltersModal } from './FiltersModal'
-import { SelectOptionType } from '../MultiSelectInput'
+import { SelectOptionType } from '../MuiSelectInput'
 
 const StyledWrapper = styled.div`
   position: relative;

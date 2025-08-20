@@ -1,19 +1,10 @@
 import React, { useContext, useState } from 'react'
 import { StyledForm } from './signalement.styles'
-import {
-  CreateSignalementDTO,
-  Signalement,
-  SignalementsService,
-  Source,
-} from '../../api/signalement'
+import { Signalement, SignalementsService, Source } from '../../api/signalement'
 import Modal from '../common/Modal'
 import SourceContext from '../../contexts/source.context'
 import { useFriendlyCaptcha } from '../../hooks/useFriendlyCaptcha'
-import {
-  IBANPlateformeLieuDit,
-  IBANPlateformeNumero,
-  IBANPlateformeVoie,
-} from '../../api/ban-plateforme/types'
+import { IBANPlateformeResult } from '../../api/ban-plateforme/types'
 import SignalementDiffRecap from './SignalementDiffRecap'
 import { getModalTitle } from '../../utils/signalement.utils'
 import {
@@ -27,9 +18,9 @@ import { Input } from '@codegouvfr/react-dsfr/Input'
 
 interface SignalementRecapModalProps {
   signalement: Signalement
-  onEditSignalement: (property: keyof Signalement, key: string) => (event: string) => void
+  onEditSignalement: (property: keyof Signalement, key?: string) => (event: string) => void
   onCloseModal: () => void
-  address: IBANPlateformeNumero | IBANPlateformeVoie | IBANPlateformeLieuDit
+  address: IBANPlateformeResult
   onClose: () => void
 }
 
@@ -57,7 +48,7 @@ export default function SignalementRecapModal({
     setSubmitStatus('loading')
     try {
       const sourceId = source?.id || process.env.REACT_APP_API_SIGNALEMENT_SOURCE_ID
-      await SignalementsService.createSignalement(signalement as CreateSignalementDTO, sourceId)
+      await SignalementsService.createSignalement(signalement, sourceId)
       if (saveContact && signalement.author) {
         setValueInLocalStorage(LocalStorageKeys.AUTHOR_CONTACT, {
           lastName: signalement.author.lastName,

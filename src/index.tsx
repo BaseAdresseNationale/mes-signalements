@@ -17,6 +17,8 @@ import { SignalementContextProvider } from './contexts/signalement.context'
 import { startReactDsfr } from '@codegouvfr/react-dsfr/spa'
 import { SignalementViewerContextProvider } from './contexts/signalement-viewer.context'
 import { AllPage } from './pages/AllPage'
+import { CreateAdressePage } from './pages/CreateAdressePage'
+
 startReactDsfr({ defaultColorScheme: 'light' })
 
 const API_SIGNALEMENT_URL = process.env.REACT_APP_API_SIGNALEMENT_URL
@@ -94,6 +96,14 @@ const router = createHashRouter([
     element: (
       <GlobalLayout>
         <AllPage />
+      </GlobalLayout>
+    ),
+  },
+  {
+    path: '/create',
+    element: (
+      <GlobalLayout>
+        <CreateAdressePage />
       </GlobalLayout>
     ),
   },

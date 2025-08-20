@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react'
-import { Author, PositionDTO, Signalement, Source } from '../api/signalement'
+import { Author, ExistingLocation, PositionDTO, Signalement, Source } from '../api/signalement'
 import { getInitialSignalement, getPositionTypeLabel } from '../utils/signalement.utils'
 import { IBANPlateformeResult } from '../api/ban-plateforme/types'
 import { ChangesRequested } from '../types/signalement.types'
@@ -11,10 +11,11 @@ export interface SignalementContextValue {
   createSignalement: (
     signalementType: Signalement.type,
     adresse: IBANPlateformeResult,
-    changesRequested?: ChangesRequested,
+    changesRequested?: Partial<ChangesRequested>,
+    creationType?: ExistingLocation.type,
   ) => void
   deleteSignalement: () => void
-  onEditSignalement: (property: keyof Signalement, key: string) => (value: any) => void
+  onEditSignalement: (property: keyof Signalement, key?: string) => (value: any) => void
   hasSignalementChanged: boolean
 }
 
@@ -37,18 +38,22 @@ export function SignalementContextProvider(props: Readonly<SignalementContextPro
   const isPublicSource = source?.type !== Source.type.PRIVATE
 
   const onEditSignalement = useCallback(
-    (property: keyof Signalement, key: string) => (value: any) => {
-      setSignalement(
-        (state) =>
-          state &&
-          ({
-            ...state,
-            [property]: {
-              ...(state[property] as object),
-              [key]: value,
-            },
-          } as Signalement),
-      )
+    (property: keyof Signalement, key?: string) => (value: any) => {
+      if (key) {
+        setSignalement(
+          (state) =>
+            state &&
+            ({
+              ...state,
+              [property]: {
+                ...(state[property] as object),
+                [key]: value,
+              },
+            } as Signalement),
+        )
+      } else {
+        setSignalement((state) => state && ({ ...state, [property]: value } as Signalement))
+      }
     },
     [setSignalement],
   )
@@ -57,9 +62,10 @@ export function SignalementContextProvider(props: Readonly<SignalementContextPro
     (
       signalementType: Signalement.type,
       adresse: IBANPlateformeResult,
-      changesRequested?: ChangesRequested,
+      changesRequested?: Partial<ChangesRequested>,
+      creationType?: ExistingLocation.type,
     ) => {
-      const signalement = getInitialSignalement(adresse, signalementType)
+      const signalement = getInitialSignalement(adresse, signalementType, creationType)
       setInitialSignalement(signalement)
       setSignalement(signalement)
 

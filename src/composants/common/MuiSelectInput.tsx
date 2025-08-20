@@ -2,21 +2,28 @@ import React from 'react'
 import styled from 'styled-components'
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
+import { FilterOptionsState } from '@mui/material'
 
 export type SelectOptionType<T> = {
   label: string
   value: T
 }
 
-type MultiSelectInputProps<T> = {
+type MuiSelectInputProps<T> = {
   label: string
   placeholder?: string
   options: Array<SelectOptionType<T>>
-  onChange: (value: SelectOptionType<T>[]) => void
-  value: SelectOptionType<T>[]
+  onChange: (value: SelectOptionType<T> | SelectOptionType<T>[]) => void
+  value: SelectOptionType<T> | SelectOptionType<T>[]
   hint?: string
   isDisabled?: boolean
   noOptionsText?: string
+  isMultiSelect?: boolean
+  filterOptions?: (
+    options: SelectOptionType<string>[],
+    params: FilterOptionsState<SelectOptionType<string>>,
+  ) => SelectOptionType<string>[]
+  errorMessage?: string
 }
 
 const StyledAutocomplete = styled(Autocomplete)`
@@ -25,13 +32,19 @@ const StyledAutocomplete = styled(Autocomplete)`
   border-top-right-radius: 4px;
 
   .MuiInputBase-root {
+    &::before {
+      border-bottom: 2px solid var(--border-plain-grey);
+    }
+    &::after {
+      border-bottom: 2px solid var(--background-action-high-blue-france);
+    }
     > input.MuiInputBase-input {
       padding: 0.5rem 1rem;
     }
   }
 `
 
-export function MultiSelectInput<T>({
+export function MuiSelectInput<T>({
   label,
   placeholder,
   options,
@@ -40,10 +53,13 @@ export function MultiSelectInput<T>({
   hint,
   isDisabled,
   noOptionsText = 'Aucun résultat',
-}: MultiSelectInputProps<T>) {
+  isMultiSelect = false,
+  filterOptions,
+  errorMessage,
+}: MuiSelectInputProps<T>) {
   return (
     <div
-      className={`fr-select-group ${isDisabled ? 'fr-select-group--disabled' : ''}`}
+      className={`fr-select-group${isDisabled ? ' fr-select-group--disabled' : ''}`}
       style={{ marginBottom: 0 }}
     >
       <label className='fr-label' htmlFor={`select-${label}`}>
@@ -51,7 +67,7 @@ export function MultiSelectInput<T>({
         {hint && <span className='fr-hint-text'>{hint}</span>}
       </label>
       <StyledAutocomplete
-        multiple
+        multiple={isMultiSelect}
         value={value}
         style={{ width: '100%' }}
         options={options}
@@ -64,7 +80,13 @@ export function MultiSelectInput<T>({
         )}
         disablePortal
         noOptionsText={noOptionsText}
+        filterOptions={filterOptions as any}
       />
+      {errorMessage && (
+        <div className='fr-messages-group' aria-live='polite'>
+          <p className='fr-message fr-message--error'>{errorMessage}</p>
+        </div>
+      )}
     </div>
   )
 }

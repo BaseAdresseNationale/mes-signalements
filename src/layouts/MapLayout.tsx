@@ -18,6 +18,7 @@ import { CadastreToggle } from '../composants/map/CadastreToggle'
 import { AdresseSearchMap } from '../composants/map/AdresseSearchMap'
 import { MapLibreEvent } from 'maplibre-gl'
 import { SignalementsSearchMap } from '../composants/map/SignalementsSearchMap'
+import { CreateAdresseButton } from '../composants/map/CreateAdresseButton'
 
 const Layout = styled.div`
   position: relative;
@@ -167,6 +168,7 @@ export function MapLayout({ children }: MapLayoutProps) {
             setShowCadastre={setShowCadastre}
             position='top-right'
           />
+          <CreateAdresseButton position='top-right' navigate={navigate} />
           <StylesSwitch
             styles={mapStyles as [MaplibreStyleDefinition, MaplibreStyleDefinition]}
             position='bottom-right'

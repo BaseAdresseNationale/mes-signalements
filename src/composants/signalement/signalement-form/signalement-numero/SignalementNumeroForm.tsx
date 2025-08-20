@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { StyledForm } from '../../signalement.styles'
 import PositionInput from '../../../common/Position/PositionInput'
 import {
@@ -15,18 +15,26 @@ import {
 import ParcelleInput from '../../../common/ParcelleInput'
 import { getAdresseLabel } from '../../../../utils/adresse.utils'
 import { lookup as BANLookup } from '../../../../api/ban-plateforme'
-import SelectInput from '../../../common/SelectInput'
+import { MuiSelectInput, SelectOptionType } from '../../../common/MuiSelectInput'
+import Input from '@codegouvfr/react-dsfr/Input'
+import { createFilterOptions } from '@mui/material/Autocomplete'
+import { FilterOptionsState } from '@mui/material'
+import useNavigateWithPreservedSearchParams from '../../../../hooks/useNavigateWithPreservedSearchParams'
+import { useParams } from 'react-router-dom'
+import { useAsyncBalValidator } from '../../../../hooks/useAsyncBALValidator'
 
 interface SignalementNumeroFormProps {
   signalement: Signalement
-  onEditSignalement: (property: keyof Signalement, key: string) => (value: any) => void
+  onEditSignalement: (property: keyof Signalement, key?: string) => (value: any) => void
   onClose: () => void
-  address: IBANPlateformeNumero | IBANPlateformeVoie
+  address: IBANPlateformeNumero | IBANPlateformeVoie | IBANPlateformeCommune
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
-  initialPositionCoords: number[]
+  initialPositionCoords?: number[]
   hasSignalementChanged: boolean
   mode: CommuneStatusDTO.mode
 }
+
+const filter = createFilterOptions<SelectOptionType<string>>()
 
 export default function SignalementNumeroForm({
   signalement,
@@ -39,32 +47,71 @@ export default function SignalementNumeroForm({
   mode,
 }: SignalementNumeroFormProps) {
   const isCreation = signalement.type === Signalement.type.LOCATION_TO_CREATE
+  const { navigate } = useNavigateWithPreservedSearchParams()
+  const routerParams = useParams()
 
-  const [complementsOpts, setComplementsOpts] = useState<{ value: string; label: string }[]>([])
+  const [voiesOpts, setVoiesOpts] = useState<SelectOptionType<string>[]>([])
+  const [complementsOpts, setComplementsOpts] = useState<SelectOptionType<string>[]>([])
+
+  const { validationErrors, onValidate, onEdit } = useAsyncBalValidator<NumeroChangesRequestedDTO>({
+    onSubmit,
+    onEditSignalement,
+  })
 
   useEffect(() => {
-    if (address) {
-      const fetchComplements = async () => {
-        try {
-          const { commune } = address
+    const fetchOptions = async () => {
+      try {
+        const results = await BANLookup(signalement.codeCommune)
+        const mappedComplements = (results as IBANPlateformeCommune).voies
+          .filter(({ type }) => type === BANPlateformeResultTypeEnum.LIEU_DIT)
+          .map(({ nomVoie, id }) => ({ value: id, label: nomVoie }))
+        setComplementsOpts(mappedComplements)
 
-          const results = await BANLookup(commune.code)
-          const mappedResults = (results as unknown as IBANPlateformeCommune).voies
-            .filter(({ type }) => type === BANPlateformeResultTypeEnum.LIEU_DIT)
-            .map(({ nomVoie }) => ({ value: nomVoie, label: nomVoie }))
-          setComplementsOpts(mappedResults)
+        const mappedVoies = (results as IBANPlateformeCommune).voies
+          .filter(({ type }) => type === BANPlateformeResultTypeEnum.VOIE)
+          .map(({ nomVoie, id }) => ({ value: id, label: nomVoie }))
+        setVoiesOpts(mappedVoies)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    fetchOptions()
+  }, [signalement])
+
+  const handleChangeVoie = useCallback(
+    async (selectedVoie: SelectOptionType<string>) => {
+      if (!selectedVoie || selectedVoie.value === address.id) {
+        return
+      }
+
+      if (selectedVoie.value.startsWith(signalement.codeCommune)) {
+        try {
+          const voie = await BANLookup(selectedVoie?.value)
+          navigate(`/${voie.id}?type=${Signalement.type.LOCATION_TO_CREATE}`)
         } catch (error) {
           console.error(error)
         }
+      } else if (routerParams['code'] === signalement.codeCommune) {
+        onEdit('changesRequested', 'nomVoie')(selectedVoie.value)
+      } else {
+        navigate(
+          `/${signalement.codeCommune}?type=${Signalement.type.LOCATION_TO_CREATE}&changesRequested=${JSON.stringify(
+            {
+              nomVoie: selectedVoie.value,
+            },
+          )}`,
+        )
       }
-
-      fetchComplements()
-    }
-  }, [address])
+    },
+    [signalement.codeCommune, navigate, onEdit, address.id],
+  )
 
   const isSubmitDisabled = useMemo(() => {
     const { changesRequested } = signalement
-    const isDisabled = (changesRequested as NumeroChangesRequestedDTO).positions?.length === 0
+    const isDisabled =
+      (changesRequested as NumeroChangesRequestedDTO).positions?.length === 0 ||
+      !(changesRequested as NumeroChangesRequestedDTO).nomVoie
     if (isCreation) {
       return isDisabled
     }
@@ -76,12 +123,12 @@ export default function SignalementNumeroForm({
     signalement.changesRequested as NumeroChangesRequestedDTO
 
   return (
-    <StyledForm onSubmit={onSubmit}>
+    <StyledForm onSubmit={(event) => onValidate(event)(signalement.changesRequested)}>
       {isCreation ? (
-        <h5>Demande de création d&apos;une adresse</h5>
+        <h4>Demande de création d&apos;une adresse</h4>
       ) : (
         <>
-          <h5>Demande de modification pour l&apos;adresse</h5>
+          <h4>Demande de modification pour l&apos;adresse</h4>
           <section>
             <div>{getAdresseLabel(address)}</div>
           </section>
@@ -90,75 +137,117 @@ export default function SignalementNumeroForm({
       <section>
         {!isCreation && <h5>Modifications demandées</h5>}
         <div className='form-row' style={{ marginBottom: 0 }}>
-          <div className='fr-input-group'>
-            <label className='fr-label' htmlFor='numero'>
-              Numéro*
-            </label>
-            <input
-              className='fr-input'
-              name='numero'
-              required
-              min={1}
-              max={9998}
-              type='number'
-              value={numero || ''}
-              onChange={(event) =>
-                onEditSignalement('changesRequested', 'numero')(event.target.value)
-              }
-            />
-          </div>
-          <div className='fr-input-group'>
-            <label className='fr-label' htmlFor='suffixe'>
-              Suffixe
-            </label>
-            <input
-              name='suffixe'
-              pattern='^[\da-zA-Z]+$'
-              maxLength={9}
-              className='fr-input'
-              value={suffixe as string}
-              placeholder={'bis, ter...'}
-              onChange={(event) =>
-                onEditSignalement('changesRequested', 'suffixe')(event.target.value)
-              }
-            />
-          </div>
+          <Input
+            label='Numéro*'
+            nativeInputProps={{
+              required: true,
+              min: 1,
+              type: 'number',
+              name: 'numero',
+              value: numero || '',
+              onChange: (event) => onEdit('changesRequested', 'numero')(event.target.value),
+            }}
+            {...(validationErrors?.numero && {
+              stateRelatedMessage: validationErrors.numero,
+              state: 'error',
+            })}
+          />
+          <Input
+            label='Suffixe'
+            nativeInputProps={{
+              maxLength: 9,
+              pattern: '^[\\da-zA-Z]+$',
+              name: 'suffixe',
+              placeholder: 'bis, ter...',
+              value: suffixe as string,
+              onChange: (event) => onEdit('changesRequested', 'suffixe')(event.target.value),
+            }}
+            {...(validationErrors?.suffixe && {
+              stateRelatedMessage: validationErrors.suffixe,
+              state: 'error',
+            })}
+          />
         </div>
         <div className='form-row'>
-          <div className='fr-input-group'>
-            <label className='fr-label' htmlFor='nomVoie'>
-              Nom de la voie*
-            </label>
-            <input
-              className='fr-input'
-              maxLength={200}
-              minLength={3}
-              name='nomVoie'
-              required
-              disabled={isCreation}
-              value={nomVoie as string}
-              onChange={(event) =>
-                onEditSignalement('changesRequested', 'nomVoie')(event.target.value)
-              }
+          {isCreation ? (
+            <MuiSelectInput
+              label='Nom de la voie*'
+              options={voiesOpts}
+              value={{ label: nomVoie, value: nomVoie }}
+              onChange={(event) => handleChangeVoie(event as SelectOptionType<string>)}
+              filterOptions={(
+                options: SelectOptionType<string>[],
+                params: FilterOptionsState<SelectOptionType<string>>,
+              ) => {
+                const filtered = filter(options, params)
+
+                const { inputValue } = params
+                const isExisting = options.some((option) => inputValue === option.label)
+                const isValid = inputValue.length > 3 && inputValue.length < 200
+                if (inputValue !== '' && !isExisting && isValid) {
+                  filtered.push({
+                    value: inputValue,
+                    label: `Créer la voie "${inputValue}"`,
+                  })
+                }
+
+                return filtered
+              }}
+              {...(validationErrors?.nomVoie && {
+                errorMessage: validationErrors.nomVoie,
+              })}
             />
-          </div>
+          ) : (
+            <Input
+              label='Nom de la voie*'
+              nativeInputProps={{
+                maxLength: 200,
+                minLength: 3,
+                name: 'nomVoie',
+                required: true,
+                value: nomVoie,
+                onChange: (event) => onEdit('changesRequested', 'nomVoie')(event.target.value),
+              }}
+              {...(validationErrors?.nomVoie && {
+                stateRelatedMessage: validationErrors.nomVoie,
+                state: 'error',
+              })}
+            />
+          )}
         </div>
-        {mode === CommuneStatusDTO.mode.FULL && (
-          <SelectInput
-            label='Complément'
-            defaultOption='-'
-            value={nomComplement}
-            options={complementsOpts}
-            handleChange={(value) => onEditSignalement('changesRequested', 'nomComplement')(value)}
-          />
-        )}
         <PositionInput
           positions={positions}
-          onChange={onEditSignalement('changesRequested', 'positions')}
+          onChange={onEdit('changesRequested', 'positions')}
           initialPositionCoords={initialPositionCoords}
           multiPositionDisabled={mode !== CommuneStatusDTO.mode.FULL}
+          {...(validationErrors?.positions && {
+            errorMessage: validationErrors.positions,
+          })}
         />
-        {mode === CommuneStatusDTO.mode.FULL && <ParcelleInput parcelles={parcelles} />}
+        {mode === CommuneStatusDTO.mode.FULL && (
+          <MuiSelectInput
+            label='Complément'
+            options={complementsOpts}
+            value={{ label: nomComplement || '', value: nomComplement }}
+            onChange={(event) =>
+              onEdit(
+                'changesRequested',
+                'nomComplement',
+              )((event as SelectOptionType<string>)?.label || '')
+            }
+            {...(validationErrors?.nomComplement && {
+              errorMessage: validationErrors.nomComplement,
+            })}
+          />
+        )}
+        {mode === CommuneStatusDTO.mode.FULL && (
+          <ParcelleInput
+            parcelles={parcelles}
+            {...(validationErrors?.parcelles && {
+              errorMessage: validationErrors.parcelles,
+            })}
+          />
+        )}
       </section>
       <section>
         <div className='form-row'>
@@ -170,9 +259,7 @@ export default function SignalementNumeroForm({
               className='fr-input'
               name='comment'
               value={comment as string}
-              onChange={(event) =>
-                onEditSignalement('changesRequested', 'comment')(event.target.value)
-              }
+              onChange={(event) => onEdit('changesRequested', 'comment')(event.target.value)}
               placeholder='Merci de ne pas indiquer de données personnelles'
             />
           </div>

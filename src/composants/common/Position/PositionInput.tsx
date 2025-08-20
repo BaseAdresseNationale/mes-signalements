@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import styled from 'styled-components'
 import PositionItem from './PositionItem'
 import { Position } from '../../../api/signalement'
 import { blurPosition } from '../../../utils/position.utils'
+import MapContext from '../../../contexts/map.context'
 
 const StyledContainer = styled.div`
   margin-top: 1.5rem;
@@ -14,10 +15,11 @@ const StyledContainer = styled.div`
 
 interface PositionInputProps {
   positions: Position[]
-  initialPositionCoords: number[]
+  initialPositionCoords?: number[]
   onChange: (positions: Position[]) => void
   defaultPositionType?: Position.type
   multiPositionDisabled?: boolean
+  errorMessage?: string
 }
 
 export default function PositionInput({
@@ -26,7 +28,11 @@ export default function PositionInput({
   onChange,
   defaultPositionType = Position.type.ENTR_E,
   multiPositionDisabled,
+  errorMessage,
 }: Readonly<PositionInputProps>) {
+  const { mapRef } = useContext(MapContext)
+  const getInitialCoords = () => [mapRef?.getCenter()?.lng || 0, mapRef?.getCenter()?.lat || 0]
+
   return (
     <StyledContainer>
       <p>{`Position${multiPositionDisabled ? '' : 's'}*`}</p>
@@ -61,7 +67,7 @@ export default function PositionInput({
                 {
                   point: {
                     type: 'Point',
-                    coordinates: blurPosition(initialPositionCoords),
+                    coordinates: blurPosition(initialPositionCoords || getInitialCoords()),
                   },
                   type: defaultPositionType,
                 },
@@ -70,6 +76,11 @@ export default function PositionInput({
           >
             Ajouter une position
           </button>
+        </div>
+      )}
+      {errorMessage && (
+        <div className='fr-messages-group' aria-live='polite'>
+          <p className='fr-message fr-message--error'>{errorMessage}</p>
         </div>
       )}
     </StyledContainer>

@@ -1,11 +1,12 @@
 import React from 'react'
-import { Signalement } from '../../api/signalement'
-import { IBANPlateformeNumero, IBANPlateformeResult } from '../../api/ban-plateforme/types'
-import { Card } from '../common/Card'
-import { getAdresseLabel } from '../../utils/adresse.utils'
-import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
-import SignalementDisabled from '../signalement/SignalementDisabled'
+import { Signalement } from '../../../api/signalement'
+import { IBANPlateformeNumero, IBANPlateformeResult } from '../../../api/ban-plateforme/types'
+import { Card } from '../../common/Card'
+import { getAdresseLabel } from '../../../utils/adresse.utils'
+import useNavigateWithPreservedSearchParams from '../../../hooks/useNavigateWithPreservedSearchParams'
+import SignalementDisabled from '../../signalement/SignalementDisabled'
 import Badge from '@codegouvfr/react-dsfr/Badge'
+import Button from '@codegouvfr/react-dsfr/Button'
 
 interface NumeroCardProps {
   adresse: IBANPlateformeNumero
@@ -18,9 +19,7 @@ export function NumeroCard({ adresse, createSignalement, disabledMessage }: Nume
 
   return (
     <Card>
-      <h2 style={{ lineHeight: 'normal' }}>
-        {getAdresseLabel(adresse, { withVoieLink: true, navigateFn: navigate })}
-      </h2>
+      <h2 style={{ lineHeight: 'normal' }}>{getAdresseLabel(adresse, { navigateFn: navigate })}</h2>
       <ul>
         <li>
           Région : <b>{adresse.commune.region.nom}</b>
@@ -68,23 +67,24 @@ export function NumeroCard({ adresse, createSignalement, disabledMessage }: Nume
 
       {createSignalement ? (
         <>
-          <button
+          <Button
             type='button'
-            className='fr-btn'
+            iconId='fr-icon-edit-line'
             onClick={() => createSignalement(Signalement.type.LOCATION_TO_UPDATE, adresse)}
           >
             Modifier l&apos;adresse
-          </button>
-          <button
+          </Button>
+          <Button
             type='button'
-            className='fr-btn'
+            iconId='fr-icon-delete-line'
+            priority='secondary'
             onClick={() => createSignalement(Signalement.type.LOCATION_TO_DELETE, adresse)}
           >
             Demander la suppression
-          </button>
+          </Button>
         </>
       ) : (
-        <SignalementDisabled message={disabledMessage} />
+        <SignalementDisabled message={disabledMessage} codeCommune={adresse.commune.code} />
       )}
     </Card>
   )

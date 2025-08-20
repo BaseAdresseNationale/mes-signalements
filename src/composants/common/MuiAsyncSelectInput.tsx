@@ -9,16 +9,17 @@ export type SelectOptionType<T> = {
   value: T
 }
 
-type AsyncMultiSelectInputProps<T> = {
-  label: string
+type MuiAsyncSelectInputProps<T> = {
+  label?: string
   placeholder?: string
-  onChange: (value: SelectOptionType<T>[]) => void
+  onChange: (value: SelectOptionType<T> | SelectOptionType<T>[]) => void
   onFetchOptions: (search: string) => Promise<SelectOptionType<T>[]>
-  value: SelectOptionType<T>[]
+  value: SelectOptionType<T> | SelectOptionType<T>[]
   hint?: string
   isDisabled?: boolean
   noOptionsText?: string
   searchMinLength?: number
+  isMultiSelect?: boolean
 }
 
 const StyledAutocomplete = styled(Autocomplete)`
@@ -27,13 +28,19 @@ const StyledAutocomplete = styled(Autocomplete)`
   border-top-right-radius: 4px;
 
   .MuiInputBase-root {
+    &::before {
+      border-bottom: 2px solid var(--border-plain-grey);
+    }
+    &::after {
+      border-bottom: 2px solid var(--background-action-high-blue-france);
+    }
     > input.MuiInputBase-input {
       padding: 0.5rem 1rem;
     }
   }
 `
 
-export function AsyncMultiSelectInput<T>({
+export function MuiAsyncSelectInput<T>({
   label,
   placeholder,
   onChange,
@@ -43,11 +50,12 @@ export function AsyncMultiSelectInput<T>({
   isDisabled,
   noOptionsText = 'Aucun résultat',
   searchMinLength,
-}: AsyncMultiSelectInputProps<T>) {
+  isMultiSelect,
+}: MuiAsyncSelectInputProps<T>) {
   const [searchValue, setSearchValue] = useState('')
   const [asyncOptions, setAsyncOptions] = useState<SelectOptionType<T>[]>([])
 
-  const options = [...asyncOptions, ...value]
+  const options = [...asyncOptions, ...(Array.isArray(value) ? value : [value])]
 
   useEffect(() => {
     const fetchOptions = debounce(async () => {
@@ -73,12 +81,14 @@ export function AsyncMultiSelectInput<T>({
       className={`fr-select-group ${isDisabled ? 'fr-select-group--disabled' : ''}`}
       style={{ marginBottom: 0 }}
     >
-      <label className='fr-label' htmlFor={`select-${label}`}>
-        {label}
-        {hint && <span className='fr-hint-text'>{hint}</span>}
-      </label>
+      {label && (
+        <label className='fr-label' htmlFor={`select-${label}`}>
+          {label}
+          {hint && <span className='fr-hint-text'>{hint}</span>}
+        </label>
+      )}
       <StyledAutocomplete
-        multiple
+        multiple={isMultiSelect}
         style={{ width: '100%' }}
         value={value || []}
         options={options}
