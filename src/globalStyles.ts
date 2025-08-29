@@ -112,6 +112,10 @@ const GlobalStyle = createGlobalStyle`
  * DSFR Styles Overrides
  */
 
+/**
+ * We want to display the search button first in the header
+ * which is included using createPortal in the navbar
+ */
 .fr-header__navbar {
   flex-direction: row-reverse;
   justify-content: flex-start;

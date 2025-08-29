@@ -1,11 +1,16 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Button from '@codegouvfr/react-dsfr/Button'
 import ReactDOM from 'react-dom'
 import LayoutContext from '../../contexts/layout.context'
 
 function SearchMobileButton() {
-  const container = document.querySelector('.fr-header__navbar')
+  const [container, setContainer] = useState<HTMLElement | null>(null)
   const { searchMobileButtonRef, setShowSearch, showDrawer, showSearch } = useContext(LayoutContext)
+
+  useEffect(() => {
+    const el = document.querySelector('.fr-header__navbar')
+    setContainer(el as HTMLElement | null)
+  }, [])
 
   if (!container || showDrawer) {
     return null
