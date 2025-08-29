@@ -73,7 +73,19 @@ export function AboutModal({ onClose }: ModalProps) {
           .
         </p>
 
-        <p>
+        <h2>Tutoriel vidéo</h2>
+        <div style={{ position: 'relative', paddingTop: '56.25%' }}>
+          <iframe
+            title='Mes Signalements'
+            width='100%'
+            height='100%'
+            src='https://tube.numerique.gouv.fr/videos/embed/puJiRMsH6Tge7oxmsnG1HL'
+            sandbox='allow-same-origin allow-scripts allow-popups allow-forms'
+            style={{ position: 'absolute', inset: 0 }}
+          ></iframe>
+        </div>
+
+        <p style={{ marginTop: 15 }}>
           <i>
             L&apos;application Mes Signalement vous est proposé par le{' '}
             <a href='https://adresse.data.gouv.fr/programme-bal' target='_blank' rel='noreferrer'>
