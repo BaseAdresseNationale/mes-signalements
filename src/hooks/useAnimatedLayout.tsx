@@ -1,12 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigation } from 'react-router-dom'
 import useWindowSize from './useWindowSize'
 
 export const ANIMATION_DURATION = 300
-
-const mobileSearchBtn = document.createElement('button')
-mobileSearchBtn.className = 'fr-btn--search fr-btn'
-mobileSearchBtn.setAttribute('aria-label', 'Ouvrir la recherche')
 
 export const useAnimatedLayout = () => {
   const { isMobile } = useWindowSize()
@@ -19,20 +15,29 @@ export const useAnimatedLayout = () => {
   const searchRef = useRef<HTMLDivElement>(null)
   const drawerRef = useRef<HTMLDivElement>(null)
 
-  mobileSearchBtn.style.display = showDrawer ? 'none' : 'block'
-  mobileSearchBtn.style.backgroundColor = showSearch ? '#eeeeee' : 'transparent'
+  const mobileSearchBtn = useMemo(() => {
+    const btn = document.createElement('button')
+    btn.className = 'fr-btn--search fr-btn'
+    btn.setAttribute('aria-label', 'Ouvrir la recherche')
+    btn.onclick = () => {
+      setShowSearch((state) => !state)
+    }
+
+    return btn
+  }, [])
 
   useEffect(() => {
     const mobileNavbar = document.querySelector('.fr-header__navbar')
-    const alreadyHasBtn = mobileNavbar?.querySelector('.fr-btn--search')
-    if (!mobileNavbar || alreadyHasBtn) {
+    if (!mobileNavbar) {
       return
     }
-    mobileSearchBtn.onclick = () => {
-      setShowSearch((state) => !state)
+    const alreadyHasBtn = mobileNavbar.querySelector('.fr-btn--search')
+    if (alreadyHasBtn) {
+      return
     }
+
     mobileNavbar.prepend(mobileSearchBtn)
-  }, [])
+  }, [mobileSearchBtn])
 
   useEffect(() => {
     if (location.pathname !== '/' || navigation.location) {
@@ -50,6 +55,8 @@ export const useAnimatedLayout = () => {
   }, [navigation, location, isMobile])
 
   useEffect(() => {
+    mobileSearchBtn.style.backgroundColor = showSearch ? '#eeeeee' : 'transparent'
+
     if (!searchRef.current) {
       return
     }
@@ -64,6 +71,8 @@ export const useAnimatedLayout = () => {
   }, [showSearch])
 
   useEffect(() => {
+    mobileSearchBtn.style.display = showDrawer ? 'none' : 'block'
+
     if (!drawerRef.current) {
       return
     }
