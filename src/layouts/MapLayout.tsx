@@ -1,9 +1,9 @@
 import styled from 'styled-components'
 import Map, { Layer, NavigationControl, Source } from 'react-map-gl/maplibre'
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useContext, useState } from 'react'
 import { Header } from '../composants/common/Header'
 import { Drawer } from '../composants/common/Drawer'
-import { useLocation, useNavigation } from 'react-router-dom'
+import { useNavigation } from 'react-router-dom'
 import { AdresseSearch } from '../composants/adresse/AdresseSearch'
 import Loader from '../composants/common/Loader'
 import useNavigateWithPreservedSearchParams from '../hooks/useNavigateWithPreservedSearchParams'
@@ -19,6 +19,7 @@ import { AdresseSearchMap } from '../composants/map/AdresseSearchMap'
 import { MapLibreEvent } from 'maplibre-gl'
 import { SignalementsSearchMap } from '../composants/map/SignalementsSearchMap'
 import { CreateAdresseButton } from '../composants/map/CreateAdresseButton'
+import { useAnimatedLayout } from '../hooks/useAnimatedLayout'
 
 const Layout = styled.div`
   position: relative;
@@ -38,8 +39,6 @@ const Layout = styled.div`
     overflow: hidden;
   }
 `
-
-export const ANIMATION_DURATION = 300
 
 interface MapLayoutProps {
   children?: React.ReactNode
@@ -71,9 +70,6 @@ const loadAssets = async (e: MapLibreEvent) => {
 }
 
 export function MapLayout({ children }: MapLayoutProps) {
-  const searchRef = useRef<HTMLDivElement>(null)
-  const drawerRef = useRef<HTMLDivElement>(null)
-
   const [cursor, setCursor] = useState<string | null>(null)
   const [showInfo, setShowInfo] = useState(false)
   const onMouseEnter = useCallback(() => setCursor('pointer'), [])
@@ -91,25 +87,7 @@ export function MapLayout({ children }: MapLayoutProps) {
 
   const { navigate } = useNavigateWithPreservedSearchParams()
   const navigation = useNavigation()
-  const location = useLocation()
-
-  useEffect(() => {
-    if (!drawerRef.current || !searchRef.current) {
-      return
-    }
-
-    if (location.pathname !== '/' || navigation.location) {
-      searchRef.current.classList.remove('show')
-      searchRef.current.setAttribute('aria-hidden', 'true')
-      drawerRef.current.classList.add('open')
-      drawerRef.current.setAttribute('aria-hidden', 'false')
-    } else {
-      searchRef.current.classList.add('show')
-      searchRef.current.setAttribute('aria-hidden', 'false')
-      drawerRef.current.classList.remove('open')
-      drawerRef.current.setAttribute('aria-hidden', 'true')
-    }
-  }, [navigation, location])
+  const { searchRef, drawerRef } = useAnimatedLayout()
 
   const handleCloseDrawer = () => {
     navigate('/')
