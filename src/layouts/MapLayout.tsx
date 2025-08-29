@@ -19,7 +19,7 @@ import { AdresseSearchMap } from '../composants/map/AdresseSearchMap'
 import { MapLibreEvent } from 'maplibre-gl'
 import { SignalementsSearchMap } from '../composants/map/SignalementsSearchMap'
 import { CreateAdresseButton } from '../composants/map/CreateAdresseButton'
-import { useAnimatedLayout } from '../hooks/useAnimatedLayout'
+import LayoutContext from '../contexts/layout.context'
 
 const Layout = styled.div`
   position: relative;
@@ -84,10 +84,10 @@ export function MapLayout({ children }: MapLayoutProps) {
     signalementSearchMapLayerOptions,
   } = useContext(MapContext)
   const { source } = useContext(SourceContext)
+  const { searchRef, drawerRef } = useContext(LayoutContext)
 
   const { navigate } = useNavigateWithPreservedSearchParams()
   const navigation = useNavigation()
-  const { searchRef, drawerRef } = useAnimatedLayout()
 
   const handleCloseDrawer = () => {
     navigate('/')

@@ -10,7 +10,6 @@ const GlobalStyle = createGlobalStyle`
   }
 }
 
-
 /**
  * Tooltip Styles
  */
@@ -109,6 +108,16 @@ const GlobalStyle = createGlobalStyle`
   }
 }
 
+/**
+ * DSFR Styles Overrides
+ */
+
+.fr-header__navbar {
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+}
+
+
 .maplibregl-ctrl.maplibregl-ctrl-group {
   > button.active {
     color: white;
@@ -119,6 +128,8 @@ const GlobalStyle = createGlobalStyle`
     }
   }
 }
+
+ 
 
 .loader-wrapper {
   height: 100%;

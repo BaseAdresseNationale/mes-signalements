@@ -4,6 +4,7 @@ import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPre
 import { AuthentificationModal } from '../authentification/AuthentificationModal'
 import { Header as HeaderDSFR } from '@codegouvfr/react-dsfr/Header'
 import { Badge } from '@codegouvfr/react-dsfr/Badge'
+import SearchMobileButton from './SearchMobileButton'
 
 interface HeaderProps {
   customSource?: Source
@@ -63,6 +64,7 @@ export function Header({ customSource, toggleShowInfo }: HeaderProps) {
               },
         ]}
       />
+      <SearchMobileButton />
       {showConnectionModal && (
         <AuthentificationModal onClose={() => setShowConnectionModal(false)} />
       )}

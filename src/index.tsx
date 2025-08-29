@@ -18,6 +18,7 @@ import { startReactDsfr } from '@codegouvfr/react-dsfr/spa'
 import { SignalementViewerContextProvider } from './contexts/signalement-viewer.context'
 import { AllPage } from './pages/AllPage'
 import { CreateAdressePage } from './pages/CreateAdressePage'
+import { LayoutContextProvider } from './contexts/layout.context'
 
 startReactDsfr({ defaultColorScheme: 'light' })
 
@@ -41,13 +42,15 @@ const GlobalLayout = (props: { children: React.ReactNode }) => {
   const { children } = props
   return (
     <MapContextProvider>
-      <SourceContextProvider>
-        <SignalementContextProvider>
-          <SignalementViewerContextProvider>
-            <MapLayout>{children}</MapLayout>
-          </SignalementViewerContextProvider>
-        </SignalementContextProvider>
-      </SourceContextProvider>
+      <LayoutContextProvider>
+        <SourceContextProvider>
+          <SignalementContextProvider>
+            <SignalementViewerContextProvider>
+              <MapLayout>{children}</MapLayout>
+            </SignalementViewerContextProvider>
+          </SignalementContextProvider>
+        </SourceContextProvider>
+      </LayoutContextProvider>
     </MapContextProvider>
   )
 }

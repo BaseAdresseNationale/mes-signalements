@@ -7,7 +7,7 @@ import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPre
 import { MOBILE_BREAKPOINT } from '../../hooks/useWindowSize'
 import { AdvancedSearchModal } from './AdvancedSearchModal'
 import { StyledResultList } from '../common/Autocomplete/Autocomplete.styles'
-import { ANIMATION_DURATION } from '../../hooks/useAnimatedLayout'
+import { ANIMATION_DURATION } from '../../contexts/layout.context'
 
 const placeHolders = [
   '10 rue Paulin Viry, Pocé-Sur-Cisse',

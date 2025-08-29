@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react'
 import { StyledDrawer } from './Drawer.styles'
-import { ANIMATION_DURATION } from '../../../hooks/useAnimatedLayout'
+import { ANIMATION_DURATION } from '../../../contexts/layout.context'
 
 interface DrawerProps {
   ref: React.Ref<HTMLDivElement>
