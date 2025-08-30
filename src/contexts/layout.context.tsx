@@ -85,15 +85,7 @@ export function LayoutContextProvider(props: { children: React.ReactNode }) {
       showSearch,
       showDrawer,
     }),
-    [
-      searchRef,
-      drawerRef,
-      searchMobileButtonRef,
-      setShowSearch,
-      setShowDrawer,
-      showSearch,
-      showDrawer,
-    ],
+    [showSearch, showDrawer],
   )
 
   return <LayoutContext.Provider value={value} {...props} />
