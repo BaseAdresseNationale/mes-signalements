@@ -2,12 +2,12 @@ import styled from 'styled-components'
 import { APIAdressePropertyType } from '../../api/api-adresse/types'
 import { search } from '../../api/api-adresse'
 import Autocomplete from '../common/Autocomplete'
-import { ANIMATION_DURATION } from '../../layouts/MapLayout'
 import React, { forwardRef, useMemo, useState } from 'react'
 import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
 import { MOBILE_BREAKPOINT } from '../../hooks/useWindowSize'
 import { AdvancedSearchModal } from './AdvancedSearchModal'
 import { StyledResultList } from '../common/Autocomplete/Autocomplete.styles'
+import { ANIMATION_DURATION } from '../../contexts/layout.context'
 
 const placeHolders = [
   '10 rue Paulin Viry, Pocé-Sur-Cisse',

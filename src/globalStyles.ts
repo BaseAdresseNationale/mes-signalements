@@ -10,7 +10,6 @@ const GlobalStyle = createGlobalStyle`
   }
 }
 
-
 /**
  * Tooltip Styles
  */
@@ -109,6 +108,20 @@ const GlobalStyle = createGlobalStyle`
   }
 }
 
+/**
+ * DSFR Styles Overrides
+ */
+
+/**
+ * We want to display the search button first in the header
+ * which is included using createPortal in the navbar
+ */
+.fr-header__navbar {
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+}
+
+
 .maplibregl-ctrl.maplibregl-ctrl-group {
   > button.active {
     color: white;
@@ -119,6 +132,8 @@ const GlobalStyle = createGlobalStyle`
     }
   }
 }
+
+ 
 
 .loader-wrapper {
   height: 100%;
