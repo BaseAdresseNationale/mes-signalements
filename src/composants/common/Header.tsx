@@ -41,11 +41,11 @@ export function Header({ customSource, toggleShowInfo }: HeaderProps) {
         }}
         quickAccessItems={[
           {
-            iconId: 'fr-icon-information-line',
+            iconId: 'fr-icon-question-line',
             buttonProps: {
               onClick: toggleShowInfo,
             },
-            text: 'À propos',
+            text: 'Aide',
           },
           customSource
             ? {
