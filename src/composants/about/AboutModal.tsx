@@ -25,9 +25,8 @@ interface ModalProps {
 
 export function AboutModal({ onClose }: ModalProps) {
   return (
-    <Modal title='À propos de Mes Signalements' onClose={onClose}>
+    <Modal title='Vous avez un problème avec votre adresse ?' onClose={onClose}>
       <StyledWrapper>
-        <h2>Vous avez un problème avec votre adresse ?</h2>
         <h3>La première étape, c&apos;est de vous assurer qu&apos;elle existe.</h3>
         <p>Pour cela, commencez par utiliser la barre de recherche pour trouver votre adresse.</p>
         <h3>La deuxième étape, c&apos;est de vous assurer qu&apos;elle soit bien renseignée.</h3>
