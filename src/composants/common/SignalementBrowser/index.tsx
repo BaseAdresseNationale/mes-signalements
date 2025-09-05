@@ -16,6 +16,7 @@ import SignalementBrowserMap from '../../map/SignalementBrowserMap'
 import Button from '@codegouvfr/react-dsfr/Button'
 import { FiltersModal } from './FiltersModal'
 import { SelectOptionType } from '../MuiSelectInput'
+import { StatsModal } from './StatsModal'
 
 const StyledWrapper = styled.div`
   position: relative;
@@ -28,6 +29,11 @@ const StyledWrapper = styled.div`
     justify-content: center;
     box-shadow: 0 2px 6px 0 rgba(0, 0, 18, 16%);
     padding: 5px 0;
+
+    > .show-dashboard-btn {
+      position: absolute;
+      right: 10px;
+    }
   }
 
   .signalement-list {
@@ -74,6 +80,7 @@ export function SignalementBrowser({ initialFilter, hideSourceFilter }: Signalem
   const { setAdresseSearchMapLayersOptions, setSignalementSearchMapLayerOptions, mapRef } =
     useContext(MapContext)
   const [showFilters, setShowFilters] = useState(false)
+  const [showStatsDashboard, setShowStatsDashboard] = useState(false)
   const [currentFilter, setCurrentFilter] = useState<SignalementBrowserFilter>(initialFilter)
   const [currentPage, setCurrentPage] = useState(1)
   const [sourceOptions, setSourceOptions] = useState<SelectOptionType<string>[]>([])
@@ -193,6 +200,13 @@ export function SignalementBrowser({ initialFilter, hideSourceFilter }: Signalem
         >
           {hasCustomFilters ? 'Modifier les filtres' : 'Filtrer les signalements'}
         </Button>
+        <Button
+          className='show-dashboard-btn'
+          iconId='fr-icon-line-chart-line'
+          onClick={() => setShowStatsDashboard(!showStatsDashboard)}
+          priority='tertiary no outline'
+          title='Afficher les statistiques'
+        />
       </div>
       {isLoading && <Loader />}
       {!isLoading && paginatedSignalements && paginatedSignalements.data.length === 0 && (
@@ -234,6 +248,7 @@ export function SignalementBrowser({ initialFilter, hideSourceFilter }: Signalem
           sourceOptions={sourceOptions}
         />
       )}
+      {showStatsDashboard && <StatsModal onClose={() => setShowStatsDashboard(false)} />}
     </StyledWrapper>
   )
 }
