@@ -61,7 +61,7 @@ export function useStats() {
             acc[status] = 0
           }
 
-          acc[status] += parseInt(count as string)
+          acc[status] += parseInt(count as string, 10)
         })
         return acc
       },

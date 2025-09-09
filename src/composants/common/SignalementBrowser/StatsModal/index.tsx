@@ -41,7 +41,7 @@ export function StatsModal({ onClose }: StatsModalProps) {
                 <CountStat label='En attente' count={stats.totalPending} />
                 <CountStat label='Traités' count={stats.totalProcessed} />
                 <CountStat label='Ignorés' count={stats.totalIgnored} />
-                <CountStat label='Expirés' count={stats.totalIgnored} />
+                <CountStat label='Expirés' count={stats.totalExpired} />
               </div>
             </section>
 
