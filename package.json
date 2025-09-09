@@ -10,6 +10,7 @@
   ],
   "author": "Équipe Adresse <adresse@data.gouv.fr>",
   "dependencies": {
+    "@ant-design/plots": "^2.6.4",
     "@codegouvfr/react-dsfr": "^1.20.2",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
