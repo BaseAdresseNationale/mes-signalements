@@ -15,7 +15,7 @@ type MuiSelectInputProps<T> = {
   options: Array<SelectOptionType<T>>
   onChange: (value: SelectOptionType<T> | SelectOptionType<T>[]) => void
   value: SelectOptionType<T> | SelectOptionType<T>[]
-  hint?: string
+  hint?: string | React.ReactNode
   isDisabled?: boolean
   noOptionsText?: string
   isMultiSelect?: boolean
