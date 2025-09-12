@@ -109,6 +109,7 @@ export default function SignalementNumeroForm({
 
   const isSubmitDisabled = useMemo(() => {
     const { changesRequested } = signalement
+
     const isDisabled =
       (changesRequested as NumeroChangesRequestedDTO).positions?.length === 0 ||
       !(changesRequested as NumeroChangesRequestedDTO).nomVoie
@@ -121,6 +122,10 @@ export default function SignalementNumeroForm({
 
   const { numero, suffixe, nomVoie, nomComplement, positions, parcelles, comment } =
     signalement.changesRequested as NumeroChangesRequestedDTO
+
+  const selectedVoie = useMemo(() => {
+    return voiesOpts.find(({ label }) => label === nomVoie)
+  }, [signalement, voiesOpts])
 
   return (
     <StyledForm onSubmit={(event) => onValidate(event)(signalement.changesRequested)}>
@@ -169,51 +174,56 @@ export default function SignalementNumeroForm({
           />
         </div>
         <div className='form-row'>
-          {isCreation ? (
-            <MuiSelectInput
-              label='Nom de la voie*'
-              options={voiesOpts}
-              value={{ label: nomVoie, value: nomVoie }}
-              onChange={(event) => handleChangeVoie(event as SelectOptionType<string>)}
-              filterOptions={(
-                options: SelectOptionType<string>[],
-                params: FilterOptionsState<SelectOptionType<string>>,
-              ) => {
-                const filtered = filter(options, params)
+          <MuiSelectInput
+            label='Voie*'
+            options={voiesOpts}
+            value={{ label: nomVoie, value: nomVoie }}
+            onChange={(event) => handleChangeVoie(event as SelectOptionType<string>)}
+            isDisabled={mode !== CommuneStatusDTO.mode.FULL}
+            {...(isCreation
+              ? {
+                  filterOptions: (
+                    options: SelectOptionType<string>[],
+                    params: FilterOptionsState<SelectOptionType<string>>,
+                  ) => {
+                    const filtered = filter(options, params)
 
-                const { inputValue } = params
-                const isExisting = options.some((option) => inputValue === option.label)
-                const isValid = inputValue.length > 3 && inputValue.length < 200
-                if (inputValue !== '' && !isExisting && isValid) {
-                  filtered.push({
-                    value: inputValue,
-                    label: `Créer la voie "${inputValue}"`,
-                  })
+                    const { inputValue } = params
+                    const isExisting = options.some((option) => inputValue === option.label)
+                    const isValid = inputValue.length > 3 && inputValue.length < 200
+                    if (inputValue !== '' && !isExisting && isValid) {
+                      filtered.push({
+                        value: inputValue,
+                        label: `Créer la voie "${inputValue}"`,
+                      })
+                    }
+
+                    return filtered
+                  },
+                  hint: 'Si la voie n’existe pas dans la liste, vous pouvez la créer en la saisissant ci-dessus.',
                 }
-
-                return filtered
-              }}
-              {...(validationErrors?.nomVoie && {
-                errorMessage: validationErrors.nomVoie,
-              })}
-            />
-          ) : (
-            <Input
-              label='Nom de la voie*'
-              nativeInputProps={{
-                maxLength: 200,
-                minLength: 3,
-                name: 'nomVoie',
-                required: true,
-                value: nomVoie,
-                onChange: (event) => onEdit('changesRequested', 'nomVoie')(event.target.value),
-              }}
-              {...(validationErrors?.nomVoie && {
-                stateRelatedMessage: validationErrors.nomVoie,
-                state: 'error',
-              })}
-            />
-          )}
+              : {
+                  hint: selectedVoie && (
+                    <>
+                      Si vous souhaitez renommer la voie, c&apos;est par{' '}
+                      <button
+                        className='fr-link'
+                        type='button'
+                        onClick={() =>
+                          navigate(
+                            `/${selectedVoie.value}?type=${Signalement.type.LOCATION_TO_UPDATE}`,
+                          )
+                        }
+                      >
+                        ici
+                      </button>
+                    </>
+                  ),
+                })}
+            {...(validationErrors?.nomVoie && {
+              errorMessage: validationErrors.nomVoie,
+            })}
+          />
         </div>
         <PositionInput
           positions={positions}
