@@ -9,16 +9,21 @@ export type SelectOptionType<T> = {
   value: T
 }
 
-type MuiSelectInputProps<T> = {
+type CallbackType<IsMulti extends boolean, T> = IsMulti extends true
+  ? (value: SelectOptionType<T>[]) => void
+  : (value: SelectOptionType<T>) => void
+
+type MuiSelectInputProps<IsMulti extends boolean, T> = {
   label: string
   placeholder?: string
   options: Array<SelectOptionType<T>>
-  onChange: (value: SelectOptionType<T> | SelectOptionType<T>[]) => void
-  value: SelectOptionType<T> | SelectOptionType<T>[]
+  onChange: CallbackType<IsMulti, T>
+  value: IsMulti extends true ? SelectOptionType<T>[] : SelectOptionType<T>
   hint?: string | React.ReactNode
   isDisabled?: boolean
   noOptionsText?: string
-  isMultiSelect?: boolean
+  isMultiSelect?: IsMulti
+  disableClearable?: boolean
   filterOptions?: (
     options: SelectOptionType<string>[],
     params: FilterOptionsState<SelectOptionType<string>>,
@@ -44,7 +49,7 @@ const StyledAutocomplete = styled(Autocomplete)`
   }
 `
 
-export function MuiSelectInput<T>({
+export function MuiSelectInput<IsMulti extends boolean, T>({
   label,
   placeholder,
   options,
@@ -53,10 +58,11 @@ export function MuiSelectInput<T>({
   hint,
   isDisabled,
   noOptionsText = 'Aucun résultat',
-  isMultiSelect = false,
+  isMultiSelect = false as IsMulti,
+  disableClearable = false,
   filterOptions,
   errorMessage,
-}: MuiSelectInputProps<T>) {
+}: MuiSelectInputProps<IsMulti, T>) {
   return (
     <div
       className={`fr-select-group${isDisabled ? ' fr-select-group--disabled' : ''}`}
@@ -81,6 +87,7 @@ export function MuiSelectInput<T>({
         disablePortal
         noOptionsText={noOptionsText}
         filterOptions={filterOptions as any}
+        disableClearable={disableClearable}
       />
       {errorMessage && (
         <div className='fr-messages-group' aria-live='polite'>
