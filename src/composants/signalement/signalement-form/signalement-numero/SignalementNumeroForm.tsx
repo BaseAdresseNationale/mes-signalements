@@ -9,6 +9,7 @@ import {
 import {
   BANPlateformeResultTypeEnum,
   IBANPlateformeCommune,
+  IBANPlateformeLieuDit,
   IBANPlateformeNumero,
   IBANPlateformeVoie,
 } from '../../../../api/ban-plateforme/types'
@@ -46,31 +47,33 @@ export default function SignalementNumeroForm({
   hasSignalementChanged,
   mode,
 }: SignalementNumeroFormProps) {
+  const { numero, suffixe, nomVoie, nomComplement, positions, parcelles, comment } =
+    signalement.changesRequested as NumeroChangesRequestedDTO
   const isCreation = signalement.type === Signalement.type.LOCATION_TO_CREATE
+
   const { navigate } = useNavigateWithPreservedSearchParams()
   const routerParams = useParams()
-
-  const [voiesOpts, setVoiesOpts] = useState<SelectOptionType<string>[]>([])
-  const [complementsOpts, setComplementsOpts] = useState<SelectOptionType<string>[]>([])
-
   const { validationErrors, onValidate, onEdit } = useAsyncBalValidator<NumeroChangesRequestedDTO>({
     onSubmit,
     onEditSignalement,
   })
 
+  const [voies, setVoies] = useState<IBANPlateformeVoie[]>([])
+  const [complements, setComplements] = useState<IBANPlateformeLieuDit[]>([])
+
   useEffect(() => {
     const fetchOptions = async () => {
       try {
         const results = await BANLookup(signalement.codeCommune)
-        const mappedComplements = (results as IBANPlateformeCommune).voies
-          .filter(({ type }) => type === BANPlateformeResultTypeEnum.LIEU_DIT)
-          .map(({ nomVoie, id }) => ({ value: id, label: nomVoie }))
-        setComplementsOpts(mappedComplements)
+        const complements = (results as IBANPlateformeCommune).voies.filter(
+          ({ type }) => type === BANPlateformeResultTypeEnum.LIEU_DIT,
+        )
+        setComplements(complements as IBANPlateformeLieuDit[])
 
-        const mappedVoies = (results as IBANPlateformeCommune).voies
-          .filter(({ type }) => type === BANPlateformeResultTypeEnum.VOIE)
-          .map(({ nomVoie, id }) => ({ value: id, label: nomVoie }))
-        setVoiesOpts(mappedVoies)
+        const voies = (results as IBANPlateformeCommune).voies.filter(
+          ({ type }) => type === BANPlateformeResultTypeEnum.VOIE,
+        )
+        setVoies(voies as IBANPlateformeVoie[])
       } catch (error) {
         console.error(error)
       }
@@ -79,7 +82,34 @@ export default function SignalementNumeroForm({
     fetchOptions()
   }, [signalement])
 
-  const handleChangeVoie = useCallback(
+  const voiesOpts: SelectOptionType<string>[] = useMemo(() => {
+    return voies.map(({ nomVoie, id }) => ({
+      value: id,
+      label: nomVoie,
+    }))
+  }, [voies])
+
+  const complementsOpts: SelectOptionType<string>[] = useMemo(() => {
+    return complements.map(({ nomVoie, id }) => ({
+      value: id,
+      label: nomVoie,
+    }))
+  }, [complements])
+
+  const selectedVoie = useMemo(() => {
+    return voiesOpts.find(({ label }) => label === nomVoie) || { label: nomVoie, value: '' }
+  }, [nomVoie, voiesOpts])
+
+  const selectedComplement = useMemo(() => {
+    return (
+      complementsOpts.find(({ label }) => label === nomComplement) || {
+        label: nomComplement || '',
+        value: '',
+      }
+    )
+  }, [nomComplement, complementsOpts])
+
+  const handleChangeVoieForCreation = useCallback(
     async (selectedVoie: SelectOptionType<string>) => {
       if (!selectedVoie || selectedVoie.value === address.id) {
         return
@@ -109,6 +139,7 @@ export default function SignalementNumeroForm({
 
   const isSubmitDisabled = useMemo(() => {
     const { changesRequested } = signalement
+
     const isDisabled =
       (changesRequested as NumeroChangesRequestedDTO).positions?.length === 0 ||
       !(changesRequested as NumeroChangesRequestedDTO).nomVoie
@@ -118,9 +149,6 @@ export default function SignalementNumeroForm({
 
     return isDisabled || !hasSignalementChanged
   }, [hasSignalementChanged, signalement, isCreation])
-
-  const { numero, suffixe, nomVoie, nomComplement, positions, parcelles, comment } =
-    signalement.changesRequested as NumeroChangesRequestedDTO
 
   return (
     <StyledForm onSubmit={(event) => onValidate(event)(signalement.changesRequested)}>
@@ -169,51 +197,62 @@ export default function SignalementNumeroForm({
           />
         </div>
         <div className='form-row'>
-          {isCreation ? (
-            <MuiSelectInput
-              label='Nom de la voie*'
-              options={voiesOpts}
-              value={{ label: nomVoie, value: nomVoie }}
-              onChange={(event) => handleChangeVoie(event as SelectOptionType<string>)}
-              filterOptions={(
-                options: SelectOptionType<string>[],
-                params: FilterOptionsState<SelectOptionType<string>>,
-              ) => {
-                const filtered = filter(options, params)
+          <MuiSelectInput
+            label='Voie*'
+            options={voiesOpts}
+            value={selectedVoie}
+            isDisabled={mode !== CommuneStatusDTO.mode.FULL}
+            {...(isCreation
+              ? {
+                  filterOptions: (
+                    options: SelectOptionType<string>[],
+                    params: FilterOptionsState<SelectOptionType<string>>,
+                  ) => {
+                    const filtered = filter(options, params)
 
-                const { inputValue } = params
-                const isExisting = options.some((option) => inputValue === option.label)
-                const isValid = inputValue.length > 3 && inputValue.length < 200
-                if (inputValue !== '' && !isExisting && isValid) {
-                  filtered.push({
-                    value: inputValue,
-                    label: `Créer la voie "${inputValue}"`,
-                  })
+                    const { inputValue } = params
+                    const isExisting = options.some((option) => inputValue === option.label)
+                    const isValid = inputValue.length > 3 && inputValue.length < 200
+                    if (inputValue !== '' && !isExisting && isValid) {
+                      filtered.push({
+                        value: inputValue,
+                        label: `Créer la voie "${inputValue}"`,
+                      })
+                    }
+
+                    return filtered
+                  },
+                  hint: 'Si la voie n’existe pas dans la liste, vous pouvez la créer en la saisissant ci-dessus.',
+                  onChange: (event: SelectOptionType<string>) => handleChangeVoieForCreation(event),
                 }
-
-                return filtered
-              }}
-              {...(validationErrors?.nomVoie && {
-                errorMessage: validationErrors.nomVoie,
-              })}
-            />
-          ) : (
-            <Input
-              label='Nom de la voie*'
-              nativeInputProps={{
-                maxLength: 200,
-                minLength: 3,
-                name: 'nomVoie',
-                required: true,
-                value: nomVoie,
-                onChange: (event) => onEdit('changesRequested', 'nomVoie')(event.target.value),
-              }}
-              {...(validationErrors?.nomVoie && {
-                stateRelatedMessage: validationErrors.nomVoie,
-                state: 'error',
-              })}
-            />
-          )}
+              : {
+                  hint: selectedVoie && (
+                    <>
+                      Pour demander le renommage de cette voie, c&apos;est par{' '}
+                      <button
+                        className='fr-link'
+                        type='button'
+                        onClick={() =>
+                          navigate(
+                            `/${selectedVoie.value}?type=${Signalement.type.LOCATION_TO_UPDATE}`,
+                          )
+                        }
+                      >
+                        ici
+                      </button>
+                    </>
+                  ),
+                  onChange: (event: SelectOptionType<string>) => {
+                    onEdit('changesRequested', 'nomVoie')(event?.label || '')
+                    const banIdVoie = voies.find(({ id }) => id === event?.value)?.banId
+                    onEdit('changesRequested', 'banIdVoie')(banIdVoie)
+                  },
+                  disableClearable: true,
+                })}
+            {...(validationErrors?.nomVoie && {
+              errorMessage: validationErrors.nomVoie,
+            })}
+          />
         </div>
         <PositionInput
           positions={positions}
@@ -228,13 +267,12 @@ export default function SignalementNumeroForm({
           <MuiSelectInput
             label='Complément'
             options={complementsOpts}
-            value={{ label: nomComplement || '', value: nomComplement }}
-            onChange={(event) =>
-              onEdit(
-                'changesRequested',
-                'nomComplement',
-              )((event as SelectOptionType<string>)?.label || '')
-            }
+            value={selectedComplement}
+            onChange={(event: SelectOptionType<string>) => {
+              onEdit('changesRequested', 'nomComplement')(event?.label || '')
+              const banIdComplement = complements.find(({ id }) => id === event?.value)?.banId
+              onEdit('changesRequested', 'banIdComplement')(banIdComplement)
+            }}
             {...(validationErrors?.nomComplement && {
               errorMessage: validationErrors.nomComplement,
             })}
