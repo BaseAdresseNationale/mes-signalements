@@ -228,7 +228,7 @@ export default function SignalementNumeroForm({
               : {
                   hint: selectedVoie && (
                     <>
-                      Pour demander le renommage cette voie, c&apos;est par{' '}
+                      Pour demander le renommage de cette voie, c&apos;est par{' '}
                       <button
                         className='fr-link'
                         type='button'
