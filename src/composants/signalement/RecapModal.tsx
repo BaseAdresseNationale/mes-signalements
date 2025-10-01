@@ -144,7 +144,7 @@ export default function SignalementRecapModal({
               Date d&apos;envoi : <b>{new Date().toLocaleDateString()}</b>
             </p>
             <div className='fr-alert fr-alert--success'>
-              <p>Votre signalement a bien été envoyée.</p>
+              <p>Votre signalement a bien été envoyé.</p>
             </div>
           </>
         )}
