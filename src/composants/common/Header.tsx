@@ -3,7 +3,6 @@ import { Source } from '../../api/signalement'
 import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
 import { AuthentificationModal } from '../authentification/AuthentificationModal'
 import { Header as HeaderDSFR } from '@codegouvfr/react-dsfr/Header'
-import { Badge } from '@codegouvfr/react-dsfr/Badge'
 import SearchMobileButton from './SearchMobileButton'
 
 interface HeaderProps {
@@ -26,14 +25,7 @@ export function Header({ customSource, toggleShowInfo }: HeaderProps) {
             FRANÇAISE
           </>
         }
-        serviceTitle={
-          <>
-            Mes Signalements{' '}
-            <Badge as='span' noIcon severity='info'>
-              Beta
-            </Badge>
-          </>
-        }
+        serviceTitle='Mes Signalements'
         serviceTagline="Contribuez à améliorer l'adressage de votre commune"
         homeLinkProps={{
           href: '/',
