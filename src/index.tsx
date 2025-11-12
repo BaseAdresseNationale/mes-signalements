@@ -19,8 +19,18 @@ import { SignalementViewerContextProvider } from './contexts/signalement-viewer.
 import { AllPage } from './pages/AllPage'
 import { CreateAdressePage } from './pages/CreateAdressePage'
 import { LayoutContextProvider } from './contexts/layout.context'
+import * as Sentry from '@sentry/react'
 
 startReactDsfr({ defaultColorScheme: 'light' })
+
+if (process.env.REACT_APP_SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.REACT_APP_SENTRY_DSN,
+    // Setting this option to true will send default PII data to Sentry.
+    // For example, automatic IP address collection on events
+    sendDefaultPii: false,
+  })
+}
 
 const API_SIGNALEMENT_URL = process.env.REACT_APP_API_SIGNALEMENT_URL
 
