@@ -71,6 +71,7 @@ Elles peuvent être définies classiquement ou en créant un fichier `.env` sur 
 | `REACT_APP_API_ADRESSE_URL`           | URL de base de l'API Adresse               |
 | `REACT_APP_API_DEPOT_URL`             | URL de base de l'API Dépôt                 |
 | `REACT_APP_FRIENDLY_CAPTCHA_SITE_KEY` | Paramétrage "Site key" de Friendly Captcha |
+| `REACT_APP_SENTRY_DSN`                | URL de Sentry                              |
 | `PORT`                                | Port de l'application                      |
 
 Toutes ces variables ont des valeurs par défaut que vous trouverez dans le fichier `.env.sample`.
