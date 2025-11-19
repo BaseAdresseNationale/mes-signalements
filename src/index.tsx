@@ -20,6 +20,7 @@ import { AllPage } from './pages/AllPage'
 import { CreateAdressePage } from './pages/CreateAdressePage'
 import { LayoutContextProvider } from './contexts/layout.context'
 import * as Sentry from '@sentry/react'
+import { useMatomoTracking } from './hooks/useMatomoTracking'
 
 startReactDsfr({ defaultColorScheme: 'light' })
 
@@ -50,6 +51,9 @@ Object.assign(OpenAPI, {
 
 const GlobalLayout = (props: { children: React.ReactNode }) => {
   const { children } = props
+
+  useMatomoTracking()
+
   return (
     <MapContextProvider>
       <LayoutContextProvider>

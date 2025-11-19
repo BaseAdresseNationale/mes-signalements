@@ -72,6 +72,8 @@ Elles peuvent être définies classiquement ou en créant un fichier `.env` sur 
 | `REACT_APP_API_DEPOT_URL`             | URL de base de l'API Dépôt                 |
 | `REACT_APP_FRIENDLY_CAPTCHA_SITE_KEY` | Paramétrage "Site key" de Friendly Captcha |
 | `REACT_APP_SENTRY_DSN`                | URL de Sentry                              |
+| `REACT_APP_MATOMO_TRACKER_URL`        | URL de tracking Matomo                     |
+| `REACT_APP_MATOMO_SITE_ID`            | Id du site Matomo                          |
 | `PORT`                                | Port de l'application                      |
 
 Toutes ces variables ont des valeurs par défaut que vous trouverez dans le fichier `.env.sample`.
