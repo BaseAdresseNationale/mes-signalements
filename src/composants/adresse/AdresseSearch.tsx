@@ -6,8 +6,8 @@ import React, { forwardRef, useMemo, useState } from 'react'
 import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
 import { MOBILE_BREAKPOINT } from '../../hooks/useWindowSize'
 import { AdvancedSearchModal } from './AdvancedSearchModal'
-import { StyledResultList } from '../common/Autocomplete/Autocomplete.styles'
 import { ANIMATION_DURATION } from '../../contexts/layout.context'
+import { ResultList } from '../common/Autocomplete/ResultList'
 
 const placeHolders = [
   '10 rue Paulin Viry, Pocé-Sur-Cisse',
@@ -61,7 +61,7 @@ const StyledSearch = styled.div<{ $animationDuration: number }>`
   }
 `
 
-interface IAdresseResult {
+export interface IAdresseResult {
   code: string
   nom: string
   type: APIAdressePropertyType
@@ -94,55 +94,19 @@ function _AdresseSearch(props: any, ref: React.ForwardedRef<HTMLDivElement>) {
         }}
         fetchResults={fetchAdresses}
         renderResultList={(results, onBlur) => {
-          const houseNumbers = results.filter(
-            ({ type }) => type === APIAdressePropertyType.HOUSE_NUMBER,
-          )
-          const streets = results.filter(({ type }) => type === APIAdressePropertyType.STREET)
-          const localities = results.filter(({ type }) => type === APIAdressePropertyType.LOCALITY)
-
-          const filteredResults = [
-            { name: 'Adresses', results: houseNumbers },
-            { name: 'Rues', results: streets },
-            { name: 'Lieux-dits', results: localities },
-          ].filter(({ results }) => results.length > 0)
-
           return (
-            <StyledResultList>
-              {filteredResults.map(({ name, results }) => (
-                <div key={name} className='result-item'>
-                  <label>{name}</label>
-                  {results.map((result) => (
-                    <button
-                      tabIndex={0}
-                      onClick={() => {
-                        navigate(`/${result.code}`)
-                        onBlur()
-                      }}
-                      key={result.code}
-                      type='button'
-                    >
-                      {result.nom}
-                    </button>
-                  ))}
-                </div>
-              ))}
-              <div className='sticky-button'>
-                <button
-                  onClick={() => {
-                    setShowAdvancedSearch(true)
-                    onBlur()
-                  }}
-                  onTouchStart={() => {
-                    setShowAdvancedSearch(true)
-                    onBlur()
-                  }}
-                  type='button'
-                  className='fr-link fr-icon-arrow-right-line fr-link--icon-right'
-                >
-                  Je ne trouve pas mon adresse
-                </button>
-              </div>
-            </StyledResultList>
+            <ResultList
+              results={results}
+              onBlur={onBlur}
+              onSelectResult={(result) => {
+                navigate(`/${result.code}`)
+                onBlur()
+              }}
+              onSelectAdvancedSearch={() => {
+                setShowAdvancedSearch(true)
+                onBlur()
+              }}
+            />
           )
         }}
       />
