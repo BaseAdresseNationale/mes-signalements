@@ -17,6 +17,7 @@ if (!API_ADRESSE_URL) {
 
 export async function search(options: SearchOptions): Promise<APIAdresseResult> {
   const url = new URL(`${API_ADRESSE_URL}/search`)
+  url.searchParams.append('index', 'address')
 
   Object.entries(options).forEach(([key, value]) => {
     if (value) {
