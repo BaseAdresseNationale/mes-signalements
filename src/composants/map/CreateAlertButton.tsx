@@ -1,15 +1,15 @@
 import { ControlPosition, IControl, MapInstance, useControl } from 'react-map-gl/maplibre'
 
-type CreateAdresseButtonProps = {
+type CreateAlertButtonProps = {
   position?: ControlPosition
   navigate: (path: string) => void
 }
 
-export class CreateAdresseButtonControl implements IControl {
+export class CreateAlertButtonControl implements IControl {
   private controlContainer: HTMLElement | undefined
   private map?: MapInstance
 
-  constructor(private props: CreateAdresseButtonProps) {}
+  constructor(private props: CreateAlertButtonProps) {}
 
   public getDefaultPosition(): string {
     const defaultPosition = 'top-right'
@@ -22,13 +22,13 @@ export class CreateAdresseButtonControl implements IControl {
     this.controlContainer.classList.add('maplibregl-ctrl', 'maplibregl-ctrl-group')
 
     const buttonElement = document.createElement('button')
-    buttonElement.id = 'create-adresse-button'
+    buttonElement.id = 'create-alert-button'
     buttonElement.type = 'button'
-    buttonElement.title = "Demander la création d'une adresse"
-    buttonElement.classList.add('fr-icon-home-4-line')
+    buttonElement.title = 'Signaler un problème à la commune'
+    buttonElement.classList.add('fr-icon-flag-line')
 
     buttonElement.addEventListener('click', () => {
-      this.props.navigate(`/create`)
+      this.props.navigate(`/create-alert`)
     })
 
     this.controlContainer.appendChild(buttonElement)
@@ -45,9 +45,9 @@ export class CreateAdresseButtonControl implements IControl {
   }
 }
 
-export function CreateAdresseButton(props: CreateAdresseButtonProps) {
+export function CreateAlertButton(props: CreateAlertButtonProps) {
   const { position, ...rest } = props
-  useControl(() => new CreateAdresseButtonControl(rest), {
+  useControl(() => new CreateAlertButtonControl(rest), {
     position,
   })
 

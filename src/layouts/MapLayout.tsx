@@ -20,6 +20,7 @@ import { MapLibreEvent } from 'maplibre-gl'
 import { SignalementsSearchMap } from '../composants/map/SignalementsSearchMap'
 import { CreateAdresseButton } from '../composants/map/CreateAdresseButton'
 import LayoutContext from '../contexts/layout.context'
+import { CreateAlertButton } from '../composants/map/CreateAlertButton'
 
 const Layout = styled.div`
   position: relative;
@@ -147,6 +148,7 @@ export function MapLayout({ children }: MapLayoutProps) {
             position='top-right'
           />
           <CreateAdresseButton position='top-right' navigate={navigate} />
+          <CreateAlertButton position='top-right' navigate={navigate} />
           <StylesSwitch
             styles={mapStyles as [MaplibreStyleDefinition, MaplibreStyleDefinition]}
             position='bottom-right'
