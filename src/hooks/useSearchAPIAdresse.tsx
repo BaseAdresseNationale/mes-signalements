@@ -1,8 +1,9 @@
 import { useCallback, useState } from 'react'
-import { APIAdressePropertyType } from '../api/api-adresse/types'
+import { APIAdressePropertyType, APIAdresseResult } from '../api/api-adresse/types'
 import { search as searchAPIAdresse } from '../api/api-adresse'
 import { lookup as BANLookup } from '../api/ban-plateforme'
 import { IBANPlateformeVoie } from '../api/ban-plateforme/types'
+import { SearchItemType } from '../composants/common/SearchInput/SearchInput'
 
 export interface MappedAPIAdresseResult {
   code: string
@@ -11,41 +12,86 @@ export interface MappedAPIAdresseResult {
   postcode?: string
 }
 
+const propertyTypeToLabel: Record<APIAdressePropertyType, string> = {
+  [APIAdressePropertyType.HOUSE_NUMBER]: 'Numéro',
+  [APIAdressePropertyType.STREET]: 'Voie',
+  [APIAdressePropertyType.LOCALITY]: 'Lieu-dit',
+  [APIAdressePropertyType.MUNICIPALITY]: 'Commune',
+}
+
+const getDetails = (properties: APIAdresseResult['features'][number]['properties']) => {
+  if (
+    [
+      APIAdressePropertyType.HOUSE_NUMBER,
+      APIAdressePropertyType.STREET,
+      APIAdressePropertyType.LOCALITY,
+    ].includes(properties.type)
+  ) {
+    return `${properties.postcode} ${properties.city}`
+  } else if (properties.type === APIAdressePropertyType.MUNICIPALITY) {
+    return properties.postcode
+  }
+  return ''
+}
+
 export function useSearchAPIAdresse() {
   const [isLoading, setIsLoading] = useState(false)
 
   const fetchAPIAdresse = useCallback(
-    (type: APIAdressePropertyType, citycode?: string) => async (search: string) => {
-      setIsLoading(true)
-      try {
-        const data = await searchAPIAdresse({
-          q: search,
-          type,
-          limit: 10,
-          citycode,
-        })
+    (type?: APIAdressePropertyType, citycode?: string) =>
+      async (search: string): Promise<SearchItemType<MappedAPIAdresseResult>[]> => {
+        setIsLoading(true)
+        try {
+          const data = await searchAPIAdresse({
+            q: search,
+            type,
+            limit: 10,
+            citycode,
+          })
 
-        return data.features.map(
-          ({
-            properties,
-            geometry,
-          }: {
-            properties: { id: string; name: string; postcode?: string }
-            geometry: { coordinates: [number, number] }
-          }) => ({
-            code: properties.id,
-            nom: properties.name,
-            coordinates: geometry.coordinates,
-            ...(properties.postcode && { postcode: properties.postcode }),
-          }),
-        )
-      } catch (error) {
-        console.error(error)
-        return []
-      } finally {
-        setIsLoading(false)
-      }
-    },
+          const mappedResults = data.features.map(
+            ({ properties, geometry }: APIAdresseResult['features'][number]) => ({
+              code: properties.id,
+              nom: properties.name,
+              id: properties.id,
+              label: properties.name,
+              type: properties.type,
+              coordinates: geometry.coordinates,
+              details: getDetails(properties),
+              ...(properties.postcode && { postcode: properties.postcode }),
+            }),
+          )
+
+          const resultsByType = mappedResults.reduce(
+            (acc, result) => {
+              const featureType = propertyTypeToLabel[result.type]
+              if (!acc[featureType]) {
+                acc[featureType] = []
+              }
+              acc[featureType].push(result)
+              return acc
+            },
+            {} as Record<string, SearchItemType<MappedAPIAdresseResult>[]>,
+          )
+
+          const featuresWithHeader = Object.entries(resultsByType).reduce(
+            (acc, [type, features]) => {
+              features[0].header = type
+              acc.push(...features)
+
+              return acc
+            },
+            [] as SearchItemType<MappedAPIAdresseResult>[],
+          )
+
+          return featuresWithHeader
+        } catch (error) {
+          console.error(error)
+          return []
+        } finally {
+          setIsLoading(false)
+        }
+      },
     [],
   )
 

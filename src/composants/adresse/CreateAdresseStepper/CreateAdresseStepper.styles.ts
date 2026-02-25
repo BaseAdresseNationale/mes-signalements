@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 
 export const StyledCreateAdresseStepper = styled.div`
+  padding: 0 0.5rem;
   .step {
     margin-top: 1rem;
 

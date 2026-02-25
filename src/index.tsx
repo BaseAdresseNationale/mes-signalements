@@ -21,6 +21,7 @@ import { CreateAdressePage } from './pages/CreateAdressePage'
 import { LayoutContextProvider } from './contexts/layout.context'
 import * as Sentry from '@sentry/react'
 import { useMatomoTracking } from './hooks/useMatomoTracking'
+import { AdvancedSearchPage } from './pages/AdvancedSearchPage'
 
 startReactDsfr({ defaultColorScheme: 'light' })
 
@@ -121,6 +122,14 @@ const router = createHashRouter([
     element: (
       <GlobalLayout>
         <CreateAdressePage />
+      </GlobalLayout>
+    ),
+  },
+  {
+    path: '/advanced-search',
+    element: (
+      <GlobalLayout>
+        <AdvancedSearchPage />
       </GlobalLayout>
     ),
   },

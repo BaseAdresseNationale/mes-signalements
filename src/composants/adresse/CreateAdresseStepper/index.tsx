@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { StyledCreateAdresseStepper } from './CreateAdresseStepper.styles'
-import Autocomplete from '../../common/Autocomplete'
-import { StyledResultList } from '../../common/Autocomplete/Autocomplete.styles'
 import { MappedAPIAdresseResult, useSearchAPIAdresse } from '../../../hooks/useSearchAPIAdresse'
 import { APIAdressePropertyType } from '../../../api/api-adresse/types'
 import { useCommuneStatus } from '../../../hooks/useCommuneStatus'
 import SignalementDisabled from '../../signalement/SignalementDisabled'
 import useNavigateWithPreservedSearchParams from '../../../hooks/useNavigateWithPreservedSearchParams'
+import SearchInput from '../../common/SearchInput'
+import { SearchItemType } from '../../common/SearchInput/SearchInput'
 
 const CreateAdresseStepper = () => {
   const { navigate } = useNavigateWithPreservedSearchParams()
@@ -40,27 +40,15 @@ const CreateAdresseStepper = () => {
             />
           </div>
         ) : (
-          <Autocomplete
-            inputProps={{ placeholder: 'Rechercher ma commune' }}
-            fetchResults={fetchAPIAdresse(APIAdressePropertyType.MUNICIPALITY)}
-            renderResultList={(results, onBlur) => (
-              <StyledResultList>
-                {results.map((result) => (
-                  <div key={result.code} className='result-item'>
-                    <button
-                      tabIndex={0}
-                      type='button'
-                      onClick={() => {
-                        setCommune(result)
-                        onBlur()
-                      }}
-                    >
-                      {result.nom} ({result.postcode})
-                    </button>
-                  </div>
-                ))}
-              </StyledResultList>
-            )}
+          <SearchInput
+            onSearch={fetchAPIAdresse(APIAdressePropertyType.MUNICIPALITY)}
+            onSelect={(result?: SearchItemType<MappedAPIAdresseResult> | null) => {
+              if (result) {
+                setCommune(result)
+              }
+            }}
+            label='Rechercher ma commune :'
+            nativeInputProps={{ placeholder: 'Bobigny' }}
           />
         )}
       </div>
