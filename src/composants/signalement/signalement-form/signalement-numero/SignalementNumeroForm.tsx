@@ -118,20 +118,21 @@ export default function SignalementNumeroForm({
       if (selectedVoie.value.startsWith(signalement.codeCommune)) {
         try {
           const voie = await BANLookup(selectedVoie?.value)
-          navigate(`/${voie.id}?type=${Signalement.type.LOCATION_TO_CREATE}`)
+          navigate(`/${voie.id}?type=${Signalement.type.LOCATION_TO_CREATE}`, {
+            type: Signalement.type.LOCATION_TO_CREATE,
+          })
         } catch (error) {
           console.error(error)
         }
       } else if (routerParams['code'] === signalement.codeCommune) {
         onEdit('changesRequested', 'nomVoie')(selectedVoie.value)
       } else {
-        navigate(
-          `/${signalement.codeCommune}?type=${Signalement.type.LOCATION_TO_CREATE}&changesRequested=${JSON.stringify(
-            {
-              nomVoie: selectedVoie.value,
-            },
-          )}`,
-        )
+        navigate(`/${signalement.codeCommune}`, {
+          type: Signalement.type.LOCATION_TO_CREATE,
+          changesRequested: JSON.stringify({
+            nomVoie: selectedVoie.value,
+          }),
+        })
       }
     },
     [signalement.codeCommune, navigate, onEdit, address.id],
@@ -233,9 +234,9 @@ export default function SignalementNumeroForm({
                         className='fr-link'
                         type='button'
                         onClick={() =>
-                          navigate(
-                            `/${selectedVoie.value}?type=${Signalement.type.LOCATION_TO_UPDATE}`,
-                          )
+                          navigate(`/${selectedVoie.value}`, {
+                            type: Signalement.type.LOCATION_TO_UPDATE,
+                          })
                         }
                       >
                         ici

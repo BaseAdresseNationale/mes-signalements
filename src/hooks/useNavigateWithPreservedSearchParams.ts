@@ -7,13 +7,19 @@ function useNavigateWithPreservedSearchParams() {
   const [searchParams] = useSearchParams()
   const { signalement, deleteSignalement } = useContext(SignalementContext)
 
-  const navigate = (to: string) => {
+  const navigate = (to: string, params: Record<string, string> = {}) => {
     if (signalement) {
       deleteSignalement()
     }
 
-    const hasSearchParams = searchParams.size > 0
-    _navigate(hasSearchParams ? `${to}?${searchParams.toString()}` : to)
+    const mergedParams = new URLSearchParams({
+      ...Object.fromEntries(searchParams.entries()),
+      ...params,
+    })
+
+    const url = `${to}?${mergedParams.toString()}`
+
+    _navigate(url)
   }
 
   return { navigate }
