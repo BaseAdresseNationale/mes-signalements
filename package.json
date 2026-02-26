@@ -1,5 +1,5 @@
 {
-  "homepage": "https://mes-signalements.mes-adresses.fr/",
+  "homepage": "https://signalement.adresse.data.gouv.fr/",
   "name": "mes-signalements",
   "version": "0.1.0",
   "private": true,
@@ -23,6 +23,7 @@
     "@types/node": "^16.7.13",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
+    "downshift": "^9.3.2",
     "express": "^4.19.2",
     "friendly-challenge": "^0.9.16",
     "maplibre-gl": "^4.3.2",

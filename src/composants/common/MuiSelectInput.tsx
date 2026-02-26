@@ -35,6 +35,7 @@ const StyledAutocomplete = styled(Autocomplete)`
   background-color: var(--background-contrast-grey);
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
+  overflow: hidden;
 
   .MuiInputBase-root {
     &::before {

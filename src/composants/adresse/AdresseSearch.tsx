@@ -1,13 +1,11 @@
 import styled from 'styled-components'
-import { APIAdressePropertyType } from '../../api/api-adresse/types'
-import { search } from '../../api/api-adresse'
-import Autocomplete from '../common/Autocomplete'
-import React, { forwardRef, useMemo, useState } from 'react'
+import React, { forwardRef, useMemo } from 'react'
 import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
 import { MOBILE_BREAKPOINT } from '../../hooks/useWindowSize'
-import { AdvancedSearchModal } from './AdvancedSearchModal'
 import { ANIMATION_DURATION } from '../../contexts/layout.context'
-import { ResultList } from '../common/Autocomplete/ResultList'
+import SearchInput, { SearchItemType } from '../common/SearchInput/SearchInput'
+import Button from '@codegouvfr/react-dsfr/Button'
+import { MappedAPIAdresseResult, useSearchAPIAdresse } from '../../hooks/useSearchAPIAdresse'
 
 const placeHolders = [
   '10 rue Paulin Viry, Pocé-Sur-Cisse',
@@ -20,6 +18,7 @@ const placeHolders = [
 ]
 
 const StyledSearch = styled.div<{ $animationDuration: number }>`
+  width: 400px;
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -30,19 +29,15 @@ const StyledSearch = styled.div<{ $animationDuration: number }>`
   z-index: 2;
   padding: 10px;
   border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
   transition: ${({ $animationDuration }) => `top ${$animationDuration}ms ease-in-out`};
-
-  p {
-    margin-bottom: 4px;
-  }
-
-  input {
-    width: 400px;
-  }
 
   &.show {
     top: 50px;
+  }
+
+  .fr-btn {
+    align-self: flex-end;
   }
 
   @media screen and (max-width: ${MOBILE_BREAKPOINT}px) {
@@ -61,56 +56,36 @@ const StyledSearch = styled.div<{ $animationDuration: number }>`
   }
 `
 
-export interface IAdresseResult {
-  code: string
-  nom: string
-  type: APIAdressePropertyType
-}
-
 function _AdresseSearch(props: any, ref: React.ForwardedRef<HTMLDivElement>) {
-  const [showAdvancedSearch, setShowAdvancedSearch] = useState(false)
   const { navigate } = useNavigateWithPreservedSearchParams()
+  const { fetchAPIAdresse } = useSearchAPIAdresse()
   const placeholder = useMemo(
     () => placeHolders[Math.floor(Math.random() * placeHolders.length)],
     [],
   )
 
-  const fetchAdresses = async (query: string): Promise<IAdresseResult[]> => {
-    const results = await search({ q: query, limit: 10 })
-
-    return results.features.map((feature) => ({
-      code: feature.properties.id,
-      nom: feature.properties.label,
-      type: feature.properties.type,
-    }))
-  }
-
   return (
     <StyledSearch ref={ref} $animationDuration={ANIMATION_DURATION}>
-      <p>Rechercher une adresse, une voie ou un lieu-dit :</p>
-      <Autocomplete
-        inputProps={{
-          placeholder,
+      <SearchInput
+        onSearch={fetchAPIAdresse()}
+        onSelect={(result?: SearchItemType<MappedAPIAdresseResult> | null) => {
+          if (result) {
+            navigate(`/${result.id}`)
+          }
         }}
-        fetchResults={fetchAdresses}
-        renderResultList={(results, onBlur) => {
-          return (
-            <ResultList
-              results={results}
-              onBlur={onBlur}
-              onSelectResult={(result) => {
-                navigate(`/${result.code}`)
-                onBlur()
-              }}
-              onSelectAdvancedSearch={() => {
-                setShowAdvancedSearch(true)
-                onBlur()
-              }}
-            />
-          )
-        }}
+        label='Rechercher une adresse, une voie ou un lieu-dit :'
+        nativeInputProps={{ placeholder }}
       />
-      {showAdvancedSearch && <AdvancedSearchModal onClose={() => setShowAdvancedSearch(false)} />}
+      <Button
+        onClick={() => navigate(`/advanced-search`)}
+        className='fr-mt-1w'
+        priority='tertiary no outline'
+        size='small'
+        iconId='fr-icon-equalizer-line'
+        iconPosition='left'
+      >
+        Recherche avancée
+      </Button>
     </StyledSearch>
   )
 }
