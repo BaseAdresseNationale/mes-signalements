@@ -118,7 +118,7 @@ export default function SignalementNumeroForm({
       if (selectedVoie.value.startsWith(signalement.codeCommune)) {
         try {
           const voie = await BANLookup(selectedVoie?.value)
-          navigate(`/${voie.id}?type=${Signalement.type.LOCATION_TO_CREATE}`, {
+          navigate(`/${voie.id}`, {
             type: Signalement.type.LOCATION_TO_CREATE,
           })
         } catch (error) {
