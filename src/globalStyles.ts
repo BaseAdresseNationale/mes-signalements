@@ -142,6 +142,107 @@ const GlobalStyle = createGlobalStyle`
   align-items: center;
   justify-content: center;
 }
+
+/* ─── CreateAlertButton – Drag & Drop (Street-View style) ─── */
+
+.create-alert-draggable {
+  cursor: grab !important;
+  transition: opacity 0.2s ease, transform 0.2s ease, color 0.2s ease;
+}
+.create-alert-draggable:hover:not(.active) {
+  transform: rotate(30deg);
+  color: inherit !important;
+}
+.create-alert-draggable.dragging {
+  opacity: 0.25;
+  transform: scale(0.8);
+  cursor: grabbing !important;
+}
+
+/* Global cursor override while dragging */
+body.alert-dragging,
+body.alert-dragging * {
+  cursor: grabbing !important;
+  user-select: none;
+}
+
+/* Ghost flag element that follows the cursor */
+.alert-drag-ghost {
+  position: fixed;
+  z-index: 10000;
+  pointer-events: none;
+  /* pole is at 34px from SVG left edge (viewBox starts at -28, pole at x=6) */
+  transform: translate(-34px, -100%) scale(0.4);
+  transform-origin: 34px bottom;
+  opacity: 0;
+  transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.alert-drag-ghost.visible {
+  opacity: 1;
+  transform: translate(-34px, -100%) scale(1);
+}
+
+/* SVG flag */
+.alert-drag-ghost .alert-drag-flag {
+  transition: transform 0.15s ease-out, filter 0.15s ease-out;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.25));
+}
+
+/* Shadow dot beneath the pin */
+.alert-drag-ghost .alert-drag-shadow-dot {
+  width: 12px;
+  height: 5px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.35), transparent);
+  border-radius: 50%;
+  margin-top: -3px;
+  margin-left: 28px;
+  transition: all 0.15s ease-out;
+}
+
+/* Enlarge when hovering over the map */
+.alert-drag-ghost.over-map .alert-drag-flag {
+  transform: scale(1.2);
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.35));
+}
+.alert-drag-ghost.over-map .alert-drag-shadow-dot {
+  width: 18px;
+  height: 7px;
+}
+
+/* Flag-drop bounce animation on successful drop */
+.alert-drag-ghost.drop .alert-drag-flag {
+  animation: alert-pin-bounce 0.5s ease-out forwards;
+}
+.alert-drag-ghost.drop .alert-drag-shadow-dot {
+  animation: alert-shadow-pulse 0.5s ease-out forwards;
+}
+
+@keyframes alert-pin-bounce {
+  0%   { transform: scale(1.2); }
+  25%  { transform: scale(1.35) translateY(-10px); }
+  50%  { transform: scale(1) translateY(0); }
+  65%  { transform: scale(1.08) translateY(-4px); }
+  80%  { transform: scale(1) translateY(0); }
+  100% { transform: scale(1); opacity: 0; }
+}
+
+@keyframes alert-shadow-pulse {
+  0%   { transform: scale(1); opacity: 1; }
+  25%  { transform: scale(0.5); opacity: 0.4; }
+  50%  { transform: scale(1.3); opacity: 1; }
+  65%  { transform: scale(0.85); opacity: 0.8; }
+  80%  { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* Return-to-button animation */
+.alert-drag-ghost.returning {
+  opacity: 0 !important;
+  transform: translate(-34px, -50%) scale(0.2) !important;
+}
 `
 
 export default GlobalStyle

@@ -35,49 +35,51 @@ export default function PositionInput({
 
   return (
     <StyledContainer>
-      <p>{`Position${multiPositionDisabled ? '' : 's'}*`}</p>
-      {positions?.map(({ point, type }, index) => (
-        <PositionItem
-          key={point.coordinates.toString()}
-          point={point}
-          type={type}
-          onEditPositionType={(updatedPosition) => {
-            const newPositions = [...positions]
-            newPositions[index] = updatedPosition
-            onChange(newPositions)
-          }}
-          {...(multiPositionDisabled
-            ? {}
-            : {
-                onDelete: () => {
-                  onChange(positions.filter((_, i) => i !== index))
-                },
-              })}
-        />
-      ))}
-      {(!multiPositionDisabled || positions.length === 0) && (
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <button
-            type='button'
-            className='fr-btn'
-            style={{ color: 'white', marginBottom: 10 }}
-            onClick={() =>
-              onChange([
-                ...positions,
-                {
-                  point: {
-                    type: 'Point',
-                    coordinates: blurPosition(initialPositionCoords || getInitialCoords()),
+      <label htmlFor='position-input'>{`Position${multiPositionDisabled ? '' : 's'}*`}</label>
+      <div id='position-input'>
+        {positions?.map(({ point, type }, index) => (
+          <PositionItem
+            key={point.coordinates.toString()}
+            point={point}
+            type={type}
+            onEditPositionType={(updatedPosition) => {
+              const newPositions = [...positions]
+              newPositions[index] = updatedPosition
+              onChange(newPositions)
+            }}
+            {...(multiPositionDisabled
+              ? {}
+              : {
+                  onDelete: () => {
+                    onChange(positions.filter((_, i) => i !== index))
                   },
-                  type: defaultPositionType,
-                },
-              ])
-            }
-          >
-            Ajouter une position
-          </button>
-        </div>
-      )}
+                })}
+          />
+        ))}
+        {(!multiPositionDisabled || positions.length === 0) && (
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <button
+              type='button'
+              className='fr-btn'
+              style={{ color: 'white', marginBottom: 10 }}
+              onClick={() =>
+                onChange([
+                  ...positions,
+                  {
+                    point: {
+                      type: 'Point',
+                      coordinates: blurPosition(initialPositionCoords || getInitialCoords()),
+                    },
+                    type: defaultPositionType,
+                  },
+                ])
+              }
+            >
+              Ajouter une position
+            </button>
+          </div>
+        )}
+      </div>
       {errorMessage && (
         <div className='fr-messages-group' aria-live='polite'>
           <p className='fr-message fr-message--error'>{errorMessage}</p>
