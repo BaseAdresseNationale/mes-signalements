@@ -28,7 +28,7 @@ export class CreateAdresseButtonControl implements IControl {
     buttonElement.classList.add('fr-icon-home-4-line')
 
     buttonElement.addEventListener('click', () => {
-      this.props.navigate(`/create`)
+      this.props.navigate(`/create-adresse`)
     })
 
     this.controlContainer.appendChild(buttonElement)

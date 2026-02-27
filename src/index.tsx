@@ -22,6 +22,8 @@ import { LayoutContextProvider } from './contexts/layout.context'
 import * as Sentry from '@sentry/react'
 import { useMatomoTracking } from './hooks/useMatomoTracking'
 import { AdvancedSearchPage } from './pages/AdvancedSearchPage'
+import { AlertPage } from './pages/AlertPage'
+import { AlertContextProvider } from './contexts/alert.context'
 
 startReactDsfr({ defaultColorScheme: 'light' })
 
@@ -60,9 +62,11 @@ const GlobalLayout = (props: { children: React.ReactNode }) => {
       <LayoutContextProvider>
         <SourceContextProvider>
           <SignalementContextProvider>
-            <SignalementViewerContextProvider>
-              <MapLayout>{children}</MapLayout>
-            </SignalementViewerContextProvider>
+            <AlertContextProvider>
+              <SignalementViewerContextProvider>
+                <MapLayout>{children}</MapLayout>
+              </SignalementViewerContextProvider>
+            </AlertContextProvider>
           </SignalementContextProvider>
         </SourceContextProvider>
       </LayoutContextProvider>
@@ -118,10 +122,18 @@ const router = createHashRouter([
     ),
   },
   {
-    path: '/create',
+    path: '/create-adresse',
     element: (
       <GlobalLayout>
         <CreateAdressePage />
+      </GlobalLayout>
+    ),
+  },
+  {
+    path: '/alert',
+    element: (
+      <GlobalLayout>
+        <AlertPage />
       </GlobalLayout>
     ),
   },
