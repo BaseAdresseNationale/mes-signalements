@@ -8,7 +8,7 @@ export type CreateAlertDTO = {
     codeCommune: string;
     type: CreateAlertDTO.type;
     point: PositionCoordinatesDTO;
-    content: string;
+    comment: string;
     author?: AuthorInput | null;
 };
 export namespace CreateAlertDTO {

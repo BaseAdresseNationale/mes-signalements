@@ -149,7 +149,7 @@ const GlobalStyle = createGlobalStyle`
   cursor: grab !important;
   transition: opacity 0.2s ease, transform 0.2s ease, color 0.2s ease;
 }
-.create-alert-draggable:hover {
+.create-alert-draggable:hover:not(.active) {
   transform: rotate(30deg);
   color: inherit !important;
 }
@@ -171,9 +171,9 @@ body.alert-dragging * {
   position: fixed;
   z-index: 10000;
   pointer-events: none;
-  /* flag base (bottom-left of pole) at cursor */
-  transform: translate(-6px, -100%) scale(0.4);
-  transform-origin: bottom left;
+  /* pole is at 34px from SVG left edge (viewBox starts at -28, pole at x=6) */
+  transform: translate(-34px, -100%) scale(0.4);
+  transform-origin: 34px bottom;
   opacity: 0;
   transition: opacity 0.15s ease-out, transform 0.15s ease-out;
   display: flex;
@@ -182,7 +182,7 @@ body.alert-dragging * {
 }
 .alert-drag-ghost.visible {
   opacity: 1;
-  transform: translate(-6px, -100%) scale(1);
+  transform: translate(-34px, -100%) scale(1);
 }
 
 /* SVG flag */
@@ -198,6 +198,7 @@ body.alert-dragging * {
   background: radial-gradient(ellipse, rgba(0, 0, 0, 0.35), transparent);
   border-radius: 50%;
   margin-top: -3px;
+  margin-left: 28px;
   transition: all 0.15s ease-out;
 }
 
@@ -240,7 +241,7 @@ body.alert-dragging * {
 /* Return-to-button animation */
 .alert-drag-ghost.returning {
   opacity: 0 !important;
-  transform: translate(-6px, -50%) scale(0.2) !important;
+  transform: translate(-34px, -50%) scale(0.2) !important;
 }
 `
 

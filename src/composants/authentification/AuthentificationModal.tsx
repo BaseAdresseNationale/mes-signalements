@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import SourceContext from '../../contexts/source.context'
 
 const StyledWrapper = styled.form`
+  padding: 0 4px;
   .form-control {
     display: flex;
     justify-content: flex-end;
