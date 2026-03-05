@@ -1,5 +1,6 @@
 import { ControlPosition, IControl, MapInstance, useControl } from 'react-map-gl/maplibre'
-import { CreateAlertDTO } from '../../api/signalement'
+import { useEffect, useRef } from 'react'
+import { useLocation } from 'react-router-dom'
 
 const DRAG_THRESHOLD = 5
 
@@ -38,12 +39,13 @@ function buildFlagSVG() {
 
 type CreateAlertButtonProps = {
   position?: ControlPosition
-  navigate: (path: string) => void
-  createAlert: (alert: Partial<CreateAlertDTO>) => void
+  navigate: (path: string, params?: Record<string, string>) => void
+  isActive?: boolean
 }
 
 export class CreateAlertButtonControl implements IControl {
   private controlContainer: HTMLElement | undefined
+  private buttonElement: HTMLButtonElement | undefined
   private map?: MapInstance
   private dragGhost: HTMLElement | null = null
   private dragStartX = 0
@@ -83,6 +85,7 @@ export class CreateAlertButtonControl implements IControl {
     this.controlContainer.classList.add('maplibregl-ctrl', 'maplibregl-ctrl-group')
 
     const buttonElement = document.createElement('button')
+    this.buttonElement = buttonElement
     buttonElement.id = 'create-alert-button'
     buttonElement.type = 'button'
     buttonElement.title = 'Glisser-déposer sur la carte pour signaler un problème'
@@ -91,16 +94,24 @@ export class CreateAlertButtonControl implements IControl {
     buttonElement.addEventListener('mousedown', (e) => this.onMouseDown(e))
     buttonElement.addEventListener('touchstart', (e) => this.onTouchStart(e))
 
-    // Allow programmatic activation via custom event
-    buttonElement.addEventListener('enter-placement-mode', () => {
-      if (!this.isPlacementMode && !this.dragGhost) {
-        const rect = buttonElement.getBoundingClientRect()
-        this.enterPlacementMode(rect.left + rect.width / 2, rect.top + rect.height / 2)
-      }
-    })
-
     this.controlContainer.appendChild(buttonElement)
+
+    if (this.props.isActive) {
+      this.setActive(true)
+    }
+
     return this.controlContainer
+  }
+
+  public setActive(active: boolean) {
+    if (!this.buttonElement) return
+    if (active) {
+      this.buttonElement.classList.add('active')
+      this.buttonElement.setAttribute('disabled', 'true')
+    } else {
+      this.buttonElement.classList.remove('active')
+      this.buttonElement.removeAttribute('disabled')
+    }
   }
 
   // ─── Mouse events ───────────────────────────────────────────
@@ -122,7 +133,6 @@ export class CreateAlertButtonControl implements IControl {
       if (!this.hasDragged && Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD) {
         this.hasDragged = true
         this.createGhost(ev.clientX, ev.clientY)
-        this.props.navigate('/alert')
       }
       if (this.hasDragged) {
         this.moveGhost(ev.clientX, ev.clientY)
@@ -162,7 +172,6 @@ export class CreateAlertButtonControl implements IControl {
       if (!this.hasDragged && Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD) {
         this.hasDragged = true
         this.createGhost(t.clientX, t.clientY)
-        this.props.navigate('/alert')
       }
       if (this.hasDragged) {
         this.moveGhost(t.clientX, t.clientY)
@@ -189,7 +198,6 @@ export class CreateAlertButtonControl implements IControl {
 
   private enterPlacementMode(x: number, y: number) {
     this.createGhost(x, y)
-    this.props.navigate('/alert')
     this.isPlacementMode = true
 
     // Mouse listeners
@@ -415,12 +423,10 @@ export class CreateAlertButtonControl implements IControl {
       setTimeout(() => ghost?.remove(), 600)
       this.cleanupDragState()
 
-      // Create alert with the drop position and navigate
-      this.props.createAlert({
-        point: {
-          type: 'Point',
-          coordinates: [lngLat.lng, lngLat.lat],
-        },
+      // Navigate to alert page with coordinates as query params
+      this.props.navigate('/alert', {
+        lng: String(lngLat.lng),
+        lat: String(lngLat.lat),
       })
     } else {
       // Animate ghost back to the button
@@ -475,10 +481,25 @@ export class CreateAlertButtonControl implements IControl {
   }
 }
 
-export function CreateAlertButton({ position, navigate, createAlert }: CreateAlertButtonProps) {
-  useControl(() => new CreateAlertButtonControl({ navigate, createAlert }), {
-    position,
-  })
+export function CreateAlertButton({ position, navigate }: CreateAlertButtonProps) {
+  const controlRef = useRef<CreateAlertButtonControl | null>(null)
+  const location = useLocation()
+  const isActive = location.pathname === '/alert'
+
+  useControl(
+    () => {
+      const ctrl = new CreateAlertButtonControl({ navigate, isActive })
+      controlRef.current = ctrl
+      return ctrl
+    },
+    {
+      position,
+    },
+  )
+
+  useEffect(() => {
+    controlRef.current?.setActive(!!isActive)
+  }, [isActive])
 
   return null
 }

@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import reportWebVitals from './reportWebVitals'
-import { RouterProvider, createHashRouter } from 'react-router-dom'
+import { RouterProvider, createHashRouter, redirect } from 'react-router-dom'
 import { MapLayout } from './layouts/MapLayout'
 import { lookup } from './api/ban-plateforme'
 import { SignalementPage } from './pages/SignalementPage'
@@ -23,7 +23,6 @@ import * as Sentry from '@sentry/react'
 import { useMatomoTracking } from './hooks/useMatomoTracking'
 import { AdvancedSearchPage } from './pages/AdvancedSearchPage'
 import { AlertPage } from './pages/AlertPage'
-import { AlertContextProvider } from './contexts/alert.context'
 
 startReactDsfr({ defaultColorScheme: 'light' })
 
@@ -62,11 +61,9 @@ const GlobalLayout = (props: { children: React.ReactNode }) => {
       <LayoutContextProvider>
         <SourceContextProvider>
           <SignalementContextProvider>
-            <AlertContextProvider>
-              <SignalementViewerContextProvider>
-                <MapLayout>{children}</MapLayout>
-              </SignalementViewerContextProvider>
-            </AlertContextProvider>
+            <SignalementViewerContextProvider>
+              <MapLayout>{children}</MapLayout>
+            </SignalementViewerContextProvider>
           </SignalementContextProvider>
         </SourceContextProvider>
       </LayoutContextProvider>
@@ -139,29 +136,25 @@ const router = createHashRouter([
     loader: ({ request }) => {
       const url = new URL(request.url)
       const lat = Number(url.searchParams.get('lat'))
-      const lon = Number(url.searchParams.get('lon'))
+      const lng = Number(url.searchParams.get('lng'))
       const type = url.searchParams.get('type')
       const comment = url.searchParams.get('comment')
 
-      if (isNaN(lat) || isNaN(lon)) {
-        console.error('Invalid position format in search params:', { lat, lon })
-        return {
-          initalAlert: null,
-        }
+      if (!lat || isNaN(lat) || !lng || isNaN(lng)) {
+        console.error('Invalid position format in search params:', { lat, lng })
+        return redirect('/')
       }
 
       if (type && !Object.values(CreateAlertDTO['type']).includes(type as CreateAlertDTO['type'])) {
         console.error('Invalid type format in search params:', type)
-        return {
-          initalAlert: null,
-        }
+        return redirect('/')
       }
 
       return {
-        initalAlert: {
+        initialAlert: {
           point: {
             type: 'Point',
-            coordinates: [lon, lat],
+            coordinates: [lng, lat],
           },
           type: (type as CreateAlertDTO['type']) || '',
           comment: comment || '',

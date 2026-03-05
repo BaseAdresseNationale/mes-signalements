@@ -2,6 +2,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { SignalementContext } from '../contexts/signalement.context'
 import { useContext } from 'react'
 
+const searchParamsToPreserve = ['sourceId']
+
 function useNavigateWithPreservedSearchParams() {
   const _navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -12,12 +14,24 @@ function useNavigateWithPreservedSearchParams() {
       deleteSignalement()
     }
 
+    const paramsToPreserve = searchParamsToPreserve.reduce(
+      (acc, param) => {
+        const value = searchParams.get(param)
+        if (value) {
+          acc[param] = value
+        }
+        return acc
+      },
+      {} as Record<string, string>,
+    )
+
     const mergedParams = new URLSearchParams({
-      ...Object.fromEntries(searchParams.entries()),
+      ...paramsToPreserve,
       ...params,
     })
 
-    const url = `${to}?${mergedParams.toString()}`
+    const queryString = mergedParams.toString()
+    const url = queryString ? `${to}?${queryString}` : to
 
     _navigate(url)
   }

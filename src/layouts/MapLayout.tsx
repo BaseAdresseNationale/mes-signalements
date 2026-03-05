@@ -8,7 +8,6 @@ import { AdresseSearch } from '../composants/adresse/AdresseSearch'
 import Loader from '../composants/common/Loader'
 import useNavigateWithPreservedSearchParams from '../hooks/useNavigateWithPreservedSearchParams'
 import MapContext from '../contexts/map.context'
-import { AlertContext } from '../contexts/alert.context'
 import { interactiveLayers, staticCadastreLayers } from '../config/map/layers'
 import { mapStyles } from '../config/map/styles'
 import { StylesSwitch } from '../composants/map/StylesSwitch'
@@ -87,7 +86,6 @@ export function MapLayout({ children }: MapLayoutProps) {
   } = useContext(MapContext)
   const { source } = useContext(SourceContext)
   const { searchRef, drawerRef } = useContext(LayoutContext)
-  const { createAlert } = useContext(AlertContext)
 
   const { navigate } = useNavigateWithPreservedSearchParams()
   const navigation = useNavigation()
@@ -150,7 +148,7 @@ export function MapLayout({ children }: MapLayoutProps) {
             position='top-right'
           />
           <CreateAdresseButton position='top-right' navigate={navigate} />
-          <CreateAlertButton position='top-right' navigate={navigate} createAlert={createAlert} />
+          <CreateAlertButton position='top-right' navigate={navigate} />
           <StylesSwitch
             styles={mapStyles as [MaplibreStyleDefinition, MaplibreStyleDefinition]}
             position='bottom-right'

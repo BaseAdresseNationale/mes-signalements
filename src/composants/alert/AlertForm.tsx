@@ -1,14 +1,17 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { StyledForm } from '../signalement/signalement.styles'
 import Input from '@codegouvfr/react-dsfr/Input'
 import { useFriendlyCaptcha } from '../../hooks/useFriendlyCaptcha'
 import Button from '@codegouvfr/react-dsfr/Button'
-import { CreateAlertDTO, Source } from '../../api/signalement'
+import { AlertsService, CreateAlertDTO, Source } from '../../api/signalement'
 import { getAlertTypeLabel } from '../../utils/alert.utils'
 import SourceContext from '../../contexts/source.context'
 import { Select } from '@codegouvfr/react-dsfr/Select'
+import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
+import Alert from '@codegouvfr/react-dsfr/Alert'
 
 interface AlertFormProps {
+  codeCommune: string
   alert: CreateAlertDTO
   onEdit: (property: keyof CreateAlertDTO, value: any) => void
 }
@@ -18,9 +21,11 @@ const alertTypeOptions = Object.values(CreateAlertDTO.type).map((type) => ({
   label: getAlertTypeLabel(type),
 }))
 
-export default function AlertForm({ alert, onEdit }: AlertFormProps) {
+export default function AlertForm({ alert, onEdit, codeCommune }: AlertFormProps) {
   const { comment, author, type } = alert
   const { source } = useContext(SourceContext)
+  const { navigate } = useNavigateWithPreservedSearchParams()
+  const [submitStatus, setSubmitStatus] = useState<string | null>(null)
 
   const { CaptchaWidget } = useFriendlyCaptcha({
     siteKey: process.env.REACT_APP_FRIENDLY_CAPTCHA_SITE_KEY || '',
@@ -28,9 +33,18 @@ export default function AlertForm({ alert, onEdit }: AlertFormProps) {
     language: 'fr',
   })
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    console.log('Submitting alert:', alert)
+    setSubmitStatus('loading')
+    try {
+      await AlertsService.createAlert({ ...alert, codeCommune })
+      setSubmitStatus('success')
+      setTimeout(() => {
+        navigate('/')
+      }, 3000)
+    } catch (error) {
+      setSubmitStatus('error')
+    }
   }
 
   return (
@@ -126,9 +140,28 @@ export default function AlertForm({ alert, onEdit }: AlertFormProps) {
           </div>
         </>
       )}
-      <div className='form-controls'>
-        <Button type='submit'>Envoyer</Button>
-      </div>
+      {submitStatus === 'success' ? (
+        <Alert
+          severity='success'
+          title='Votre alerte a été envoyée avec succès !'
+          description='Merci pour votre signalement.'
+        />
+      ) : (
+        <>
+          <div className='form-controls'>
+            <Button type='submit' disabled={submitStatus === 'loading'}>
+              Envoyer
+            </Button>
+          </div>
+          {submitStatus === 'error' && (
+            <Alert
+              severity='error'
+              title='Une erreur est survenue'
+              description="Une erreur est survenue lors de l'envoi de votre alerte. Veuillez réessayer ultérieurement."
+            />
+          )}
+        </>
+      )}
     </StyledForm>
   )
 }
