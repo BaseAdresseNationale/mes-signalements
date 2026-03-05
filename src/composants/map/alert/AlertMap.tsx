@@ -1,9 +1,9 @@
 import React from 'react'
-import { CreateAlertDTO } from '../../../api/signalement'
 import { AlertMarker } from './AlertMarker'
+import { CreateAlertDTO } from '../../../api/signalement'
 
 interface AlertMapProps {
-  alert: CreateAlertDTO | null
+  alert: Pick<CreateAlertDTO, 'point'> | null
   onEditAlert: (property: keyof CreateAlertDTO, value: any) => void
 }
 

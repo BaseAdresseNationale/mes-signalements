@@ -166,6 +166,13 @@ body.alert-dragging * {
   user-select: none;
 }
 
+/* Global cursor override for placement mode (click-to-place) */
+body.alert-placing,
+body.alert-placing * {
+  cursor: crosshair !important;
+  user-select: none;
+}
+
 /* Ghost flag element that follows the cursor */
 .alert-drag-ghost {
   position: fixed;

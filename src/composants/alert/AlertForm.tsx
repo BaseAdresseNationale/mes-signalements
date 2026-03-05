@@ -48,7 +48,7 @@ export default function AlertForm({ alert, onEdit }: AlertFormProps) {
               value: type || '',
             }}
           >
-            <option disabled hidden selected value=''>
+            <option disabled hidden value=''>
               Selectionnez une option
             </option>
             {alertTypeOptions.map((option) => (

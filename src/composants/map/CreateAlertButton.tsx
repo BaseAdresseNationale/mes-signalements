@@ -39,7 +39,7 @@ function buildFlagSVG() {
 type CreateAlertButtonProps = {
   position?: ControlPosition
   navigate: (path: string) => void
-  createAlert: (point: CreateAlertDTO['point']) => void
+  createAlert: (alert: Partial<CreateAlertDTO>) => void
 }
 
 export class CreateAlertButtonControl implements IControl {
@@ -62,6 +62,15 @@ export class CreateAlertButtonControl implements IControl {
   private horizontalDir = -1 // -1 = moving left (flag right), 1 = moving right (flag left)
   private displayedDir = -1
 
+  // Placement mode (click-to-place)
+  private isPlacementMode = false
+  private boundPlacementMouseMove: ((e: MouseEvent) => void) | null = null
+  private boundPlacementMouseDown: ((e: MouseEvent) => void) | null = null
+  private boundPlacementTouchStart: ((e: TouchEvent) => void) | null = null
+  private boundPlacementTouchMove: ((e: TouchEvent) => void) | null = null
+  private boundPlacementTouchEnd: ((e: TouchEvent) => void) | null = null
+  private boundPlacementKeyDown: ((e: KeyboardEvent) => void) | null = null
+
   constructor(private props: CreateAlertButtonProps) {}
 
   public getDefaultPosition(): string {
@@ -82,6 +91,14 @@ export class CreateAlertButtonControl implements IControl {
     buttonElement.addEventListener('mousedown', (e) => this.onMouseDown(e))
     buttonElement.addEventListener('touchstart', (e) => this.onTouchStart(e))
 
+    // Allow programmatic activation via custom event
+    buttonElement.addEventListener('enter-placement-mode', () => {
+      if (!this.isPlacementMode && !this.dragGhost) {
+        const rect = buttonElement.getBoundingClientRect()
+        this.enterPlacementMode(rect.left + rect.width / 2, rect.top + rect.height / 2)
+      }
+    })
+
     this.controlContainer.appendChild(buttonElement)
     return this.controlContainer
   }
@@ -91,6 +108,10 @@ export class CreateAlertButtonControl implements IControl {
   private onMouseDown(e: MouseEvent) {
     e.preventDefault()
     e.stopPropagation()
+
+    // Ignore button clicks while in placement mode (document handler will handle drop)
+    if (this.isPlacementMode) return
+
     this.dragStartX = e.clientX
     this.dragStartY = e.clientY
     this.hasDragged = false
@@ -114,7 +135,7 @@ export class CreateAlertButtonControl implements IControl {
       if (this.hasDragged) {
         this.handleDrop(ev.clientX, ev.clientY)
       } else {
-        this.props.navigate('/alert')
+        this.enterPlacementMode(ev.clientX, ev.clientY)
       }
     }
 
@@ -126,6 +147,9 @@ export class CreateAlertButtonControl implements IControl {
 
   private onTouchStart(e: TouchEvent) {
     e.preventDefault()
+
+    if (this.isPlacementMode) return
+
     const touch = e.touches[0]
     this.dragStartX = touch.clientX
     this.dragStartY = touch.clientY
@@ -151,11 +175,105 @@ export class CreateAlertButtonControl implements IControl {
       if (this.hasDragged) {
         const t = ev.changedTouches[0]
         this.handleDrop(t.clientX, t.clientY)
+      } else {
+        const t = ev.changedTouches[0]
+        this.enterPlacementMode(t.clientX, t.clientY)
       }
     }
 
     document.addEventListener('touchmove', onTouchMove)
     document.addEventListener('touchend', onTouchEnd)
+  }
+
+  // ─── Placement mode (click-to-place) ───────────────────────
+
+  private enterPlacementMode(x: number, y: number) {
+    this.createGhost(x, y)
+    this.props.navigate('/alert')
+    this.isPlacementMode = true
+
+    // Mouse listeners
+    this.boundPlacementMouseMove = (ev: MouseEvent) => {
+      this.moveGhost(ev.clientX, ev.clientY)
+    }
+    this.boundPlacementMouseDown = (ev: MouseEvent) => {
+      ev.preventDefault()
+      this.handleDrop(ev.clientX, ev.clientY)
+    }
+
+    // Touch listeners
+    this.boundPlacementTouchStart = (ev: TouchEvent) => {
+      const t = ev.touches[0]
+      this.moveGhost(t.clientX, t.clientY)
+    }
+    this.boundPlacementTouchMove = (ev: TouchEvent) => {
+      const t = ev.touches[0]
+      this.moveGhost(t.clientX, t.clientY)
+    }
+    this.boundPlacementTouchEnd = (ev: TouchEvent) => {
+      const t = ev.changedTouches[0]
+      this.handleDrop(t.clientX, t.clientY)
+    }
+
+    // Escape to cancel
+    this.boundPlacementKeyDown = (ev: KeyboardEvent) => {
+      if (ev.key === 'Escape') {
+        this.animateReturn()
+      }
+    }
+
+    document.addEventListener('mousemove', this.boundPlacementMouseMove)
+    document.addEventListener('keydown', this.boundPlacementKeyDown)
+
+    // Delay click/touch listeners to avoid catching the current event
+    setTimeout(() => {
+      if (this.isPlacementMode) {
+        if (this.boundPlacementMouseDown) {
+          document.addEventListener('mousedown', this.boundPlacementMouseDown)
+        }
+        if (this.boundPlacementTouchStart) {
+          document.addEventListener('touchstart', this.boundPlacementTouchStart)
+        }
+        if (this.boundPlacementTouchMove) {
+          document.addEventListener('touchmove', this.boundPlacementTouchMove)
+        }
+        if (this.boundPlacementTouchEnd) {
+          document.addEventListener('touchend', this.boundPlacementTouchEnd)
+        }
+      }
+    }, 10)
+
+    // Crosshair cursor for placement mode
+    document.body.classList.add('alert-placing')
+  }
+
+  private cleanupPlacementListeners() {
+    if (this.boundPlacementMouseMove) {
+      document.removeEventListener('mousemove', this.boundPlacementMouseMove)
+      this.boundPlacementMouseMove = null
+    }
+    if (this.boundPlacementMouseDown) {
+      document.removeEventListener('mousedown', this.boundPlacementMouseDown)
+      this.boundPlacementMouseDown = null
+    }
+    if (this.boundPlacementTouchStart) {
+      document.removeEventListener('touchstart', this.boundPlacementTouchStart)
+      this.boundPlacementTouchStart = null
+    }
+    if (this.boundPlacementTouchMove) {
+      document.removeEventListener('touchmove', this.boundPlacementTouchMove)
+      this.boundPlacementTouchMove = null
+    }
+    if (this.boundPlacementTouchEnd) {
+      document.removeEventListener('touchend', this.boundPlacementTouchEnd)
+      this.boundPlacementTouchEnd = null
+    }
+    if (this.boundPlacementKeyDown) {
+      document.removeEventListener('keydown', this.boundPlacementKeyDown)
+      this.boundPlacementKeyDown = null
+    }
+    this.isPlacementMode = false
+    document.body.classList.remove('alert-placing')
   }
 
   // ─── Ghost management ──────────────────────────────────────
@@ -299,8 +417,10 @@ export class CreateAlertButtonControl implements IControl {
 
       // Create alert with the drop position and navigate
       this.props.createAlert({
-        type: 'Point',
-        coordinates: [lngLat.lng, lngLat.lat],
+        point: {
+          type: 'Point',
+          coordinates: [lngLat.lng, lngLat.lat],
+        },
       })
     } else {
       // Animate ghost back to the button
@@ -335,6 +455,7 @@ export class CreateAlertButtonControl implements IControl {
     const btn = document.getElementById('create-alert-button')
     if (btn) btn.classList.remove('dragging')
     document.body.classList.remove('alert-dragging')
+    this.cleanupPlacementListeners()
     this.dragGhost = null
     this.hasDragged = false
   }
@@ -345,6 +466,7 @@ export class CreateAlertButtonControl implements IControl {
   }
 
   public onRemove(): void {
+    this.cleanupDrag()
     if (!this.controlContainer || !this.controlContainer.parentNode || !this.map) {
       return
     }

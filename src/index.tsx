@@ -5,7 +5,7 @@ import { RouterProvider, createHashRouter } from 'react-router-dom'
 import { MapLayout } from './layouts/MapLayout'
 import { lookup } from './api/ban-plateforme'
 import { SignalementPage } from './pages/SignalementPage'
-import { OpenAPI } from './api/signalement'
+import { CreateAlertDTO, OpenAPI } from './api/signalement'
 
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { SourcePage } from './pages/SourcePage'
@@ -136,6 +136,38 @@ const router = createHashRouter([
         <AlertPage />
       </GlobalLayout>
     ),
+    loader: ({ request }) => {
+      const url = new URL(request.url)
+      const lat = Number(url.searchParams.get('lat'))
+      const lon = Number(url.searchParams.get('lon'))
+      const type = url.searchParams.get('type')
+      const comment = url.searchParams.get('comment')
+
+      if (isNaN(lat) || isNaN(lon)) {
+        console.error('Invalid position format in search params:', { lat, lon })
+        return {
+          initalAlert: null,
+        }
+      }
+
+      if (type && !Object.values(CreateAlertDTO['type']).includes(type as CreateAlertDTO['type'])) {
+        console.error('Invalid type format in search params:', type)
+        return {
+          initalAlert: null,
+        }
+      }
+
+      return {
+        initalAlert: {
+          point: {
+            type: 'Point',
+            coordinates: [lon, lat],
+          },
+          type: (type as CreateAlertDTO['type']) || '',
+          comment: comment || '',
+        },
+      }
+    },
   },
   {
     path: '/advanced-search',
