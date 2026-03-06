@@ -1,19 +1,34 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Layer, LayerProps, MapLayerMouseEvent, Popup, Source, useMap } from 'react-map-gl/maplibre'
-import { signalementPointsLayer } from '../../config/map/layers'
-import { Signalement } from '../../api/signalement'
+import {
+  alertPointsLayer,
+  APISignalementTiles,
+  signalementPointsLayer,
+} from '../../config/map/layers'
+import { Alert, Signalement } from '../../api/signalement'
 import SignalementCard from '../signalement/SignalementCard'
-import { SignalementViewerContext } from '../../contexts/signalement-viewer.context'
 import { getSignalementFromFeatureAPISignalement } from '../../utils/signalement.utils'
+import { getAlertFromFeatureAPISignalement } from '../../utils/alert.utils'
+import AlertCard from '../alert/AlertCard'
+import { SignalementViewerContext } from '../../contexts/signalement-viewer.context'
 
 interface SignalementSearchMapProps {
   options: Partial<LayerProps>
 }
 
+enum FeatureType {
+  SIGNALMENT = 'SIGNALMENT',
+  ALERT = 'ALERT',
+}
+
 export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMapProps>) {
   const map = useMap()
   const { setViewedSignalement } = useContext(SignalementViewerContext)
-  const [hoveredSignalement, setHoveredSignalement] = useState<Signalement | null>(null)
+  const [hoveredFeature, setHoveredFeature] = useState<{
+    type: FeatureType
+    data: Signalement | Alert
+    point: any
+  } | null>(null)
 
   useEffect(() => {
     if (!map.current) {
@@ -27,15 +42,26 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
 
       if (e.features.length > 0) {
         const feature = e.features[0]
-        setHoveredSignalement({
-          ...getSignalementFromFeatureAPISignalement(feature),
-          point: feature.geometry,
-        })
+        if (feature.layer.id === signalementPointsLayer.id) {
+          const signalement = getSignalementFromFeatureAPISignalement(feature)
+          setHoveredFeature({
+            type: FeatureType.SIGNALMENT,
+            data: signalement,
+            point: feature.geometry,
+          })
+        } else if (feature.layer.id === alertPointsLayer.id) {
+          const alert = getAlertFromFeatureAPISignalement(feature)
+          setHoveredFeature({
+            type: FeatureType.ALERT,
+            data: alert,
+            point: feature.geometry,
+          })
+        }
       }
     }
 
     const handleMouseLeave = () => {
-      setHoveredSignalement(null)
+      setHoveredFeature(null)
     }
 
     const handleSelect = (e: MapLayerMouseEvent) => {
@@ -44,7 +70,10 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
       }
 
       if (e.features.length > 0) {
-        setViewedSignalement(getSignalementFromFeatureAPISignalement(e.features[0]))
+        const feature = e.features[0]
+        if (feature.layer.id === signalementPointsLayer.id) {
+          setViewedSignalement(getSignalementFromFeatureAPISignalement(feature))
+        }
       }
     }
 
@@ -52,6 +81,9 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
       map.current.on('click', signalementPointsLayer.id, handleSelect)
       map.current.on('mousemove', signalementPointsLayer.id, handleMouseMove)
       map.current.on('mouseleave', signalementPointsLayer.id, handleMouseLeave)
+
+      map.current.on('mousemove', alertPointsLayer.id, handleMouseMove)
+      map.current.on('mouseleave', alertPointsLayer.id, handleMouseLeave)
     }
 
     return () => {
@@ -59,34 +91,47 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
         map.current.off('click', signalementPointsLayer.id, handleSelect)
         map.current.off('mousemove', signalementPointsLayer.id, handleMouseMove)
         map.current.off('mouseleave', signalementPointsLayer.id, handleMouseLeave)
+
+        map.current.off('mousemove', alertPointsLayer.id, handleMouseMove)
+        map.current.off('mouseleave', alertPointsLayer.id, handleMouseLeave)
       }
     }
   }, [map])
 
   return (
     <>
-      {hoveredSignalement && (
+      {hoveredFeature && hoveredFeature.type === FeatureType.SIGNALMENT && (
         <Popup
           offset={-5}
-          longitude={hoveredSignalement.point.coordinates[0]}
-          latitude={hoveredSignalement.point.coordinates[1]}
+          longitude={hoveredFeature.point.coordinates[0]}
+          latitude={hoveredFeature.point.coordinates[1]}
           anchor='bottom'
           closeButton={false}
         >
-          <SignalementCard signalement={hoveredSignalement} />
+          <SignalementCard signalement={hoveredFeature.data as Signalement} />
+        </Popup>
+      )}
+      {hoveredFeature && hoveredFeature.type === FeatureType.ALERT && (
+        <Popup
+          offset={5}
+          longitude={hoveredFeature.point.coordinates[0]}
+          latitude={hoveredFeature.point.coordinates[1]}
+          anchor='top'
+          closeButton={false}
+        >
+          <AlertCard alert={hoveredFeature.data as Alert} />
         </Popup>
       )}
       <Source
         id='api-signalement'
         type='vector'
-        tiles={[
-          `${process.env.REACT_APP_API_SIGNALEMENT_URL}/signalements/tiles/{z}/{x}/{y}.pbf?status=${Signalement.status.PENDING}`,
-        ]}
+        tiles={APISignalementTiles}
         minzoom={10}
         maxzoom={14}
         promoteId='id'
       >
         <Layer key={signalementPointsLayer.id} {...(signalementPointsLayer as any)} {...options} />
+        <Layer key={alertPointsLayer.id} {...(alertPointsLayer as any)} {...options} />
       </Source>
     </>
   )

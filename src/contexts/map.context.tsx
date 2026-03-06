@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react'
-import { LayerProps, MapRef } from 'react-map-gl/maplibre'
+import { LayerProps, MapRef, VectorTileSource } from 'react-map-gl/maplibre'
+import { APISignalementTiles } from '../config/map/layers'
 
 interface MapContextValue {
   mapRef: MapRef | null
@@ -16,6 +17,7 @@ interface MapContextValue {
   >
   signalementSearchMapLayerOptions: Partial<LayerProps>
   setSignalementSearchMapLayerOptions: React.Dispatch<React.SetStateAction<Partial<LayerProps>>>
+  reloadAPISignalementTiles: () => void
 }
 
 export const MapContext = createContext<MapContextValue>({
@@ -36,6 +38,7 @@ export const MapContext = createContext<MapContextValue>({
   setAdresseSearchMapLayersOptions: () => {},
   signalementSearchMapLayerOptions: {},
   setSignalementSearchMapLayerOptions: () => {},
+  reloadAPISignalementTiles: () => {},
 })
 
 export function MapContextProvider(props: { children: React.ReactNode }) {
@@ -56,7 +59,9 @@ export function MapContextProvider(props: { children: React.ReactNode }) {
     voie: {},
     toponyme: {},
   })
-  const [signalementSearchMapLayerOptions, setSignalementSearchMapLayerOptions] = useState({})
+  const [signalementSearchMapLayerOptions, setSignalementSearchMapLayerOptions] = useState<
+    Partial<LayerProps>
+  >({})
 
   // Update cadastre toggle button
   useEffect(() => {
@@ -75,6 +80,13 @@ export function MapContextProvider(props: { children: React.ReactNode }) {
     }
   }, [showCadastre, editParcelles])
 
+  const reloadAPISignalementTiles = useCallback(() => {
+    if (mapRef) {
+      const source: VectorTileSource = mapRef.getSource('api-signalement') as VectorTileSource
+      source.setTiles(APISignalementTiles)
+    }
+  }, [mapRef])
+
   const value = useMemo(
     () => ({
       mapRef,
@@ -89,6 +101,7 @@ export function MapContextProvider(props: { children: React.ReactNode }) {
       setAdresseSearchMapLayersOptions,
       signalementSearchMapLayerOptions,
       setSignalementSearchMapLayerOptions,
+      reloadAPISignalementTiles,
     }),
     [
       mapRef,
@@ -103,6 +116,7 @@ export function MapContextProvider(props: { children: React.ReactNode }) {
       setAdresseSearchMapLayersOptions,
       signalementSearchMapLayerOptions,
       setSignalementSearchMapLayerOptions,
+      reloadAPISignalementTiles,
     ],
   )
 

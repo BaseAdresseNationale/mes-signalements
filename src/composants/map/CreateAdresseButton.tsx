@@ -5,7 +5,7 @@ type CreateAdresseButtonProps = {
   navigate: (path: string) => void
 }
 
-export class MaplibreLayerVisibilityControl implements IControl {
+export class CreateAdresseButtonControl implements IControl {
   private controlContainer: HTMLElement | undefined
   private map?: MapInstance
 
@@ -24,11 +24,11 @@ export class MaplibreLayerVisibilityControl implements IControl {
     const buttonElement = document.createElement('button')
     buttonElement.id = 'create-adresse-button'
     buttonElement.type = 'button'
-    buttonElement.title = 'Ajouter une adresse'
-    buttonElement.classList.add('fr-icon-add-circle-line')
+    buttonElement.title = "Demander la création d'une adresse"
+    buttonElement.classList.add('fr-icon-home-4-line')
 
     buttonElement.addEventListener('click', () => {
-      this.props.navigate(`/create`)
+      this.props.navigate(`/create-adresse`)
     })
 
     this.controlContainer.appendChild(buttonElement)
@@ -47,7 +47,7 @@ export class MaplibreLayerVisibilityControl implements IControl {
 
 export function CreateAdresseButton(props: CreateAdresseButtonProps) {
   const { position, ...rest } = props
-  useControl(() => new MaplibreLayerVisibilityControl(rest), {
+  useControl(() => new CreateAdresseButtonControl(rest), {
     position,
   })
 

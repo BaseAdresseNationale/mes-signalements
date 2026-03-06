@@ -5,15 +5,5 @@ import SourceContext from '../contexts/source.context'
 export function SourcePage() {
   const { source } = useContext(SourceContext)
 
-  return source ? (
-    <SignalementBrowser
-      initialFilter={{
-        types: [],
-        status: [],
-        communes: [],
-        sources: [{ value: source.id, label: source.nom }],
-      }}
-      hideSourceFilter
-    />
-  ) : null
+  return source ? <SignalementBrowser fromSource={{ value: source.id, label: source.nom }} /> : null
 }
