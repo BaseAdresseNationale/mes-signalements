@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { Sunburst } from '@ant-design/plots'
 import { useStats } from '../hooks/useStats'
-import { CountStat } from '../composants/common/SignalementBrowser/StatsModal/CountStat'
+import { CountStat } from '../composants/stats/CountStat'
 import Loader from '../composants/common/Loader'
 
 const StyledWrapper = styled.div`

@@ -14,9 +14,8 @@ import { CreateAdressePage } from './pages/CreateAdressePage'
 import * as Sentry from '@sentry/react'
 import { AdvancedSearchPage } from './pages/AdvancedSearchPage'
 import { AlertPage } from './pages/AlertPage'
-import { BaseLayout } from './layouts/BaseLayout'
-import { MapLayout } from './layouts/MapLayout'
 import { StatsPage } from './pages/StatsPage'
+import { GlobalLayout } from './layouts/GlobalLayout'
 
 import 'maplibre-gl/dist/maplibre-gl.css'
 
@@ -51,17 +50,17 @@ const router = createHashRouter([
   {
     path: '/',
     element: (
-      <MapLayout>
+      <GlobalLayout>
         <AdresseSearchPage />
-      </MapLayout>
+      </GlobalLayout>
     ),
   },
   {
     path: '/:code',
     element: (
-      <MapLayout>
+      <GlobalLayout>
         <SignalementPage />
-      </MapLayout>
+      </GlobalLayout>
     ),
     loader: async ({ params }) => {
       if (!params.code) {
@@ -81,33 +80,33 @@ const router = createHashRouter([
   {
     path: '/source',
     element: (
-      <MapLayout>
+      <GlobalLayout>
         <SourcePage />
-      </MapLayout>
+      </GlobalLayout>
     ),
   },
   {
     path: '/all',
     element: (
-      <MapLayout>
+      <GlobalLayout>
         <AllPage />
-      </MapLayout>
+      </GlobalLayout>
     ),
   },
   {
     path: '/create-adresse',
     element: (
-      <MapLayout>
+      <GlobalLayout>
         <CreateAdressePage />
-      </MapLayout>
+      </GlobalLayout>
     ),
   },
   {
     path: '/alert',
     element: (
-      <MapLayout>
+      <GlobalLayout>
         <AlertPage />
-      </MapLayout>
+      </GlobalLayout>
     ),
     loader: ({ request }) => {
       const url = new URL(request.url)
@@ -141,17 +140,17 @@ const router = createHashRouter([
   {
     path: '/advanced-search',
     element: (
-      <MapLayout>
+      <GlobalLayout>
         <AdvancedSearchPage />
-      </MapLayout>
+      </GlobalLayout>
     ),
   },
   {
     path: '/stats',
     element: (
-      <BaseLayout>
+      <GlobalLayout baseLayout>
         <StatsPage />
-      </BaseLayout>
+      </GlobalLayout>
     ),
   },
 ])
