@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import ReactDOM from 'react-dom'
 import styled from 'styled-components'
 import { MOBILE_BREAKPOINT } from '../../hooks/useWindowSize'
+import * as focusTrap from 'focus-trap'
 
 const StyledBackDrop = styled.div`
   height: 100dvh;
@@ -90,17 +91,48 @@ interface ModalProps {
 
 function Modal({ title, children, onClose, style }: ModalProps) {
   const rootElement = document.getElementById('root')
+  const modalRef = useRef<HTMLDivElement>(null)
+  const focusTrapRef = useRef<focusTrap.FocusTrap | null>(null)
+
+  // Focus trap for accessibility
+  useEffect(() => {
+    if (!modalRef.current) {
+      return
+    }
+
+    if (!focusTrapRef.current) {
+      focusTrapRef.current = focusTrap.createFocusTrap(modalRef.current, {
+        escapeDeactivates: true,
+        clickOutsideDeactivates: true,
+        onDeactivate: onClose,
+      })
+    }
+
+    focusTrapRef.current.activate()
+  }, [])
 
   return ReactDOM.createPortal(
-    <StyledBackDrop onClick={onClose}>
-      <StyledModal onClick={(e) => e.stopPropagation()} style={style}>
+    <StyledBackDrop>
+      <StyledModal
+        onClick={(e) => e.stopPropagation()}
+        style={style}
+        ref={modalRef}
+        role='dialog'
+        aria-modal='true'
+        aria-labelledby='modal-title'
+      >
         <div className='header'>
-          <h3>{title}</h3>
+          <h3 id='modal-title'>{title}</h3>
           <button
             className='fr-btn fr-btn--close fr-btn--tertiary-no-outline'
             title='Fermer'
             type='button'
-            onClick={onClose}
+            onClick={() => {
+              if (focusTrapRef.current) {
+                focusTrapRef.current.deactivate()
+              }
+              onClose()
+            }}
           >
             Fermer
           </button>

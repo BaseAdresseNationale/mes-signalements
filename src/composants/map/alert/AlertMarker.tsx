@@ -29,13 +29,20 @@ export function AlertMarker({ coordinates, onDragEnd }: MarkerProps) {
         <line x1='6' y1='2' x2='6' y2='46' stroke='white' strokeWidth='5' strokeLinecap='round' />
         <line x1='6' y1='2' x2='6' y2='46' stroke='#333' strokeWidth='2.5' strokeLinecap='round' />
         <path
-          d='M6 4 L36 10 L6 22 Z'
+          className='alert-flag-path-outline'
+          d='M6,4 C16,2 30,5 38,10 C30,15 16,20 6,22 Z'
           fill='none'
           stroke='white'
           strokeWidth='3'
           strokeLinejoin='round'
         />
-        <path d='M6 4 L36 10 L6 22 Z' fill='#E1000F' stroke='#b0000c' strokeWidth='0.5' />
+        <path
+          className='alert-flag-path'
+          d='M6,4 C16,2 30,5 38,10 C30,15 16,20 6,22 Z'
+          fill='#E1000F'
+          stroke='#b0000c'
+          strokeWidth='0.5'
+        />
         <circle cx='6' cy='46' r='4' fill='white' />
         <circle cx='6' cy='46' r='2.5' fill='#333' />
       </svg>

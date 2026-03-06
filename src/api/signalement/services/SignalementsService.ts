@@ -65,34 +65,6 @@ export class SignalementsService {
         });
     }
     /**
-     * Get tiles (with signalements features)
-     * @param status
-     * @param z
-     * @param x
-     * @param y
-     * @returns any
-     * @throws ApiError
-     */
-    public static getTiles(
-        status: string,
-        z: string,
-        x: string,
-        y: string,
-    ): CancelablePromise<any> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/signalements/tiles/{z}/{x}/{y}.pbf',
-            path: {
-                'z': z,
-                'x': x,
-                'y': y,
-            },
-            query: {
-                'status': status,
-            },
-        });
-    }
-    /**
      * Validate changes requested
      * @param requestBody
      * @returns any

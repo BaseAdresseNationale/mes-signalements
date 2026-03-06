@@ -45,3 +45,4 @@ export { SettingsService } from './services/SettingsService';
 export { SignalementsService } from './services/SignalementsService';
 export { SourcesService } from './services/SourcesService';
 export { StatsService } from './services/StatsService';
+export { TilesService } from './services/TilesService';

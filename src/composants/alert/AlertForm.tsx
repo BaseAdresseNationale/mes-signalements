@@ -9,6 +9,7 @@ import SourceContext from '../../contexts/source.context'
 import { Select } from '@codegouvfr/react-dsfr/Select'
 import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
 import Alert from '@codegouvfr/react-dsfr/Alert'
+import MapContext from '../../contexts/map.context'
 
 interface AlertFormProps {
   codeCommune: string
@@ -24,6 +25,7 @@ const alertTypeOptions = Object.values(CreateAlertDTO.type).map((type) => ({
 export default function AlertForm({ alert, onEdit, codeCommune }: AlertFormProps) {
   const { comment, author, type } = alert
   const { source } = useContext(SourceContext)
+  const { reloadAPISignalementTiles } = useContext(MapContext)
   const { navigate } = useNavigateWithPreservedSearchParams()
   const [submitStatus, setSubmitStatus] = useState<string | null>(null)
 
@@ -38,6 +40,7 @@ export default function AlertForm({ alert, onEdit, codeCommune }: AlertFormProps
     setSubmitStatus('loading')
     try {
       await AlertsService.createAlert({ ...alert, codeCommune })
+      reloadAPISignalementTiles()
       setSubmitStatus('success')
       setTimeout(() => {
         navigate('/')

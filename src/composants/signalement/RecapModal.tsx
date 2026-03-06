@@ -15,6 +15,7 @@ import {
 } from '../../utils/localStorage.utils'
 import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox'
 import { Input } from '@codegouvfr/react-dsfr/Input'
+import MapContext from '../../contexts/map.context'
 
 interface SignalementRecapModalProps {
   signalement: Signalement
@@ -33,6 +34,7 @@ export default function SignalementRecapModal({
 }: SignalementRecapModalProps) {
   const [submitStatus, setSubmitStatus] = useState<string | null>(null)
   const { source } = useContext(SourceContext)
+  const { reloadAPISignalementTiles } = useContext(MapContext)
   const [saveContact, setSaveContact] = useState(
     Boolean(getValueFromLocalStorage(LocalStorageKeys.AUTHOR_CONTACT)),
   )
@@ -49,6 +51,7 @@ export default function SignalementRecapModal({
     try {
       const sourceId = source?.id || process.env.REACT_APP_API_SIGNALEMENT_SOURCE_ID
       await SignalementsService.createSignalement(signalement, sourceId)
+      reloadAPISignalementTiles()
       if (saveContact && signalement.author) {
         setValueInLocalStorage(LocalStorageKeys.AUTHOR_CONTACT, {
           lastName: signalement.author.lastName,

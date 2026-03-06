@@ -1,7 +1,5 @@
-import styled from 'styled-components'
 import Map, { Layer, NavigationControl, Source } from 'react-map-gl/maplibre'
 import React, { useCallback, useContext, useState } from 'react'
-import { Header } from '../composants/common/Header'
 import { Drawer } from '../composants/common/Drawer'
 import { useNavigation } from 'react-router-dom'
 import { AdresseSearch } from '../composants/adresse/AdresseSearch'
@@ -11,8 +9,6 @@ import MapContext from '../contexts/map.context'
 import { interactiveLayers, staticCadastreLayers } from '../config/map/layers'
 import { mapStyles } from '../config/map/styles'
 import { StylesSwitch } from '../composants/map/StylesSwitch'
-import { AboutModal } from '../composants/about/AboutModal'
-import SourceContext from '../contexts/source.context'
 import { MaplibreStyleDefinition } from '../types/maplibre.types'
 import { CadastreToggle } from '../composants/map/CadastreToggle'
 import { AdresseSearchMap } from '../composants/map/AdresseSearchMap'
@@ -21,25 +17,8 @@ import { SignalementsSearchMap } from '../composants/map/SignalementsSearchMap'
 import { CreateAdresseButton } from '../composants/map/CreateAdresseButton'
 import LayoutContext from '../contexts/layout.context'
 import { CreateAlertButton } from '../composants/map/CreateAlertButton'
-
-const Layout = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 100vw;
-  height: 100dvh;
-
-  > header {
-    flex: 0 0 auto;
-  }
-
-  > .main-wrapper {
-    flex: 1 1 auto;
-    position: relative;
-    height: 100%;
-    overflow: hidden;
-  }
-`
+import { BaseLayout } from './BaseLayout'
+import styled from 'styled-components'
 
 interface MapLayoutProps {
   children?: React.ReactNode
@@ -68,11 +47,20 @@ const loadAssets = async (e: MapLibreEvent) => {
 
   const conePurple = await map.loadImage('/icons/cone-purple.png')
   map.addImage('cone-purple', conePurple.data)
+
+  const alertFlag = await map.loadImage('/icons/alert-flag.png')
+  map.addImage('alert-flag', alertFlag.data)
 }
+
+const StyledMapWrapper = styled.div`
+  flex: 1 1 auto;
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+`
 
 export function MapLayout({ children }: MapLayoutProps) {
   const [cursor, setCursor] = useState<string | null>(null)
-  const [showInfo, setShowInfo] = useState(false)
   const onMouseEnter = useCallback(() => setCursor('pointer'), [])
   const onMouseLeave = useCallback(() => setCursor(null), [])
 
@@ -84,7 +72,6 @@ export function MapLayout({ children }: MapLayoutProps) {
     adresseSearchMapLayersOptions,
     signalementSearchMapLayerOptions,
   } = useContext(MapContext)
-  const { source } = useContext(SourceContext)
   const { searchRef, drawerRef } = useContext(LayoutContext)
 
   const { navigate } = useNavigateWithPreservedSearchParams()
@@ -95,9 +82,8 @@ export function MapLayout({ children }: MapLayoutProps) {
   }
 
   return (
-    <Layout>
-      <Header customSource={source} toggleShowInfo={() => setShowInfo((state) => !state)} />
-      <div className='main-wrapper'>
+    <BaseLayout>
+      <StyledMapWrapper>
         <Map
           ref={mapRefCb}
           style={{
@@ -164,8 +150,7 @@ export function MapLayout({ children }: MapLayoutProps) {
             children
           )}
         </Drawer>
-      </div>
-      {showInfo && <AboutModal onClose={() => setShowInfo(false)} />}
-    </Layout>
+      </StyledMapWrapper>
+    </BaseLayout>
   )
 }

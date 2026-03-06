@@ -15,6 +15,10 @@ const VOIE_MAX = 24
 
 export const PARCELLES_MINZOOM = 14
 
+export const APISignalementTiles = [
+  `${process.env.REACT_APP_API_SIGNALEMENT_URL}/tiles/{z}/{x}/{y}.pbf?status=${Signalement.status.PENDING}`,
+]
+
 export const adresseCircleLayer = {
   id: 'adresse',
   source: 'base-adresse-nationale',
@@ -237,7 +241,7 @@ export const signalementPointsLayer = {
   source: 'api-signalement',
   'source-layer': 'signalements',
   type: 'symbol',
-  minzoom: 12,
+  minzoom: 10,
   layout: {
     'icon-image': [
       'case',
@@ -252,6 +256,19 @@ export const signalementPointsLayer = {
     'icon-size': 0.05,
     'icon-offset': [0, 150],
     'icon-anchor': 'top',
+  },
+}
+
+export const alertPointsLayer = {
+  id: 'alert-points',
+  source: 'api-signalement',
+  'source-layer': 'alerts',
+  type: 'symbol',
+  minzoom: 10,
+  layout: {
+    'icon-image': 'alert-flag',
+    'icon-anchor': 'bottom',
+    'icon-size': 0.4,
   },
 }
 
@@ -314,4 +331,5 @@ export const interactiveLayers = [
   clusters,
   unclusteredPoint,
   signalementPointsLayer,
+  alertPointsLayer,
 ]

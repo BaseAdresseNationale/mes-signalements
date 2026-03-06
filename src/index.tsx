@@ -2,27 +2,23 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import reportWebVitals from './reportWebVitals'
 import { RouterProvider, createHashRouter, redirect } from 'react-router-dom'
-import { MapLayout } from './layouts/MapLayout'
 import { lookup } from './api/ban-plateforme'
 import { SignalementPage } from './pages/SignalementPage'
 import { CreateAlertDTO, OpenAPI } from './api/signalement'
-
-import 'maplibre-gl/dist/maplibre-gl.css'
 import { SourcePage } from './pages/SourcePage'
-import { MapContextProvider } from './contexts/map.context'
 import { AdresseSearchPage } from './pages/AdresseSearchPage'
 import GlobalStyle from './globalStyles'
-import { SourceContextProvider } from './contexts/source.context'
-import { SignalementContextProvider } from './contexts/signalement.context'
 import { startReactDsfr } from '@codegouvfr/react-dsfr/spa'
-import { SignalementViewerContextProvider } from './contexts/signalement-viewer.context'
 import { AllPage } from './pages/AllPage'
 import { CreateAdressePage } from './pages/CreateAdressePage'
-import { LayoutContextProvider } from './contexts/layout.context'
 import * as Sentry from '@sentry/react'
-import { useMatomoTracking } from './hooks/useMatomoTracking'
 import { AdvancedSearchPage } from './pages/AdvancedSearchPage'
 import { AlertPage } from './pages/AlertPage'
+import { BaseLayout } from './layouts/BaseLayout'
+import { MapLayout } from './layouts/MapLayout'
+import { StatsPage } from './pages/StatsPage'
+
+import 'maplibre-gl/dist/maplibre-gl.css'
 
 startReactDsfr({ defaultColorScheme: 'light' })
 
@@ -51,41 +47,21 @@ Object.assign(OpenAPI, {
   BASE: API_SIGNALEMENT_URL,
 })
 
-const GlobalLayout = (props: { children: React.ReactNode }) => {
-  const { children } = props
-
-  useMatomoTracking()
-
-  return (
-    <MapContextProvider>
-      <LayoutContextProvider>
-        <SourceContextProvider>
-          <SignalementContextProvider>
-            <SignalementViewerContextProvider>
-              <MapLayout>{children}</MapLayout>
-            </SignalementViewerContextProvider>
-          </SignalementContextProvider>
-        </SourceContextProvider>
-      </LayoutContextProvider>
-    </MapContextProvider>
-  )
-}
-
 const router = createHashRouter([
   {
     path: '/',
     element: (
-      <GlobalLayout>
+      <MapLayout>
         <AdresseSearchPage />
-      </GlobalLayout>
+      </MapLayout>
     ),
   },
   {
     path: '/:code',
     element: (
-      <GlobalLayout>
+      <MapLayout>
         <SignalementPage />
-      </GlobalLayout>
+      </MapLayout>
     ),
     loader: async ({ params }) => {
       if (!params.code) {
@@ -105,33 +81,33 @@ const router = createHashRouter([
   {
     path: '/source',
     element: (
-      <GlobalLayout>
+      <MapLayout>
         <SourcePage />
-      </GlobalLayout>
+      </MapLayout>
     ),
   },
   {
     path: '/all',
     element: (
-      <GlobalLayout>
+      <MapLayout>
         <AllPage />
-      </GlobalLayout>
+      </MapLayout>
     ),
   },
   {
     path: '/create-adresse',
     element: (
-      <GlobalLayout>
+      <MapLayout>
         <CreateAdressePage />
-      </GlobalLayout>
+      </MapLayout>
     ),
   },
   {
     path: '/alert',
     element: (
-      <GlobalLayout>
+      <MapLayout>
         <AlertPage />
-      </GlobalLayout>
+      </MapLayout>
     ),
     loader: ({ request }) => {
       const url = new URL(request.url)
@@ -165,9 +141,17 @@ const router = createHashRouter([
   {
     path: '/advanced-search',
     element: (
-      <GlobalLayout>
+      <MapLayout>
         <AdvancedSearchPage />
-      </GlobalLayout>
+      </MapLayout>
+    ),
+  },
+  {
+    path: '/stats',
+    element: (
+      <BaseLayout>
+        <StatsPage />
+      </BaseLayout>
     ),
   },
 ])
