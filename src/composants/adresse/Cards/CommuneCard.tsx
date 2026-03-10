@@ -62,6 +62,14 @@ export function CommuneCard({ adresse, createSignalement, disabledMessage }: Com
           >
             Demander la création d&apos;un lieu-dit
           </Button>
+          <Button
+            type='button'
+            iconId='fr-icon-flag-line'
+            onClick={() => document.dispatchEvent(new CustomEvent('enter-placement-mode'))}
+            priority='secondary'
+          >
+            Signaler une adresse manquante
+          </Button>
         </>
       ) : (
         <SignalementDisabled message={disabledMessage} codeCommune={adresse.codeCommune} />

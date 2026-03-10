@@ -18,6 +18,8 @@ interface MapContextValue {
   signalementSearchMapLayerOptions: Partial<LayerProps>
   setSignalementSearchMapLayerOptions: React.Dispatch<React.SetStateAction<Partial<LayerProps>>>
   reloadAPISignalementTiles: () => void
+  mapMessage: string | null
+  setMapMessage: React.Dispatch<React.SetStateAction<string | null>>
 }
 
 export const MapContext = createContext<MapContextValue>({
@@ -39,6 +41,8 @@ export const MapContext = createContext<MapContextValue>({
   signalementSearchMapLayerOptions: {},
   setSignalementSearchMapLayerOptions: () => {},
   reloadAPISignalementTiles: () => {},
+  mapMessage: null,
+  setMapMessage: () => {},
 })
 
 export function MapContextProvider(props: { children: React.ReactNode }) {
@@ -62,6 +66,7 @@ export function MapContextProvider(props: { children: React.ReactNode }) {
   const [signalementSearchMapLayerOptions, setSignalementSearchMapLayerOptions] = useState<
     Partial<LayerProps>
   >({})
+  const [mapMessage, setMapMessage] = useState<string | null>(null)
 
   // Update cadastre toggle button
   useEffect(() => {
@@ -102,6 +107,8 @@ export function MapContextProvider(props: { children: React.ReactNode }) {
       signalementSearchMapLayerOptions,
       setSignalementSearchMapLayerOptions,
       reloadAPISignalementTiles,
+      mapMessage,
+      setMapMessage,
     }),
     [
       mapRef,
@@ -117,6 +124,8 @@ export function MapContextProvider(props: { children: React.ReactNode }) {
       signalementSearchMapLayerOptions,
       setSignalementSearchMapLayerOptions,
       reloadAPISignalementTiles,
+      mapMessage,
+      setMapMessage,
     ],
   )
 

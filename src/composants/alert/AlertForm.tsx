@@ -57,17 +57,14 @@ export default function AlertForm({ alert, onEdit, codeCommune }: AlertFormProps
         <div className='form-row'>
           <Select
             label="Type d'alerte*"
-            hint="Si votre signalement ne correspond pas à ces types, choisissez 'Autre' et précisez le dans les informations complémentaires"
             nativeSelectProps={{
               required: true,
               name: 'type',
               onChange: (event) => onEdit('type', event.target.value),
               value: type || '',
+              disabled: true,
             }}
           >
-            <option disabled hidden value=''>
-              Selectionnez une option
-            </option>
             {alertTypeOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
@@ -94,7 +91,7 @@ export default function AlertForm({ alert, onEdit, codeCommune }: AlertFormProps
       {source?.type !== Source.type.PRIVATE && (
         <>
           <h4>Vos coordonnées</h4>
-          <section>
+          <section style={{ marginTop: 0 }}>
             <div className='form-row'>
               <Input
                 label='Nom*'

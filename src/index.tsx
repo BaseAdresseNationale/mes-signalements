@@ -4,7 +4,7 @@ import reportWebVitals from './reportWebVitals'
 import { RouterProvider, createHashRouter, redirect } from 'react-router-dom'
 import { lookup } from './api/ban-plateforme'
 import { SignalementPage } from './pages/SignalementPage'
-import { CreateAlertDTO, OpenAPI } from './api/signalement'
+import { Alert, CreateAlertDTO, OpenAPI } from './api/signalement'
 import { SourcePage } from './pages/SourcePage'
 import { AdresseSearchPage } from './pages/AdresseSearchPage'
 import GlobalStyle from './globalStyles'
@@ -131,7 +131,7 @@ const router = createHashRouter([
             type: 'Point',
             coordinates: [lng, lat],
           },
-          type: (type as CreateAlertDTO['type']) || '',
+          type: Alert.type.MISSING_ADDRESS,
           comment: comment || '',
         },
       }

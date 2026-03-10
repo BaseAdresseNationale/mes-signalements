@@ -8,16 +8,16 @@ export const StyledBrowserTabWrapper = styled.div`
 
   .header {
     display: flex;
-    justify-content: center;
-    box-shadow: 0 2px 6px 0 rgba(0, 0, 18, 16%);
-    padding: 5px 0;
+    justify-content: flex-end;
+    padding: 5px;
   }
 
   .signalement-list {
-    overflow-y: scroll;
+    overflow-y: auto;
     flex: 1;
+    min-height: 0;
     list-style-type: none;
-    padding: 0;
+    padding: 0 0 39px 0;
     margin: 0;
     li {
       padding: 10px;
@@ -32,5 +32,12 @@ export const StyledBrowserTabWrapper = styled.div`
         margin: 2px 0;
       }
     }
+  }
+
+  .pagination {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    border-top: 1px solid #ccc;
   }
 `

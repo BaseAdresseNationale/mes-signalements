@@ -3,10 +3,19 @@ import { SignalementTab } from './SignalementTab'
 import { Tabs } from '@codegouvfr/react-dsfr/Tabs'
 import { AlertTab } from './AlertTab'
 import { AlertBrowserFilter, SignalementBrowserFilter } from './types'
+import styled from 'styled-components'
 
 interface SignalementBrowserProps {
   fromSource?: { value: string; label: string }
 }
+
+const StyledTabs = styled(Tabs)`
+  height: 100%;
+  .fr-tabs__panel {
+    height: 100%;
+    padding: 0;
+  }
+`
 
 export function SignalementBrowser({ fromSource }: SignalementBrowserProps) {
   const hideSourceFilter = !!fromSource
@@ -18,7 +27,7 @@ export function SignalementBrowser({ fromSource }: SignalementBrowserProps) {
   }
 
   return (
-    <Tabs
+    <StyledTabs
       tabs={[
         {
           label: 'Signalements',

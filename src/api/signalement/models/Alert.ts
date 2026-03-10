@@ -22,8 +22,6 @@ export type Alert = {
 export namespace Alert {
     export enum type {
         MISSING_ADDRESS = 'MISSING_ADDRESS',
-        ROAD_PROBLEM = 'ROAD_PROBLEM',
-        OTHER = 'OTHER',
     }
     export enum status {
         PENDING = 'PENDING',

@@ -71,6 +71,8 @@ export function MapLayout({ children }: MapLayoutProps) {
     setShowCadastre,
     adresseSearchMapLayersOptions,
     signalementSearchMapLayerOptions,
+    mapMessage,
+    setMapMessage,
   } = useContext(MapContext)
   const { searchRef, drawerRef } = useContext(LayoutContext)
 
@@ -134,13 +136,37 @@ export function MapLayout({ children }: MapLayoutProps) {
             position='top-right'
           />
           <CreateAdresseButton position='top-right' navigate={navigate} />
-          <CreateAlertButton position='top-right' navigate={navigate} />
+          <CreateAlertButton
+            position='top-right'
+            navigate={navigate}
+            setMapMessage={setMapMessage}
+          />
           <StylesSwitch
             styles={mapStyles as [MaplibreStyleDefinition, MaplibreStyleDefinition]}
             position='bottom-right'
           />
         </Map>
         <AdresseSearch ref={searchRef} />
+        {mapMessage && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 16,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 3,
+              background: 'rgba(0, 0, 0, 0.7)',
+              color: 'white',
+              padding: '8px 16px',
+              borderRadius: 8,
+              fontSize: 14,
+              fontWeight: 500,
+              pointerEvents: 'none',
+            }}
+          >
+            {mapMessage}
+          </div>
+        )}
         <Drawer ref={drawerRef} onClose={handleCloseDrawer}>
           {navigation.state === 'loading' ? (
             <div className='loader-wrapper'>

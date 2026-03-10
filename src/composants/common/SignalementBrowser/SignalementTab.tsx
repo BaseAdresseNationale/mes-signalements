@@ -177,6 +177,7 @@ export function SignalementTab({ initialFilter, hideSourceFilter }: SignalementT
             ))}
           </ul>
           <Pagination
+            className='pagination'
             count={Math.ceil(paginatedSignalements.total / PAGE_SIZE)}
             currentPage={currentPage}
             onPageChange={(page) => {

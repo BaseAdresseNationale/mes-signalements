@@ -25,7 +25,7 @@ export class AlertsService {
         limit?: number,
         page?: number,
         status?: Array<'PENDING' | 'IGNORED' | 'PROCESSED' | 'EXPIRED'>,
-        types?: Array<'MISSING_ADDRESS' | 'ROAD_PROBLEM' | 'OTHER'>,
+        types?: Array<'MISSING_ADDRESS'>,
         sourceIds?: Array<string>,
         codeCommunes?: Array<string>,
     ): CancelablePromise<PaginatedAlertsDTO> {

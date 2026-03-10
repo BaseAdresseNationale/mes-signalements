@@ -14,8 +14,6 @@ export type CreateAlertDTO = {
 export namespace CreateAlertDTO {
     export enum type {
         MISSING_ADDRESS = 'MISSING_ADDRESS',
-        ROAD_PROBLEM = 'ROAD_PROBLEM',
-        OTHER = 'OTHER',
     }
 }
 

@@ -41,6 +41,7 @@ type CreateAlertButtonProps = {
   position?: ControlPosition
   navigate: (path: string, params?: Record<string, string>) => void
   isActive?: boolean
+  setMapMessage: React.Dispatch<React.SetStateAction<string | null>>
 }
 
 export class CreateAlertButtonControl implements IControl {
@@ -65,6 +66,7 @@ export class CreateAlertButtonControl implements IControl {
   private displayedDir = -1
 
   // Placement mode (click-to-place)
+  private boundEnterPlacementMode: ((e: Event) => void) | null = null
   private isPlacementMode = false
   private boundPlacementMouseMove: ((e: MouseEvent) => void) | null = null
   private boundPlacementMouseDown: ((e: MouseEvent) => void) | null = null
@@ -95,6 +97,15 @@ export class CreateAlertButtonControl implements IControl {
     buttonElement.addEventListener('touchstart', (e) => this.onTouchStart(e))
 
     this.controlContainer.appendChild(buttonElement)
+
+    // Listen for custom event to enter placement mode from outside
+    this.boundEnterPlacementMode = () => {
+      if (!this.isPlacementMode && this.buttonElement) {
+        const rect = this.buttonElement.getBoundingClientRect()
+        this.enterPlacementMode(rect.left + rect.width / 2, rect.top + rect.height / 2)
+      }
+    }
+    document.addEventListener('enter-placement-mode', this.boundEnterPlacementMode)
 
     if (this.props.isActive) {
       this.setActive(true)
@@ -199,6 +210,7 @@ export class CreateAlertButtonControl implements IControl {
   private enterPlacementMode(x: number, y: number) {
     this.createGhost(x, y)
     this.isPlacementMode = true
+    this.props.setMapMessage('Positionnez le drapeau sur la carte')
 
     // Mouse listeners
     this.boundPlacementMouseMove = (ev: MouseEvent) => {
@@ -281,6 +293,7 @@ export class CreateAlertButtonControl implements IControl {
       this.boundPlacementKeyDown = null
     }
     this.isPlacementMode = false
+    this.props.setMapMessage(null)
     document.body.classList.remove('alert-placing')
   }
 
@@ -473,6 +486,10 @@ export class CreateAlertButtonControl implements IControl {
 
   public onRemove(): void {
     this.cleanupDrag()
+    if (this.boundEnterPlacementMode) {
+      document.removeEventListener('enter-placement-mode', this.boundEnterPlacementMode)
+      this.boundEnterPlacementMode = null
+    }
     if (!this.controlContainer || !this.controlContainer.parentNode || !this.map) {
       return
     }
@@ -481,14 +498,14 @@ export class CreateAlertButtonControl implements IControl {
   }
 }
 
-export function CreateAlertButton({ position, navigate }: CreateAlertButtonProps) {
+export function CreateAlertButton({ position, navigate, setMapMessage }: CreateAlertButtonProps) {
   const controlRef = useRef<CreateAlertButtonControl | null>(null)
   const location = useLocation()
   const isActive = location.pathname === '/alert'
 
   useControl(
     () => {
-      const ctrl = new CreateAlertButtonControl({ navigate, isActive })
+      const ctrl = new CreateAlertButtonControl({ navigate, isActive, setMapMessage })
       controlRef.current = ctrl
       return ctrl
     },

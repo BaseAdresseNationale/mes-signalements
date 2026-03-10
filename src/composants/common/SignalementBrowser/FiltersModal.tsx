@@ -64,14 +64,6 @@ export const alertFilterTypesOptions: SelectOptionType<Alert.type>[] = [
     label: getAlertTypeLabel(Alert.type.MISSING_ADDRESS),
     value: Alert.type.MISSING_ADDRESS,
   },
-  {
-    label: getAlertTypeLabel(Alert.type.ROAD_PROBLEM),
-    value: Alert.type.ROAD_PROBLEM,
-  },
-  {
-    label: getAlertTypeLabel(Alert.type.OTHER),
-    value: Alert.type.OTHER,
-  },
 ]
 
 const StyledForm = styled.form`
