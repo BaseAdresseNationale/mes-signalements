@@ -114,6 +114,7 @@ const router = createHashRouter([
       const lng = Number(url.searchParams.get('lng'))
       const type = url.searchParams.get('type')
       const comment = url.searchParams.get('comment')
+      const idRNB = url.searchParams.get('idRNB')
 
       if (!lat || isNaN(lat) || !lng || isNaN(lng)) {
         console.error('Invalid position format in search params:', { lat, lng })
@@ -133,6 +134,9 @@ const router = createHashRouter([
           },
           type: Alert.type.MISSING_ADDRESS,
           comment: comment || '',
+          context: {
+            idRNB,
+          },
         },
       }
     },

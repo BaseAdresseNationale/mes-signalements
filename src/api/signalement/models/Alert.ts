@@ -4,6 +4,7 @@
 /* eslint-disable */
 import type { Author } from './Author';
 import type { Client } from './Client';
+import type { MissingAddressContext } from './MissingAddressContext';
 import type { Source } from './Source';
 export type Alert = {
     id: string;
@@ -17,6 +18,7 @@ export type Alert = {
     author?: Author | null;
     status: Alert.status;
     source: Source;
+    context?: MissingAddressContext | null;
     processedBy?: Client | null;
 };
 export namespace Alert {

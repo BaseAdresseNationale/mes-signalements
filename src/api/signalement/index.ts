@@ -25,6 +25,7 @@ export { ExistingLocation } from './models/ExistingLocation';
 export { ExistingNumero } from './models/ExistingNumero';
 export { ExistingToponyme } from './models/ExistingToponyme';
 export { ExistingVoie } from './models/ExistingVoie';
+export type { MissingAddressContext } from './models/MissingAddressContext';
 export type { NumeroChangesRequestedDTO } from './models/NumeroChangesRequestedDTO';
 export type { PaginatedAlertsDTO } from './models/PaginatedAlertsDTO';
 export type { PaginatedSignalementsDTO } from './models/PaginatedSignalementsDTO';
@@ -41,6 +42,7 @@ export type { VoieChangesRequestedDTO } from './models/VoieChangesRequestedDTO';
 
 export { AlertsService } from './services/AlertsService';
 export { ClientsService } from './services/ClientsService';
+export { ReportsService } from './services/ReportsService';
 export { SettingsService } from './services/SettingsService';
 export { SignalementsService } from './services/SignalementsService';
 export { SourcesService } from './services/SourcesService';
