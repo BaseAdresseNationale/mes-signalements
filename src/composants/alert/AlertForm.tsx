@@ -39,7 +39,7 @@ export default function AlertForm({ alert, onEdit, codeCommune }: AlertFormProps
     event.preventDefault()
     setSubmitStatus('loading')
     try {
-      await AlertsService.createAlert({ ...alert, codeCommune })
+      await AlertsService.createAlert({ ...alert, codeCommune }, source?.id)
       reloadAPISignalementTiles()
       setSubmitStatus('success')
       setTimeout(() => {
