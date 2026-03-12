@@ -2,15 +2,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { Alert } from './Alert';
-import type { Signalement } from './Signalement';
+import type { Report } from './Report';
 export type Client = {
     id: string;
     createdAt: string;
     updatedAt: string;
     deletedAt?: string | null;
     nom: string;
-    processedSignalements?: Array<Signalement> | null;
-    processedAlerts?: Array<Alert> | null;
+    processedReports?: Array<Report> | null;
 };
 

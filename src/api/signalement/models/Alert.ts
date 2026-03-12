@@ -14,12 +14,14 @@ export type Alert = {
     codeCommune: string;
     nomCommune?: string | null;
     type: Alert.type;
-    point: Record<string, any>;
     author?: Author | null;
     status: Alert.status;
+    point: Record<string, any>;
     source: Source;
-    context?: MissingAddressContext | null;
     processedBy?: Client | null;
+    reportKind: Alert.reportKind;
+    comment: string;
+    context?: MissingAddressContext | null;
 };
 export namespace Alert {
     export enum type {
@@ -30,6 +32,10 @@ export namespace Alert {
         IGNORED = 'IGNORED',
         PROCESSED = 'PROCESSED',
         EXPIRED = 'EXPIRED',
+    }
+    export enum reportKind {
+        ALERT = 'alert',
+        SIGNALEMENT = 'signalement',
     }
 }
 

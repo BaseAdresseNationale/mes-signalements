@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { PaginatedReportsDTO } from '../models/PaginatedReportsDTO';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { OpenAPI } from '../core/OpenAPI';
 import { request as __request } from '../core/request';
@@ -14,7 +15,7 @@ export class ReportsService {
      * @param status
      * @param sourceIds
      * @param codeCommunes
-     * @returns any
+     * @returns PaginatedReportsDTO
      * @throws ApiError
      */
     public static getReports(
@@ -24,7 +25,7 @@ export class ReportsService {
         status?: Array<'PENDING' | 'IGNORED' | 'PROCESSED' | 'EXPIRED'>,
         sourceIds?: Array<string>,
         codeCommunes?: Array<string>,
-    ): CancelablePromise<any> {
+    ): CancelablePromise<PaginatedReportsDTO> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/reports',
