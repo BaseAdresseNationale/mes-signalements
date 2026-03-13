@@ -8,17 +8,13 @@ export const SignalementTypeWrapper = styled.div`
 `
 
 export const StyledForm = styled.form`
+  padding: 0 4px;
   position: relative;
   display: flex;
   flex-direction: column;
   max-width: unset !important;
   margin: unset !important;
   overflow: scroll;
-
-  input,
-  textarea {
-    outline: none;
-  }
 
   section:not(:first-of-type) {
     margin-top: 2em;

@@ -14,11 +14,17 @@ interface PaginationProps {
   count: number
   currentPage: number
   onPageChange: (page: number) => void
+  className?: string
 }
 
-export default function Pagination({ count, currentPage, onPageChange }: PaginationProps) {
+export default function Pagination({
+  count,
+  currentPage,
+  onPageChange,
+  className,
+}: PaginationProps) {
   return (
-    <StyledWrapper>
+    <StyledWrapper className={className}>
       <Button
         iconId='fr-icon-arrow-left-s-first-line'
         onClick={() => onPageChange(1)}

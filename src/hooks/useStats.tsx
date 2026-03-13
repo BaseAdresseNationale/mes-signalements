@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Signalement, SignalementStatsDTO, StatsService } from '../api/signalement'
+import { CombinedStatsDTO, Signalement, StatsService } from '../api/signalement'
 
 type SunburstData = {
   name: string
@@ -7,11 +7,42 @@ type SunburstData = {
   children?: SunburstData[]
 }
 
+type ChartData = {
+  children: SunburstData[]
+}
+
+type StatusKey = Signalement.status
+
+type StatByStatus = Record<StatusKey, number>
+
+type StatsGroupRaw = {
+  total?: number | string
+  fromSources?: Record<string, Record<string, number | string>>
+  processedBy?: Record<string, Record<string, number | string>>
+}
+
+type StatsOutput = {
+  total: number
+  totalPending: number
+  totalIgnored: number
+  totalProcessed: number
+  totalExpired: number
+  sourceChartData: ChartData
+  clientChartData: ChartData
+}
+
 const labelMap = {
   [Signalement.status.PENDING]: 'En attente',
   [Signalement.status.PROCESSED]: 'Traités',
   [Signalement.status.IGNORED]: 'Ignorés',
   [Signalement.status.EXPIRED]: 'Expirés',
+}
+
+const emptyTotals: StatByStatus = {
+  [Signalement.status.PENDING]: 0,
+  [Signalement.status.IGNORED]: 0,
+  [Signalement.status.PROCESSED]: 0,
+  [Signalement.status.EXPIRED]: 0,
 }
 
 const getChildren = (data?: Record<string, any>): SunburstData[] => {
@@ -35,8 +66,62 @@ const getChildren = (data?: Record<string, any>): SunburstData[] => {
   })
 }
 
+const normalizeNumber = (value: number | string | undefined): number => {
+  if (typeof value === 'number') {
+    return value
+  }
+
+  if (typeof value === 'string') {
+    return parseInt(value, 10) || 0
+  }
+
+  return 0
+}
+
+const computeTotals = (
+  fromSources?: Record<string, Record<string, number | string>>,
+): StatByStatus => {
+  if (!fromSources) {
+    return { ...emptyTotals }
+  }
+
+  return Object.values(fromSources).reduce<StatByStatus>(
+    (acc, source) => {
+      Object.entries(source).forEach(([status, count]) => {
+        if (status in acc) {
+          acc[status as StatusKey] = acc[status as StatusKey] + normalizeNumber(count)
+        }
+      })
+      return acc
+    },
+    { ...emptyTotals },
+  )
+}
+
+const buildStats = (group?: StatsGroupRaw): StatsOutput | null => {
+  if (!group) {
+    return null
+  }
+
+  const totals = computeTotals(group.fromSources)
+  return {
+    total: normalizeNumber(group.total),
+    totalPending: totals[Signalement.status.PENDING],
+    totalIgnored: totals[Signalement.status.IGNORED],
+    totalProcessed: totals[Signalement.status.PROCESSED],
+    totalExpired: totals[Signalement.status.EXPIRED],
+    sourceChartData: {
+      children: getChildren(group.fromSources),
+    },
+    clientChartData: {
+      children: getChildren(group.processedBy),
+    },
+  }
+}
+
 export function useStats() {
-  const [rawStats, setRawStats] = useState<SignalementStatsDTO | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [rawStats, setRawStats] = useState<CombinedStatsDTO | null>(null)
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -45,55 +130,23 @@ export function useStats() {
         setRawStats(stats)
       } catch (error) {
         console.error('Error fetching stats:', error)
+      } finally {
+        setIsLoading(false)
       }
     }
 
     fetchStats()
   }, [])
 
-  const totals = useMemo(() => {
-    if (!rawStats) return null
-
-    return Object.values(rawStats.fromSources).reduce(
-      (acc, source) => {
-        Object.entries(source).forEach(([status, count]) => {
-          if (!acc[status]) {
-            acc[status] = 0
-          }
-
-          acc[status] += parseInt(count as string, 10)
-        })
-        return acc
-      },
-      {} as Record<Signalement.status, number>,
-    )
-  }, [rawStats])
-
-  const sourceChartData = useMemo(
-    () => ({
-      children: getChildren(rawStats?.fromSources),
-    }),
+  const signalementStats = useMemo(
+    () => buildStats(rawStats?.signalementStats as StatsGroupRaw | undefined),
     [rawStats],
   )
 
-  const clientChartData = useMemo(
-    () => ({
-      children: getChildren(rawStats?.processedBy),
-    }),
+  const alertStats = useMemo(
+    () => buildStats(rawStats?.alertStats as StatsGroupRaw | undefined),
     [rawStats],
   )
 
-  const stats = rawStats
-    ? {
-        total: rawStats.total,
-        totalPending: totals ? totals[Signalement.status.PENDING] : 0,
-        totalIgnored: totals ? totals[Signalement.status.IGNORED] : 0,
-        totalProcessed: totals ? totals[Signalement.status.PROCESSED] : 0,
-        totalExpired: totals ? totals[Signalement.status.EXPIRED] : 0,
-        sourceChartData,
-        clientChartData,
-      }
-    : null
-
-  return stats
+  return { signalementStats, alertStats, isLoading }
 }
