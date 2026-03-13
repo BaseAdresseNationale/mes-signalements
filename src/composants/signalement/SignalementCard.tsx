@@ -34,10 +34,13 @@ export default function SignalementCard({ signalement }: SignalementCardProps) {
         {getSignalementTypeLabel(signalement.type)}
       </Badge>
       <p>{getSignalementLabel(signalement)}</p>
-      <p>Créé le {new Date(signalement.createdAt).toLocaleDateString()}</p>
+      <p>
+        <b>Créé le</b> {new Date(signalement.createdAt).toLocaleDateString()} via{' '}
+        {signalement.source.nom}
+      </p>
       {signalement.processedBy && (
         <p>
-          {signalement.status === Signalement.status.PROCESSED ? 'Accepté' : 'Refusé'} le{' '}
+          <b>{signalement.status === Signalement.status.PROCESSED ? 'Accepté' : 'Refusé'} le</b>{' '}
           {new Date(signalement.updatedAt).toLocaleDateString()} via {signalement.processedBy.nom}
         </p>
       )}

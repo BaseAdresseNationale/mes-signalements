@@ -29,12 +29,29 @@ export default function AlertCard({ alert }: AlertCardProps) {
       >
         {getAlertTypeLabel(alert.type)}
       </Badge>
-      <p>Créé le {new Date(alert.createdAt).toLocaleDateString()}</p>
+      <p>
+        {alert.nomCommune} ({alert.codeCommune})
+      </p>
+      <p>
+        <b>Déposée le</b> {new Date(alert.createdAt).toLocaleDateString()} via {alert.source.nom}
+      </p>
       {alert.processedBy && (
-        <p>
-          {alert.status === Alert.status.PROCESSED ? 'Accepté' : 'Refusé'} le{' '}
-          {new Date(alert.updatedAt).toLocaleDateString()} via {alert.processedBy.nom}
-        </p>
+        <>
+          <p>
+            <b>{alert.status === Alert.status.PROCESSED ? 'Acceptée' : 'Refusée'} le</b>{' '}
+            {new Date(alert.updatedAt).toLocaleDateString()} via {alert.processedBy.nom}
+          </p>
+          {alert.status === Alert.status.PROCESSED && alert.context?.createdAddress?.label && (
+            <p>
+              <b>Adresse créée</b> : {alert.context.createdAddress.label}
+            </p>
+          )}
+          {alert.status === Alert.status.IGNORED && alert.rejectionReason && (
+            <p>
+              <b>Raison du refus</b> : {alert.rejectionReason}
+            </p>
+          )}
+        </>
       )}
     </StyledAlertCard>
   )

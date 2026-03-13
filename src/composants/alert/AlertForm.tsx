@@ -3,7 +3,7 @@ import { StyledForm } from '../signalement/signalement.styles'
 import Input from '@codegouvfr/react-dsfr/Input'
 import { useFriendlyCaptcha } from '../../hooks/useFriendlyCaptcha'
 import Button from '@codegouvfr/react-dsfr/Button'
-import { AlertsService, CreateAlertDTO, Source } from '../../api/signalement'
+import { AlertsService, CreateAlertDTO, Signalement, Source } from '../../api/signalement'
 import { getAlertTypeLabel } from '../../utils/alert.utils'
 import SourceContext from '../../contexts/source.context'
 import { Select } from '@codegouvfr/react-dsfr/Select'
@@ -57,6 +57,22 @@ export default function AlertForm({ alert, onEdit, codeCommune }: AlertFormProps
         <div className='form-row'>
           <Select
             label="Type d'alerte*"
+            hint={
+              <>
+                Si vous connaissez l&apos;adresse exacte à créer, rendez-vous{' '}
+                <button
+                  className='fr-link'
+                  type='button'
+                  onClick={() =>
+                    navigate(`/${codeCommune}`, {
+                      type: Signalement.type.LOCATION_TO_CREATE,
+                    })
+                  }
+                >
+                  ici
+                </button>
+              </>
+            }
             nativeSelectProps={{
               required: true,
               name: 'type',
