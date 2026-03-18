@@ -18,6 +18,7 @@ import { StatsPage } from './pages/StatsPage'
 import { GlobalLayout } from './layouts/GlobalLayout'
 
 import 'maplibre-gl/dist/maplibre-gl.css'
+import { ProconnectCallbackPage } from './pages/ProconnectCallbackPage'
 
 startReactDsfr({ defaultColorScheme: 'light' })
 
@@ -154,6 +155,30 @@ const router = createHashRouter([
     element: (
       <GlobalLayout baseLayout>
         <StatsPage />
+      </GlobalLayout>
+    ),
+  },
+  {
+    path: '/proconnect-callback',
+    loader: async ({ request }) => {
+      const url = new URL(request.url)
+      const sourceToken = Number(url.searchParams.get('sourceToken'))
+      const lastName = url.searchParams.get('lastName')
+      const firstName = url.searchParams.get('firstName')
+      const email = url.searchParams.get('email')
+
+      return {
+        sourceToken,
+        author: {
+          lastName: lastName || '',
+          firstName: firstName || '',
+          email: email || '',
+        },
+      }
+    },
+    element: (
+      <GlobalLayout>
+        <ProconnectCallbackPage />
       </GlobalLayout>
     ),
   },
