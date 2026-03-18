@@ -162,7 +162,7 @@ const router = createHashRouter([
     path: '/proconnect-callback',
     loader: async ({ request }) => {
       const url = new URL(request.url)
-      const sourceToken = Number(url.searchParams.get('sourceToken'))
+      const sourceToken = url.searchParams.get('sourceToken')
       const lastName = url.searchParams.get('lastName')
       const firstName = url.searchParams.get('firstName')
       const email = url.searchParams.get('email')
