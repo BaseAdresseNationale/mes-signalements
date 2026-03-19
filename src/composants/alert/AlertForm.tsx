@@ -40,9 +40,9 @@ export default function AlertForm({ alert, onEdit, codeCommune }: AlertFormProps
     setSubmitStatus('loading')
     try {
       await AlertsService.createAlert({ ...alert, codeCommune }, source?.id)
-      reloadAPISignalementTiles()
       setSubmitStatus('success')
       setTimeout(() => {
+        reloadAPISignalementTiles()
         navigate('/')
       }, 3000)
     } catch (error) {
