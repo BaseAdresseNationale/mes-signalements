@@ -25,6 +25,7 @@
     "@types/react-dom": "^18.0.0",
     "downshift": "^9.3.2",
     "express": "^4.19.2",
+    "focus-trap": "^8.0.0",
     "friendly-challenge": "^0.9.16",
     "maplibre-gl": "^4.3.2",
     "react": "^18.3.1",

@@ -1,27 +1,23 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import reportWebVitals from './reportWebVitals'
-import { RouterProvider, createHashRouter } from 'react-router-dom'
-import { MapLayout } from './layouts/MapLayout'
+import { RouterProvider, createHashRouter, redirect } from 'react-router-dom'
 import { lookup } from './api/ban-plateforme'
 import { SignalementPage } from './pages/SignalementPage'
-import { OpenAPI } from './api/signalement'
-
-import 'maplibre-gl/dist/maplibre-gl.css'
+import { Alert, CreateAlertDTO, OpenAPI } from './api/signalement'
 import { SourcePage } from './pages/SourcePage'
-import { MapContextProvider } from './contexts/map.context'
 import { AdresseSearchPage } from './pages/AdresseSearchPage'
 import GlobalStyle from './globalStyles'
-import { SourceContextProvider } from './contexts/source.context'
-import { SignalementContextProvider } from './contexts/signalement.context'
 import { startReactDsfr } from '@codegouvfr/react-dsfr/spa'
-import { SignalementViewerContextProvider } from './contexts/signalement-viewer.context'
 import { AllPage } from './pages/AllPage'
 import { CreateAdressePage } from './pages/CreateAdressePage'
-import { LayoutContextProvider } from './contexts/layout.context'
 import * as Sentry from '@sentry/react'
-import { useMatomoTracking } from './hooks/useMatomoTracking'
 import { AdvancedSearchPage } from './pages/AdvancedSearchPage'
+import { AlertPage } from './pages/AlertPage'
+import { StatsPage } from './pages/StatsPage'
+import { GlobalLayout } from './layouts/GlobalLayout'
+
+import 'maplibre-gl/dist/maplibre-gl.css'
 
 startReactDsfr({ defaultColorScheme: 'light' })
 
@@ -49,26 +45,6 @@ if (!API_SIGNALEMENNT_SOURCE_ID) {
 Object.assign(OpenAPI, {
   BASE: API_SIGNALEMENT_URL,
 })
-
-const GlobalLayout = (props: { children: React.ReactNode }) => {
-  const { children } = props
-
-  useMatomoTracking()
-
-  return (
-    <MapContextProvider>
-      <LayoutContextProvider>
-        <SourceContextProvider>
-          <SignalementContextProvider>
-            <SignalementViewerContextProvider>
-              <MapLayout>{children}</MapLayout>
-            </SignalementViewerContextProvider>
-          </SignalementContextProvider>
-        </SourceContextProvider>
-      </LayoutContextProvider>
-    </MapContextProvider>
-  )
-}
 
 const router = createHashRouter([
   {
@@ -118,7 +94,7 @@ const router = createHashRouter([
     ),
   },
   {
-    path: '/create',
+    path: '/create-adresse',
     element: (
       <GlobalLayout>
         <CreateAdressePage />
@@ -126,10 +102,58 @@ const router = createHashRouter([
     ),
   },
   {
+    path: '/alert',
+    element: (
+      <GlobalLayout>
+        <AlertPage />
+      </GlobalLayout>
+    ),
+    loader: ({ request }) => {
+      const url = new URL(request.url)
+      const lat = Number(url.searchParams.get('lat'))
+      const lng = Number(url.searchParams.get('lng'))
+      const type = url.searchParams.get('type')
+      const comment = url.searchParams.get('comment')
+      const idRNB = url.searchParams.get('idRNB')
+
+      if (!lat || isNaN(lat) || !lng || isNaN(lng)) {
+        console.error('Invalid position format in search params:', { lat, lng })
+        return redirect('/')
+      }
+
+      if (type && !Object.values(CreateAlertDTO['type']).includes(type as CreateAlertDTO['type'])) {
+        console.error('Invalid type format in search params:', type)
+        return redirect('/')
+      }
+
+      return {
+        initialAlert: {
+          point: {
+            type: 'Point',
+            coordinates: [lng, lat],
+          },
+          type: Alert.type.MISSING_ADDRESS,
+          comment: comment || '',
+          context: {
+            idRNB,
+          },
+        },
+      }
+    },
+  },
+  {
     path: '/advanced-search',
     element: (
       <GlobalLayout>
         <AdvancedSearchPage />
+      </GlobalLayout>
+    ),
+  },
+  {
+    path: '/stats',
+    element: (
+      <GlobalLayout baseLayout>
+        <StatsPage />
       </GlobalLayout>
     ),
   },

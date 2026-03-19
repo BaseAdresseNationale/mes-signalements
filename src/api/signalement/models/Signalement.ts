@@ -21,13 +21,14 @@ export type Signalement = {
     nomCommune?: string | null;
     type: Signalement.type;
     author?: Author | null;
-    existingLocation?: (ExistingNumero | ExistingVoie | ExistingToponyme) | null;
-    changesRequested: (NumeroChangesRequestedDTO | DeleteNumeroChangesRequestedDTO | ToponymeChangesRequestedDTO | VoieChangesRequestedDTO);
-    status?: Signalement.status | null;
+    status: Signalement.status;
+    point: Record<string, any>;
     source: Source;
     processedBy?: Client | null;
     rejectionReason?: string;
-    point: Record<string, any>;
+    reportKind: Signalement.reportKind;
+    existingLocation?: (ExistingNumero | ExistingVoie | ExistingToponyme) | null;
+    changesRequested: (NumeroChangesRequestedDTO | DeleteNumeroChangesRequestedDTO | ToponymeChangesRequestedDTO | VoieChangesRequestedDTO);
 };
 export namespace Signalement {
     export enum type {
@@ -40,6 +41,10 @@ export namespace Signalement {
         IGNORED = 'IGNORED',
         PROCESSED = 'PROCESSED',
         EXPIRED = 'EXPIRED',
+    }
+    export enum reportKind {
+        ALERT = 'alert',
+        SIGNALEMENT = 'signalement',
     }
 }
 

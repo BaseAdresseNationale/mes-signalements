@@ -1,15 +1,16 @@
 import React, { useState } from 'react'
 import Modal from '../Modal'
 import { MuiSelectInput, SelectOptionType } from '../MuiSelectInput'
-import { Signalement } from '../../../api/signalement'
-import { SignalementBrowserFilter } from '.'
+import { Alert, Signalement } from '../../../api/signalement'
+import { BrowserFilter } from './types'
 import styled from 'styled-components'
 import Button from '@codegouvfr/react-dsfr/Button'
 import { MuiAsyncSelectInput } from '../MuiAsyncSelectInput'
 import { search as searchAPIAdresse } from '../../../api/api-adresse'
 import { APIAdressePropertyType } from '../../../api/api-adresse/types'
+import { getAlertTypeLabel } from '../../../utils/alert.utils'
 
-export const filterStatusOptions = [
+export const signalementFilterStatusOptions: SelectOptionType<Signalement.status>[] = [
   {
     label: 'En cours',
     value: Signalement.status.PENDING,
@@ -24,7 +25,7 @@ export const filterStatusOptions = [
   },
 ]
 
-export const filterTypesOptions = [
+export const signalementFilterTypesOptions: SelectOptionType<Signalement.type>[] = [
   {
     label: 'Modification',
     value: Signalement.type.LOCATION_TO_UPDATE,
@@ -36,6 +37,32 @@ export const filterTypesOptions = [
   {
     label: 'Suppression',
     value: Signalement.type.LOCATION_TO_DELETE,
+  },
+]
+
+export const alertFilterStatusOptions: SelectOptionType<Alert.status>[] = [
+  {
+    label: 'En cours',
+    value: Alert.status.PENDING,
+  },
+  {
+    label: 'Acceptées',
+    value: Alert.status.PROCESSED,
+  },
+  {
+    label: 'Refusées',
+    value: Alert.status.IGNORED,
+  },
+  {
+    label: 'Expirées',
+    value: Alert.status.EXPIRED,
+  },
+]
+
+export const alertFilterTypesOptions: SelectOptionType<Alert.type>[] = [
+  {
+    label: getAlertTypeLabel(Alert.type.MISSING_ADDRESS),
+    value: Alert.type.MISSING_ADDRESS,
   },
 ]
 
@@ -51,22 +78,32 @@ const StyledForm = styled.form`
   }
 `
 
-interface FiltersModalProps {
-  filters: SignalementBrowserFilter
+interface FiltersModalProps<TType extends string, TStatus extends string> {
+  filters: BrowserFilter<TType, TStatus>
   onClose: () => void
-  onSubmit: (newFilters: SignalementBrowserFilter) => void
+  onSubmit: (newFilters: BrowserFilter<TType, TStatus>) => void
   onReset?: () => void
   sourceOptions?: SelectOptionType<string>[]
+  title?: string
+  statusOptions: SelectOptionType<TStatus>[]
+  typeOptions: SelectOptionType<TType>[]
+  sourceHint?: string
+  communeHint?: string
 }
 
-export function FiltersModal({
+export function FiltersModal<TType extends string, TStatus extends string>({
   filters,
   onClose,
   onSubmit,
   onReset,
   sourceOptions,
-}: FiltersModalProps) {
-  const [value, setValue] = useState(filters)
+  title = 'Filtrer',
+  statusOptions,
+  typeOptions,
+  sourceHint,
+  communeHint,
+}: Readonly<FiltersModalProps<TType, TStatus>>) {
+  const [value, setValue] = useState<BrowserFilter<TType, TStatus>>(filters)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -75,34 +112,34 @@ export function FiltersModal({
   }
 
   return (
-    <Modal onClose={onClose} title='Filtrer les signalements' style={{ width: 600 }}>
+    <Modal onClose={onClose} title={title} style={{ width: 600 }}>
       <StyledForm onSubmit={handleSubmit}>
         <MuiSelectInput
           isMultiSelect
           label='Statuts'
           value={value.status}
-          options={filterStatusOptions}
+          options={statusOptions}
           onChange={(newValue) =>
-            setValue((prev: SignalementBrowserFilter) => ({
+            setValue((prev) => ({
               ...prev,
-              status: newValue as SelectOptionType<Signalement.status>[],
+              status: newValue as SelectOptionType<TStatus>[],
             }))
           }
-          hint={filterStatusOptions.map((option) => option.label).join(', ')}
+          hint={statusOptions.map((option) => option.label).join(', ')}
         />
 
         <MuiSelectInput
           isMultiSelect
           label='Types'
           value={value.types}
-          options={filterTypesOptions}
+          options={typeOptions}
           onChange={(newValue) =>
-            setValue((prev: SignalementBrowserFilter) => ({
+            setValue((prev) => ({
               ...prev,
-              types: newValue as SelectOptionType<Signalement.type>[],
+              types: newValue as SelectOptionType<TType>[],
             }))
           }
-          hint={filterTypesOptions.map((option) => option.label).join(', ')}
+          hint={typeOptions.map((option) => option.label).join(', ')}
         />
 
         {sourceOptions?.length && sourceOptions.length > 0 ? (
@@ -112,12 +149,12 @@ export function FiltersModal({
             value={value.sources}
             options={sourceOptions}
             onChange={(newValue) =>
-              setValue((prev: SignalementBrowserFilter) => ({
+              setValue((prev) => ({
                 ...prev,
                 sources: newValue as SelectOptionType<string>[],
               }))
             }
-            hint='Sources de provenance des signalements'
+            hint={sourceHint}
           />
         ) : null}
 
@@ -126,7 +163,7 @@ export function FiltersModal({
           isMultiSelect
           value={value.communes}
           onChange={(newValue) =>
-            setValue((prev: SignalementBrowserFilter) => ({
+            setValue((prev) => ({
               ...prev,
               communes: newValue as SelectOptionType<string>[],
             }))
@@ -145,7 +182,7 @@ export function FiltersModal({
               }),
             )
           }}
-          hint='Communes sur lesquelles les signalements ont été effectués'
+          hint={communeHint}
           searchMinLength={3}
         />
 
