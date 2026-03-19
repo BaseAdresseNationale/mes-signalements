@@ -2,7 +2,7 @@ import { ControlPosition, IControl, MapInstance, useControl } from 'react-map-gl
 import { useEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 
-const DRAG_THRESHOLD = 5
+const DRAG_THRESHOLD = 10
 
 // Flag shape: two cubic beziers from pole-top (6,4) to pole-attach (6,22)
 // Each state = [[cp1x,cp1y],[cp2x,cp2y],[tipX,tipY],[cp3x,cp3y],[cp4x,cp4y]]
@@ -118,10 +118,8 @@ export class CreateAlertButtonControl implements IControl {
     if (!this.buttonElement) return
     if (active) {
       this.buttonElement.classList.add('active')
-      this.buttonElement.setAttribute('disabled', 'true')
     } else {
       this.buttonElement.classList.remove('active')
-      this.buttonElement.removeAttribute('disabled')
     }
   }
 
@@ -131,8 +129,11 @@ export class CreateAlertButtonControl implements IControl {
     e.preventDefault()
     e.stopPropagation()
 
-    // Ignore button clicks while in placement mode (document handler will handle drop)
-    if (this.isPlacementMode) return
+    // Exit placement mode if already active
+    if (this.isPlacementMode) {
+      this.animateReturn()
+      return
+    }
 
     this.dragStartX = e.clientX
     this.dragStartY = e.clientY
@@ -169,7 +170,10 @@ export class CreateAlertButtonControl implements IControl {
   private onTouchStart(e: TouchEvent) {
     e.preventDefault()
 
-    if (this.isPlacementMode) return
+    if (this.isPlacementMode) {
+      this.animateReturn()
+      return
+    }
 
     const touch = e.touches[0]
     this.dragStartX = touch.clientX
@@ -211,6 +215,12 @@ export class CreateAlertButtonControl implements IControl {
     this.createGhost(x, y)
     this.isPlacementMode = true
     this.props.setMapMessage('Positionnez le drapeau sur la carte')
+
+    // Switch button icon to close
+    if (this.buttonElement) {
+      this.buttonElement.classList.remove('fr-icon-flag-line', 'create-alert-draggable')
+      this.buttonElement.classList.add('fr-icon-close-line')
+    }
 
     // Mouse listeners
     this.boundPlacementMouseMove = (ev: MouseEvent) => {
@@ -295,6 +305,12 @@ export class CreateAlertButtonControl implements IControl {
     this.isPlacementMode = false
     this.props.setMapMessage(null)
     document.body.classList.remove('alert-placing')
+
+    // Revert button icon to flag
+    if (this.buttonElement) {
+      this.buttonElement.classList.remove('fr-icon-close-line')
+      this.buttonElement.classList.add('fr-icon-flag-line', 'create-alert-draggable')
+    }
   }
 
   // ─── Ghost management ──────────────────────────────────────
