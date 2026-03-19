@@ -11,7 +11,7 @@ interface DrawerProps {
 function _Drawer({ children, onClose }: DrawerProps, ref: React.Ref<HTMLDivElement>) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === 'Escape' && !document.querySelector('[role="dialog"]')) {
         onClose()
       }
     }
