@@ -19,6 +19,7 @@ import { GlobalLayout } from './layouts/GlobalLayout'
 
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { ProconnectCallbackPage } from './pages/ProconnectCallbackPage'
+import { ProconnectLogoutPage } from './pages/ProconnectLogoutPage'
 
 startReactDsfr({ defaultColorScheme: 'light' })
 
@@ -179,6 +180,14 @@ const router = createHashRouter([
     element: (
       <GlobalLayout>
         <ProconnectCallbackPage />
+      </GlobalLayout>
+    ),
+  },
+  {
+    path: '/proconnect-logout',
+    element: (
+      <GlobalLayout>
+        <ProconnectLogoutPage />
       </GlobalLayout>
     ),
   },
