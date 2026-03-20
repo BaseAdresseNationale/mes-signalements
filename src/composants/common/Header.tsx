@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { Source } from '../../api/signalement'
-import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
 import { AuthentificationModal } from '../authentification/AuthentificationModal'
 import { Header as HeaderDSFR } from '@codegouvfr/react-dsfr/Header'
 import SearchMobileButton from './SearchMobileButton'
+import SourcePortal from '../authentification/SourcePortal'
 
 interface HeaderProps {
   customSource?: Source
@@ -11,7 +11,6 @@ interface HeaderProps {
 }
 
 export function Header({ customSource, toggleShowInfo }: HeaderProps) {
-  const { navigate } = useNavigateWithPreservedSearchParams()
   const [showConnectionModal, setShowConnectionModal] = useState(false)
 
   return (
@@ -39,21 +38,17 @@ export function Header({ customSource, toggleShowInfo }: HeaderProps) {
             },
             text: 'Aide',
           },
-          customSource
-            ? {
-                iconId: 'fr-icon-account-circle-fill',
-                buttonProps: {
-                  onClick: () => navigate('/source'),
-                },
-                text: customSource.nom,
-              }
-            : {
-                iconId: 'fr-icon-lock-line',
-                buttonProps: {
-                  onClick: () => setShowConnectionModal(true),
-                },
-                text: 'Se connecter',
+          customSource ? (
+            <SourcePortal source={customSource} />
+          ) : (
+            {
+              iconId: 'fr-icon-lock-line',
+              buttonProps: {
+                onClick: () => setShowConnectionModal(true),
               },
+              text: 'Se connecter',
+            }
+          ),
         ]}
       />
       <SearchMobileButton />

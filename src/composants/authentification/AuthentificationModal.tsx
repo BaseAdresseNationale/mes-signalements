@@ -1,7 +1,9 @@
 import React, { useContext, useState } from 'react'
+import { ProConnectButton } from '@codegouvfr/react-dsfr/ProConnectButton'
 import Modal from '../common/Modal'
 import styled from 'styled-components'
 import SourceContext from '../../contexts/source.context'
+import { OpenAPI } from '../../api/signalement'
 
 const StyledWrapper = styled.form`
   padding: 0 4px;
@@ -46,6 +48,7 @@ export function AuthentificationModal({ onClose }: AuthentificationModal) {
     <Modal title='Connexion' onClose={onClose}>
       <StyledWrapper onSubmit={handleSubmit}>
         <p>Connectez-vous pour accéder à vos signalements.</p>
+        <ProConnectButton url={`${OpenAPI.BASE}/proconnect/login`} />
         <label className='fr-label' htmlFor='nomVoie'>
           Renseignez votre jeton d&apos;accès
         </label>
