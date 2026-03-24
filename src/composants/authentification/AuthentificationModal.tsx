@@ -21,6 +21,26 @@ const StyledWrapper = styled.form`
   .fr-alert {
     margin-top: 20px;
   }
+
+  .separator {
+    display: block;
+    text-align: center;
+    margin: 30px 0;
+    height: 1px;
+    background-color: var(--border-default-grey);
+    position: relative;
+
+    &::before {
+      content: 'Ou';
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: white;
+      padding: 0 12px;
+      font-size: 14px;
+    }
+  }
 `
 
 interface AuthentificationModal {
@@ -49,8 +69,9 @@ export function AuthentificationModal({ onClose }: AuthentificationModal) {
       <StyledWrapper onSubmit={handleSubmit}>
         <p>Connectez-vous pour accéder à vos signalements.</p>
         <ProConnectButton url={`${OpenAPI.BASE}/proconnect/login`} />
+        <div className='separator fr-text--sm' />
         <label className='fr-label' htmlFor='nomVoie'>
-          Renseignez votre jeton d&apos;accès
+          Connectez-vous avec votre jeton d&apos;accès (déprécié)
         </label>
         <input
           className='fr-input'
