@@ -3,7 +3,7 @@ import { Source } from '../../api/signalement'
 import { AuthentificationModal } from '../authentification/AuthentificationModal'
 import { Header as HeaderDSFR } from '@codegouvfr/react-dsfr/Header'
 import SearchMobileButton from './SearchMobileButton'
-import SourcePortal from '../authentification/SourcePortal'
+import SourcePortal from '../authentification/SourceMenu'
 
 interface HeaderProps {
   customSource?: Source

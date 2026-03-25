@@ -1,8 +1,14 @@
 'use client'
 
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import * as focusTrap from 'focus-trap'
+import {
+  getValueFromLocalStorage,
+  LocalStorageKeys,
+  removeValueFromLocalStorage,
+} from '../../../utils/localStorage.utils'
+import { Author, OpenAPI } from '../../../api/signalement'
 
 const Popover = styled.div`
   position: fixed;
@@ -32,28 +38,6 @@ const UserEmail = styled.div`
   word-break: break-word;
 `
 
-const UserOrganization = styled.div`
-  font-size: 0.75rem;
-  color: var(--text-default-grey);
-  margin-top: 0.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-weight: 500;
-
-  &::before {
-    content: '';
-    display: inline-block;
-    width: 1rem;
-    height: 1rem;
-    background-color: currentColor;
-    -webkit-mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 19h2v2H1v-2h2V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v15h2V9h3a1 1 0 0 1 1 1v9zM7 11v2h4v-2H7zm0-4v2h4V7H7z'/%3E%3C/svg%3E");
-    mask-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 19h2v2H1v-2h2V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v15h2V9h3a1 1 0 0 1 1 1v9zM7 11v2h4v-2H7zm0-4v2h4V7H7z'/%3E%3C/svg%3E");
-    -webkit-mask-size: 100% 100%;
-    mask-size: 100% 100%;
-  }
-`
-
 const MenuList = styled.ul`
   list-style: none;
   margin: 0;
@@ -64,6 +48,10 @@ const MenuList = styled.ul`
 
 const MenuItem = styled.li`
   margin: 0;
+  &:hover {
+    background: var(--background-alt-blue-france);
+    text-decoration: none;
+  }
 `
 
 const MenuLink = styled.a`
@@ -73,42 +61,19 @@ const MenuLink = styled.a`
   color: inherit;
   text-decoration: none;
   font-size: 0.875rem;
-
-  &:hover {
-    background: var(--background-action-low-blue-france-hover);
-    text-decoration: none;
-  }
 `
 
 interface SourceMenuPopoverProps {
   open: boolean
   anchorRef: React.RefObject<HTMLElement>
   onClose: () => void
-  displayName?: string
-  userEmail?: string
-  organization?: string
-  sourceUrl: string
-  logoutUrl: string
 }
 
-export default function SourceMenuPopover({
-  open,
-  anchorRef,
-  onClose,
-  displayName,
-  userEmail,
-  organization,
-  sourceUrl,
-  logoutUrl,
-}: SourceMenuPopoverProps) {
+export default function SourceMenuPopover({ open, anchorRef, onClose }: SourceMenuPopoverProps) {
   const [position, setPosition] = useState<{ top: number; left: number } | null>(null)
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const focusTrapRef = useRef<focusTrap.FocusTrap | null>(null)
-
-  const hasUserInfo = useMemo(
-    () => Boolean(displayName || userEmail || organization),
-    [displayName, userEmail, organization],
-  )
+  const user = getValueFromLocalStorage<Author>(LocalStorageKeys.AUTHOR_CONTACT)
 
   useEffect(() => {
     if (!open) {
@@ -119,22 +84,15 @@ export default function SourceMenuPopover({
     const anchor = anchorRef.current
     if (!anchor) return
 
-    const rect = anchor.getBoundingClientRect()
-    const minWidth = 240
-    const left = Math.min(Math.max(8, rect.right - minWidth), window.innerWidth - minWidth - 8)
-    const top = rect.bottom + 8
-    setPosition({ top, left })
-
     const handleResize = () => {
-      const nextRect = anchor.getBoundingClientRect()
-      const nextLeft = Math.min(
-        Math.max(8, nextRect.right - minWidth),
-        window.innerWidth - minWidth - 8,
-      )
-      const nextTop = nextRect.bottom + 8
-      setPosition({ top: nextTop, left: nextLeft })
+      const minWidth = 240
+      const rect = anchor.getBoundingClientRect()
+      const left = Math.min(Math.max(8, rect.right - minWidth), window.innerWidth - minWidth - 8)
+      const top = rect.bottom + 8
+      setPosition({ top, left })
     }
 
+    handleResize()
     window.addEventListener('resize', handleResize)
 
     return () => {
@@ -163,6 +121,23 @@ export default function SourceMenuPopover({
     }
   }, [open])
 
+  const handleLogout = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault()
+    onClose()
+
+    const wasProconnected = getValueFromLocalStorage<boolean>(LocalStorageKeys.PROCONNECTED)
+
+    removeValueFromLocalStorage(LocalStorageKeys.AUTHOR_CONTACT)
+    removeValueFromLocalStorage(LocalStorageKeys.SOURCE_TOKEN)
+    removeValueFromLocalStorage(LocalStorageKeys.PROCONNECTED)
+
+    if (wasProconnected) {
+      window.location.href = `${OpenAPI.BASE}/proconnect/logout`
+    } else {
+      window.location.href = '/'
+    }
+  }
+
   return (
     <Popover
       id='source-menu-popover'
@@ -174,17 +149,18 @@ export default function SourceMenuPopover({
         display: open ? 'block' : 'none',
       }}
     >
-      {hasUserInfo && (
+      {user && (
         <UserInfo>
-          {displayName && <UserName>{displayName}</UserName>}
-          {userEmail && <UserEmail>{userEmail}</UserEmail>}
-          {organization && <UserOrganization>{organization}</UserOrganization>}
+          {user.firstName && user.lastName && (
+            <UserName>{`${user.firstName} ${user.lastName}`}</UserName>
+          )}
+          {user.email && <UserEmail>{user.email}</UserEmail>}
         </UserInfo>
       )}
       <MenuList>
         <MenuItem>
           <MenuLink
-            href={sourceUrl}
+            href='/#/source'
             onClick={onClose}
             className='fr-link fr-link--icon-left fr-icon-bar-chart-line'
           >
@@ -193,8 +169,8 @@ export default function SourceMenuPopover({
         </MenuItem>
         <MenuItem>
           <MenuLink
-            href={logoutUrl}
-            onClick={onClose}
+            href='/'
+            onClick={handleLogout}
             className='fr-link fr-link--icon-left fr-icon-arrow-right-line'
           >
             Se déconnecter

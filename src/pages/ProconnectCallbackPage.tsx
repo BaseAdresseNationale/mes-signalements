@@ -20,6 +20,7 @@ export function ProconnectCallbackPage() {
       try {
         await fetchSourceByToken(sourceToken)
         setValueInLocalStorage(LocalStorageKeys.AUTHOR_CONTACT, author)
+        setValueInLocalStorage(LocalStorageKeys.PROCONNECTED, 'true')
         navigate('/')
       } catch (error) {
         console.error('Error fetching source by token:', error)

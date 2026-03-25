@@ -2,9 +2,17 @@
 
 import React, { useRef, useState } from 'react'
 import styled from 'styled-components'
-import { Author, OpenAPI, Source } from '../../../api/signalement'
-import { getValueFromLocalStorage, LocalStorageKeys } from '../../../utils/localStorage.utils'
+import { Source } from '../../../api/signalement'
 import SourceMenuPopover from '../SourceMenuPopover'
+
+const ButtonLabel = styled.div`
+  max-width: 320px;
+  > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+`
 
 const MenuButton = styled.button.attrs({
   className: 'fr-btn fr-icon-account-circle-fill',
@@ -33,16 +41,15 @@ const MenuButton = styled.button.attrs({
   }
 `
 
-interface SourcePortalProps {
+interface SourceMenuProps {
   source: Source
 }
 
-export default function SourcePortal({ source }: SourcePortalProps) {
+export default function SourceMenu({ source }: SourceMenuProps) {
   const [open, setOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement>(null)
-  const user = getValueFromLocalStorage<Author>(LocalStorageKeys.AUTHOR_CONTACT)
 
-  return user ? (
+  return (
     <div>
       <MenuButton
         ref={buttonRef}
@@ -51,19 +58,13 @@ export default function SourcePortal({ source }: SourcePortalProps) {
         aria-expanded={open}
         aria-haspopup='menu'
         aria-controls='source-menu-popover'
+        title={source.nom}
       >
-        Mon espace
+        <ButtonLabel>
+          <span>{source.nom}</span>
+        </ButtonLabel>
       </MenuButton>
-      <SourceMenuPopover
-        open={open}
-        anchorRef={buttonRef}
-        onClose={() => setOpen(false)}
-        displayName={`${user.firstName} ${user.lastName}`}
-        userEmail={user.email ?? ''}
-        organization={source.nom}
-        sourceUrl='/#/source'
-        logoutUrl={`${OpenAPI.BASE}/proconnect/logout`}
-      />
+      <SourceMenuPopover open={open} anchorRef={buttonRef} onClose={() => setOpen(false)} />
     </div>
-  ) : null
+  )
 }
