@@ -8,6 +8,7 @@ import SourceMenuPopover from '../SourceMenuPopover'
 const ButtonLabel = styled.div`
   max-width: 320px;
   > span {
+    display: block;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
