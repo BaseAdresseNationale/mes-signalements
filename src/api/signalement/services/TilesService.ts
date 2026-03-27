@@ -37,27 +37,4 @@ export class TilesService {
             },
         });
     }
-    /**
-     * Get vector tiles with commune status (enabled communes)
-     * @param z
-     * @param x
-     * @param y
-     * @returns any PBF vector tile with commune-status layer
-     * @throws ApiError
-     */
-    public static getCommuneStatusTiles(
-        z: string,
-        x: string,
-        y: string,
-    ): CancelablePromise<any> {
-        return __request(OpenAPI, {
-            method: 'GET',
-            url: '/tiles/commune-status/{z}/{x}/{y}.pbf',
-            path: {
-                'z': z,
-                'x': x,
-                'y': y,
-            },
-        });
-    }
 }

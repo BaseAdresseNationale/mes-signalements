@@ -3,11 +3,10 @@ import { Layer, LayerProps, MapLayerMouseEvent, Popup, Source, useMap } from 're
 import {
   alertPointsLayer,
   APISignalementTiles,
-  APICommuneStatusTiles,
   signalementPointsLayer,
   getCommuneStatusLayer,
 } from '../../config/map/layers'
-import { Alert, Signalement } from '../../api/signalement'
+import { Alert, CommuneSettingsDTO, SettingsService, Signalement } from '../../api/signalement'
 import SignalementCard from '../signalement/SignalementCard'
 import { getSignalementFromFeatureAPISignalement } from '../../utils/signalement.utils'
 import { getAlertFromFeatureAPISignalement } from '../../utils/alert.utils'
@@ -27,12 +26,26 @@ enum FeatureType {
 export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMapProps>) {
   const map = useMap()
   const { setViewedSignalement } = useContext(SignalementViewerContext)
+  const [communeSettings, setCommuneSettings] = useState<Record<string, CommuneSettingsDTO>>({})
   const [hoveredFeature, setHoveredFeature] = useState<{
     type: FeatureType
     data: Signalement | Alert
     point: any
   } | null>(null)
   const { source } = useContext(SourceContext)
+
+  // Fetch commune settings on mount
+  useEffect(() => {
+    const fetchCommuneSettings = async () => {
+      try {
+        const settings = await SettingsService.getAllCommuneSettings()
+        setCommuneSettings(settings)
+      } catch (error) {
+        console.error('Error fetching commune settings:', error)
+      }
+    }
+    fetchCommuneSettings()
+  }, [])
 
   const communeStatusLayer = useMemo(
     () =>
@@ -89,7 +102,40 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
       }
     }
 
-    if (map?.current) {
+    const applySettings = () => {
+      if (!map.current?.isSourceLoaded('decoupage-administratif')) {
+        return
+      }
+
+      for (const [codeCommune, status] of Object.entries(communeSettings)) {
+        map.current.setFeatureState(
+          { source: 'decoupage-administratif', sourceLayer: 'communes', id: codeCommune },
+          {
+            disabled: status.disabled,
+            mode: status.mode || null,
+            filteredSources: status.filteredSources?.join(',') || null,
+          },
+        )
+      }
+
+      map.current.off('sourcedata', onSourceData)
+    }
+
+    const onSourceData = (e: any) => {
+      if (e.sourceId === 'decoupage-administratif' && e.isSourceLoaded) {
+        applySettings()
+      }
+    }
+
+    if (Object.keys(communeSettings).length > 0) {
+      if (map.current.isSourceLoaded('decoupage-administratif')) {
+        applySettings()
+      } else {
+        map.current.on('sourcedata', onSourceData)
+      }
+    }
+
+    if (map.current) {
       map.current.on('click', signalementPointsLayer.id, handleSelect)
       map.current.on('mousemove', signalementPointsLayer.id, handleMouseMove)
       map.current.on('mouseleave', signalementPointsLayer.id, handleMouseLeave)
@@ -100,6 +146,7 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
 
     return () => {
       if (map?.current) {
+        map.current.off('sourcedata', onSourceData)
         map.current.off('click', signalementPointsLayer.id, handleSelect)
         map.current.off('mousemove', signalementPointsLayer.id, handleMouseMove)
         map.current.off('mouseleave', signalementPointsLayer.id, handleMouseLeave)
@@ -108,7 +155,7 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
         map.current.off('mouseleave', alertPointsLayer.id, handleMouseLeave)
       }
     }
-  }, [map])
+  }, [map, communeSettings])
 
   return (
     <>
@@ -146,12 +193,11 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
         <Layer key={alertPointsLayer.id} {...(alertPointsLayer as any)} {...options} />
       </Source>
       <Source
-        id='api-commune-status'
+        id='decoupage-administratif'
         type='vector'
-        tiles={APICommuneStatusTiles}
-        minzoom={5}
-        maxzoom={20}
-        promoteId='id'
+        tiles={['https://openmaptiles.data.gouv.fr/data/decoupage-administratif/{z}/{x}/{y}.pbf']}
+        maxzoom={11}
+        promoteId='code'
       >
         <Layer key={communeStatusLayer.id} {...(communeStatusLayer as any)} {...options} />
       </Source>

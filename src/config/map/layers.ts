@@ -278,20 +278,26 @@ export const alertPointsLayer = {
 
 export const getCommuneStatusLayer = (sourceId: string) => ({
   id: 'commune-status-polygons',
-  source: 'api-commune-status',
-  'source-layer': 'commune-status',
+  source: 'decoupage-administratif',
+  'source-layer': 'communes',
   type: 'fill',
   maxzoom: 11,
-  minzoom: 7,
   paint: {
     'fill-color': [
       'case',
-      ['all', ['has', 'filteredSources'], ['in', sourceId, ['get', 'filteredSources']]],
+      // Pas de statut connu → gris
+      ['!', ['to-boolean', ['feature-state', 'mode']]],
       '#cecece',
-      ['==', ['get', 'mode'], CommuneStatusDTO.mode.FULL],
+      // Source filtrée → gris
+      ['in', sourceId, ['to-string', ['feature-state', 'filteredSources']]],
+      '#cecece',
+      // Mode FULL → bleu foncé
+      ['==', ['feature-state', 'mode'], CommuneStatusDTO.mode.FULL],
       '#2564a0',
-      ['==', ['get', 'mode'], CommuneStatusDTO.mode.LIGHT],
+      // Mode LIGHT → bleu clair
+      ['==', ['feature-state', 'mode'], CommuneStatusDTO.mode.LIGHT],
       '#3288bd',
+      // Disabled / défaut → gris
       '#cecece',
     ],
     'fill-opacity': ['interpolate', ['linear'], ['zoom'], 7, 0.1, 8, 0.5, 11, 0.1],
