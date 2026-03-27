@@ -1,9 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { Layer, LayerProps, MapLayerMouseEvent, Popup, Source, useMap } from 'react-map-gl/maplibre'
 import {
   alertPointsLayer,
   APISignalementTiles,
   signalementPointsLayer,
+  communeStatusLayer,
+  getAPICommuneStatusTiles,
 } from '../../config/map/layers'
 import { Alert, Signalement } from '../../api/signalement'
 import SignalementCard from '../signalement/SignalementCard'
@@ -11,6 +13,7 @@ import { getSignalementFromFeatureAPISignalement } from '../../utils/signalement
 import { getAlertFromFeatureAPISignalement } from '../../utils/alert.utils'
 import AlertCard from '../alert/AlertCard'
 import { SignalementViewerContext } from '../../contexts/signalement-viewer.context'
+import SourceContext from '../../contexts/source.context'
 
 interface SignalementSearchMapProps {
   options: Partial<LayerProps>
@@ -29,6 +32,13 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
     data: Signalement | Alert
     point: any
   } | null>(null)
+  const { source } = useContext(SourceContext)
+
+  const apiCommuneStatusTiles = useMemo(
+    () =>
+      getAPICommuneStatusTiles(source?.id || `${process.env.REACT_APP_API_SIGNALEMENT_SOURCE_ID}`),
+    [source?.id],
+  )
 
   useEffect(() => {
     if (!map.current) {
@@ -132,6 +142,16 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
       >
         <Layer key={signalementPointsLayer.id} {...(signalementPointsLayer as any)} {...options} />
         <Layer key={alertPointsLayer.id} {...(alertPointsLayer as any)} {...options} />
+      </Source>
+      <Source
+        id='api-commune-status'
+        type='vector'
+        tiles={apiCommuneStatusTiles}
+        minzoom={5}
+        maxzoom={20}
+        promoteId='id'
+      >
+        <Layer key={communeStatusLayer.id} {...(communeStatusLayer as any)} {...options} />
       </Source>
     </>
   )

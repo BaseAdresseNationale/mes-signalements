@@ -1,4 +1,4 @@
-import { Signalement } from '../../api/signalement'
+import { CommuneStatusDTO, Signalement } from '../../api/signalement'
 
 // DSFR default blue color
 export const DEFAULT_COLOR_DARK = '#000091'
@@ -17,6 +17,10 @@ export const PARCELLES_MINZOOM = 14
 
 export const APISignalementTiles = [
   `${process.env.REACT_APP_API_SIGNALEMENT_URL}/tiles/{z}/{x}/{y}.pbf?status=${Signalement.status.PENDING}`,
+]
+
+export const getAPICommuneStatusTiles = (sourceId: string) => [
+  `${process.env.REACT_APP_API_SIGNALEMENT_URL}/tiles/commune-status/{z}/{x}/{y}.pbf?sourceId=${sourceId}`,
 ]
 
 export const adresseCircleLayer = {
@@ -269,6 +273,25 @@ export const alertPointsLayer = {
     'icon-image': 'alert-flag',
     'icon-anchor': 'bottom',
     'icon-size': 0.4,
+  },
+}
+
+export const communeStatusLayer = {
+  id: 'commune-status-polygons',
+  source: 'api-commune-status',
+  'source-layer': 'commune-status',
+  type: 'fill',
+  maxzoom: 10,
+  paint: {
+    'fill-color': [
+      'case',
+      ['==', ['get', 'mode'], CommuneStatusDTO.mode.FULL],
+      '#3288bd',
+      ['==', ['get', 'mode'], CommuneStatusDTO.mode.LIGHT],
+      '#3288bd',
+      '#999999',
+    ],
+    'fill-opacity': ['interpolate', ['exponential', 0.5], ['zoom'], 5, 0.9, 15, 0.5],
   },
 }
 
