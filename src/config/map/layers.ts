@@ -289,7 +289,7 @@ export const getCommuneStatusLayer = (sourceId: string) => ({
       ['all', ['has', 'filteredSources'], ['in', sourceId, ['get', 'filteredSources']]],
       '#cecece',
       ['==', ['get', 'mode'], CommuneStatusDTO.mode.FULL],
-      '#3288bd',
+      '#2564a0',
       ['==', ['get', 'mode'], CommuneStatusDTO.mode.LIGHT],
       '#3288bd',
       '#cecece',
