@@ -38,8 +38,7 @@ export class TilesService {
         });
     }
     /**
-     * Get vector tiles with commune status (enabled communes for a given source)
-     * @param sourceId Source ID to filter commune status
+     * Get vector tiles with commune status (enabled communes)
      * @param z
      * @param x
      * @param y
@@ -47,7 +46,6 @@ export class TilesService {
      * @throws ApiError
      */
     public static getCommuneStatusTiles(
-        sourceId: string,
         z: string,
         x: string,
         y: string,
@@ -59,9 +57,6 @@ export class TilesService {
                 'z': z,
                 'x': x,
                 'y': y,
-            },
-            query: {
-                'sourceId': sourceId,
             },
         });
     }

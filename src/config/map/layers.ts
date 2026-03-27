@@ -19,8 +19,8 @@ export const APISignalementTiles = [
   `${process.env.REACT_APP_API_SIGNALEMENT_URL}/tiles/{z}/{x}/{y}.pbf?status=${Signalement.status.PENDING}`,
 ]
 
-export const getAPICommuneStatusTiles = (sourceId: string) => [
-  `${process.env.REACT_APP_API_SIGNALEMENT_URL}/tiles/commune-status/{z}/{x}/{y}.pbf?sourceId=${sourceId}`,
+export const APICommuneStatusTiles = [
+  `${process.env.REACT_APP_API_SIGNALEMENT_URL}/tiles/commune-status/{z}/{x}/{y}.pbf`,
 ]
 
 export const adresseCircleLayer = {
@@ -276,24 +276,27 @@ export const alertPointsLayer = {
   },
 }
 
-export const communeStatusLayer = {
+export const getCommuneStatusLayer = (sourceId: string) => ({
   id: 'commune-status-polygons',
   source: 'api-commune-status',
   'source-layer': 'commune-status',
   type: 'fill',
-  maxzoom: 10,
+  maxzoom: 11,
+  minzoom: 7,
   paint: {
     'fill-color': [
       'case',
+      ['all', ['has', 'filteredSources'], ['in', sourceId, ['get', 'filteredSources']]],
+      '#cecece',
       ['==', ['get', 'mode'], CommuneStatusDTO.mode.FULL],
       '#3288bd',
       ['==', ['get', 'mode'], CommuneStatusDTO.mode.LIGHT],
       '#3288bd',
-      '#999999',
+      '#cecece',
     ],
-    'fill-opacity': ['interpolate', ['exponential', 0.5], ['zoom'], 5, 0.9, 15, 0.5],
+    'fill-opacity': ['interpolate', ['linear'], ['zoom'], 7, 0.1, 8, 0.5, 11, 0.1],
   },
-}
+})
 
 export const clusters = {
   id: 'clusters',

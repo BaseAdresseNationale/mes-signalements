@@ -3,9 +3,9 @@ import { Layer, LayerProps, MapLayerMouseEvent, Popup, Source, useMap } from 're
 import {
   alertPointsLayer,
   APISignalementTiles,
+  APICommuneStatusTiles,
   signalementPointsLayer,
-  communeStatusLayer,
-  getAPICommuneStatusTiles,
+  getCommuneStatusLayer,
 } from '../../config/map/layers'
 import { Alert, Signalement } from '../../api/signalement'
 import SignalementCard from '../signalement/SignalementCard'
@@ -34,10 +34,12 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
   } | null>(null)
   const { source } = useContext(SourceContext)
 
-  const apiCommuneStatusTiles = useMemo(
+  const communeStatusLayer = useMemo(
     () =>
-      getAPICommuneStatusTiles(source?.id || `${process.env.REACT_APP_API_SIGNALEMENT_SOURCE_ID}`),
-    [source?.id],
+      getCommuneStatusLayer(
+        source?.id || `${process.env.REACT_APP_API_SIGNALEMENT_SOURCE_ID}`,
+      ) as Partial<LayerProps>,
+    [source],
   )
 
   useEffect(() => {
@@ -146,7 +148,7 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
       <Source
         id='api-commune-status'
         type='vector'
-        tiles={apiCommuneStatusTiles}
+        tiles={APICommuneStatusTiles}
         minzoom={5}
         maxzoom={20}
         promoteId='id'
