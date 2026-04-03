@@ -1,10 +1,9 @@
-import React, { createContext, useCallback, useContext, useMemo, useState } from 'react'
-import { Author, ExistingLocation, PositionDTO, Signalement, Source } from '../api/signalement'
+import React, { createContext, useCallback, useMemo, useState } from 'react'
+import { Author, ExistingLocation, PositionDTO, Signalement } from '../api/signalement'
 import { getInitialSignalement, getPositionTypeLabel } from '../utils/signalement.utils'
 import { IBANPlateformeResult } from '../api/ban-plateforme/types'
 import { ChangesRequested } from '../types/signalement.types'
 import { getValueFromLocalStorage, LocalStorageKeys } from '../utils/localStorage.utils'
-import SourceContext from './source.context'
 
 export interface SignalementContextValue {
   signalement: Signalement | null
@@ -34,8 +33,6 @@ interface SignalementContextProviderProps {
 export function SignalementContextProvider(props: Readonly<SignalementContextProviderProps>) {
   const [initialSignalement, setInitialSignalement] = useState<Signalement | null>(null)
   const [signalement, setSignalement] = useState<Signalement | null>(null)
-  const { source } = useContext(SourceContext)
-  const isPublicSource = source?.type !== Source.type.PRIVATE
 
   const onEditSignalement = useCallback(
     (property: keyof Signalement, key?: string) => (value: any) => {
@@ -84,13 +81,13 @@ export function SignalementContextProvider(props: Readonly<SignalementContextPro
 
       // Set author if provided in local storage
       const authorContact = getValueFromLocalStorage<Author>(LocalStorageKeys.AUTHOR_CONTACT)
-      if (authorContact && isPublicSource) {
+      if (authorContact) {
         onEditSignalement('author', 'firstName')(authorContact.firstName)
         onEditSignalement('author', 'lastName')(authorContact.lastName)
         onEditSignalement('author', 'email')(authorContact.email)
       }
     },
-    [setSignalement, isPublicSource],
+    [setSignalement],
   )
 
   const deleteSignalement = useCallback(() => {
