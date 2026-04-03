@@ -1,8 +1,7 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { Author, CreateAlertDTO, Source } from '../api/signalement'
+import { Author, CreateAlertDTO } from '../api/signalement'
 import { getValueFromLocalStorage, LocalStorageKeys } from '../utils/localStorage.utils'
 import { useCommuneStatus } from '../hooks/useCommuneStatus'
-import SourceContext from '../contexts/source.context'
 import MapContext from '../contexts/map.context'
 
 interface useAlertParams {
@@ -16,20 +15,18 @@ export function useAlert({ initialAlert }: useAlertParams) {
   const { communeStatus, isCommuneStatusLoading } = useCommuneStatus({
     codeCommune,
   })
-  const { source } = useContext(SourceContext)
-  const isPublicSource = source?.type !== Source.type.PRIVATE
 
   useEffect(() => {
     // Set author if provided in local storage
     const authorContact = getValueFromLocalStorage<Author>(LocalStorageKeys.AUTHOR_CONTACT)
-    if (authorContact && isPublicSource) {
+    if (authorContact) {
       onEditAlert('author', {
         firstName: authorContact.firstName,
         lastName: authorContact.lastName,
         email: authorContact.email,
       } as Author)
     }
-  }, [isPublicSource])
+  }, [])
 
   useEffect(() => {
     if (initialAlert?.point && mapRef) {
