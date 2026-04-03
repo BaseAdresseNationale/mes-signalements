@@ -1,6 +1,7 @@
 export enum LocalStorageKeys {
   AUTHOR_CONTACT = 'authorContact',
   SOURCE_TOKEN = 'sourceToken',
+  PROCONNECTED = 'proconnected',
 }
 
 export function getValueFromLocalStorage<T>(key: LocalStorageKeys): T | undefined {

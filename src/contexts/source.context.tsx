@@ -36,10 +36,10 @@ export function SourceContextProvider(props: { children: React.ReactNode }) {
 
   useEffect(() => {
     try {
-      if (sourceId) {
-        fetchSourceById(sourceId)
-      } else if (sourceToken) {
+      if (sourceToken) {
         fetchSourceByToken(sourceToken)
+      } else if (sourceId) {
+        fetchSourceById(sourceId)
       }
     } catch (e) {
       console.error(e)
