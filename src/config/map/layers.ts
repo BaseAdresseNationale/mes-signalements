@@ -281,19 +281,18 @@ export const getCommuneStatusLayer = (sourceId: string) => ({
   source: 'decoupage-administratif',
   'source-layer': 'communes',
   type: 'fill',
-  maxzoom: 11,
   paint: {
     'fill-color': [
       'case',
       ['in', sourceId, ['to-string', ['feature-state', 'filteredSources']]],
-      '#cecece',
+      '#b0b0b0',
       ['==', ['feature-state', 'mode'], CommuneStatusDTO.mode.FULL],
       'transparent',
       ['==', ['feature-state', 'mode'], CommuneStatusDTO.mode.LIGHT],
       'transparent',
-      '#cecece',
+      '#b0b0b0',
     ],
-    'fill-opacity': ['interpolate', ['linear'], ['zoom'], 7, 0.1, 8, 0.5, 11, 0.1],
+    'fill-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0.5, 12, 0.3],
   },
 })
 

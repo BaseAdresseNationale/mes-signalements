@@ -196,7 +196,7 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
         id='decoupage-administratif'
         type='vector'
         tiles={['https://openmaptiles.data.gouv.fr/data/decoupage-administratif/{z}/{x}/{y}.pbf']}
-        maxzoom={11}
+        maxzoom={12}
         promoteId='code'
       >
         <Layer key={communeStatusLayer.id} {...(communeStatusLayer as any)} {...options} />

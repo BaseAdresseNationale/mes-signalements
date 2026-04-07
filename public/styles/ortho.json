@@ -17,7 +17,8 @@
     },
     "decoupage-administratif": {
       "type": "vector",
-      "url": "https://openmaptiles.geo.data.gouv.fr/data/decoupage-administratif.json"
+      "tiles": ["https://openmaptiles.data.gouv.fr/data/decoupage-administratif/{z}/{x}/{y}.pbf"],
+      "maxzoom": 12
     }
   },
   "layers": [
