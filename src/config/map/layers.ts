@@ -285,16 +285,12 @@ export const getCommuneStatusLayer = (sourceId: string) => ({
   paint: {
     'fill-color': [
       'case',
-      // Source filtrée → gris
       ['in', sourceId, ['to-string', ['feature-state', 'filteredSources']]],
       '#cecece',
-      // Mode FULL → bleu foncé
       ['==', ['feature-state', 'mode'], CommuneStatusDTO.mode.FULL],
       'transparent',
-      // Mode LIGHT → bleu clair
       ['==', ['feature-state', 'mode'], CommuneStatusDTO.mode.LIGHT],
       'transparent',
-      // Disabled / défaut → gris
       '#cecece',
     ],
     'fill-opacity': ['interpolate', ['linear'], ['zoom'], 7, 0.1, 8, 0.5, 11, 0.1],
