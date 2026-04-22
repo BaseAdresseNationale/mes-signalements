@@ -167,6 +167,7 @@ export function AlertTab({ hideSourceFilter, initialFilter }: AlertTabProps) {
             ))}
           </ul>
           <Pagination
+            className='pagination'
             count={Math.ceil(paginatedAlerts.total / PAGE_SIZE)}
             currentPage={currentPage}
             onPageChange={(page) => {
