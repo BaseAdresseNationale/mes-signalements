@@ -27,6 +27,7 @@ export function CommuneCard({ adresse, createSignalement, disabledMessage }: Com
       <h1>
         {adresse.nomCommune} ({adresse.codeCommune})
       </h1>
+
       <ul>
         <li>
           Région : <b>{adresse.region.nom}</b>
@@ -38,6 +39,7 @@ export function CommuneCard({ adresse, createSignalement, disabledMessage }: Com
           </b>
         </li>
       </ul>
+
       {createSignalement ? (
         <>
           <Button
@@ -69,6 +71,34 @@ export function CommuneCard({ adresse, createSignalement, disabledMessage }: Com
             priority='secondary'
           >
             Signaler une adresse manquante
+          </Button>
+
+          <Button
+            priority='tertiary no outline'
+            size='small'
+            iconId='ri-road-map-line'
+            style={{ marginTop: 5 }}
+            linkProps={{
+              href: `${process.env.REACT_APP_ADRESSE_DATA_GOUV_URL}/carte-base-adresse-nationale?id=${adresse.codeCommune}`,
+              target: '_blank',
+              rel: 'noopener noreferrer',
+            }}
+          >
+            Voir dans l&apos;explorateur BAN
+          </Button>
+
+          <Button
+            priority='tertiary no outline'
+            size='small'
+            iconId='ri-community-line'
+            style={{ marginTop: 5 }}
+            linkProps={{
+              href: `${process.env.REACT_APP_ADRESSE_DATA_GOUV_URL}/commune/${adresse.codeCommune}`,
+              target: '_blank',
+              rel: 'noopener noreferrer',
+            }}
+          >
+            Voir la page de la commune
           </Button>
         </>
       ) : (

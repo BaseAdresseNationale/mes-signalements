@@ -74,6 +74,7 @@ Elles peuvent être définies classiquement ou en créant un fichier `.env` sur 
 | `REACT_APP_SENTRY_DSN`                | URL de Sentry                              |
 | `REACT_APP_MATOMO_TRACKER_URL`        | URL de tracking Matomo                     |
 | `REACT_APP_MATOMO_SITE_ID`            | Id du site Matomo                          |
+| `REACT_APP_ADRESSE_DATA_GOUV_URL`     | Url du site adresse.data.gouv.fr           |
 | `PORT`                                | Port de l'application                      |
 
 Toutes ces variables ont des valeurs par défaut que vous trouverez dans le fichier `.env.sample`.
