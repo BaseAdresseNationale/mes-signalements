@@ -11,9 +11,13 @@ export function ProconnectCallbackPage() {
   const [isLoading, setIsLoading] = useState(true)
   const { fetchSourceByToken } = useContext(SourceContext)
   const { navigate } = useNavigateWithPreservedSearchParams()
-  const { sourceToken, author } = useLoaderData() as {
+  const { sourceToken, author, error } = useLoaderData() as {
     sourceToken: string
     author: Author
+    error: {
+      message: string
+      link: string
+    }
   }
   useEffect(() => {
     const initializeSource = async () => {
@@ -33,6 +37,23 @@ export function ProconnectCallbackPage() {
 
   return isLoading ? (
     <Loader />
+  ) : error.message === 'ORGANIZATION_NOT_PUBLIC' ? (
+    <Alert
+      severity='error'
+      title='Erreur de connexion'
+      description='La connexion ProConnect est réservée aux organisations publiques. Veuillez contacter votre administrateur ProConnect pour plus d’informations.'
+    />
+  ) : error.message === 'COMMUNE_NOT_ALLOWED' ? (
+    <Alert
+      severity='error'
+      title='Erreur de connexion'
+      description={
+        <>
+          Afin d&apos;éditer les adresses de votre commune, veuillez suivre les indications
+          disponibles sur <a href={error.link}>cette page</a>.
+        </>
+      }
+    />
   ) : (
     <Alert
       severity='error'
