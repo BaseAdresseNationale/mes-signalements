@@ -117,8 +117,6 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
           },
         )
       }
-
-      map.current.off('sourcedata', onSourceData)
     }
 
     const onSourceData = (e: any) => {
@@ -127,11 +125,19 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
       }
     }
 
+    // Re-applique les feature-states quand le style change (ex: switch fond de carte),
+    // car setStyle réinitialise toutes les feature-states.
+    const onStyleData = () => {
+      applySettings()
+    }
+
     if (Object.keys(communeSettings).length > 0) {
+      // On reste abonné à 'sourcedata' en permanence pour re-appliquer après chaque
+      // rechargement de la source (notamment après un setStyle déclenché par StylesSwitch).
+      map.current.on('sourcedata', onSourceData)
+      map.current.on('styledata', onStyleData)
       if (map.current.isSourceLoaded('decoupage-administratif')) {
         applySettings()
-      } else {
-        map.current.on('sourcedata', onSourceData)
       }
     }
 
@@ -147,6 +153,7 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
     return () => {
       if (map?.current) {
         map.current.off('sourcedata', onSourceData)
+        map.current.off('styledata', onStyleData)
         map.current.off('click', signalementPointsLayer.id, handleSelect)
         map.current.off('mousemove', signalementPointsLayer.id, handleMouseMove)
         map.current.off('mouseleave', signalementPointsLayer.id, handleMouseLeave)
