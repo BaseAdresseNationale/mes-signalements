@@ -81,17 +81,24 @@ export function useSearchAPIAdresse() {
             }),
           ) as SearchItemType<MappedAPIAdresseResult>[]
 
-          // Si Paris, Lyon ou Marseille sont présents dans les résultats, on filtre les arrondissements pour éviter les doublons
-          mappedResults = mappedResults.filter((result) => {
-            if (result.type === APIAdressePropertyType.MUNICIPALITY) {
-              return !codesToFilter.includes(result.code)
-            }
-            return true
-          })
+          // Si Paris, Lyon ou Marseille (ou arrondissements) sont présents dans les résultats, on les filtre pour éviter les doublons
+          if (mappedResults.some((result) => codesToFilter.includes(result.code))) {
+            mappedResults = mappedResults.filter((result) => {
+              if (result.type === APIAdressePropertyType.MUNICIPALITY) {
+                return !codesToFilter.includes(result.code)
+              }
+              return true
+            })
+          }
 
-          const fuseResults = fuseDistricts.search(search, { limit: 3 })
-          if (fuseResults.length > 0) {
-            mappedResults = [...fuseResults.map((result) => result.item), ...mappedResults]
+          const shouldInjectDistrictResults =
+            !citycode && (type === undefined || type === APIAdressePropertyType.MUNICIPALITY)
+
+          if (shouldInjectDistrictResults) {
+            const fuseResults = fuseDistricts.search(search, { limit: 3 })
+            if (fuseResults.length > 0) {
+              mappedResults = [...fuseResults.map((result) => result.item), ...mappedResults]
+            }
           }
 
           const resultsByType = mappedResults.reduce(
