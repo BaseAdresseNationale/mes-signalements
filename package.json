@@ -27,6 +27,7 @@
     "express": "^4.19.2",
     "focus-trap": "^8.0.0",
     "friendly-challenge": "^0.9.16",
+    "fuse.js": "^7.3.0",
     "maplibre-gl": "^4.3.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
