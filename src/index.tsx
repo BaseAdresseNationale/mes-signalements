@@ -16,6 +16,7 @@ import { AdvancedSearchPage } from './pages/AdvancedSearchPage'
 import { AlertPage } from './pages/AlertPage'
 import { StatsPage } from './pages/StatsPage'
 import { GlobalLayout } from './layouts/GlobalLayout'
+import { PanoramaxViewerPage } from './pages/PanoramaxViewerPage'
 
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { ProconnectCallbackPage } from './pages/ProconnectCallbackPage'
@@ -155,6 +156,14 @@ const router = createHashRouter([
     element: (
       <GlobalLayout baseLayout>
         <StatsPage />
+      </GlobalLayout>
+    ),
+  },
+  {
+    path: '/panoramax/:pictureId',
+    element: (
+      <GlobalLayout>
+        <PanoramaxViewerPage />
       </GlobalLayout>
     ),
   },

@@ -19,6 +19,10 @@ import LayoutContext from '../contexts/layout.context'
 import { CreateAlertButton } from '../composants/map/CreateAlertButton'
 import { BaseLayout } from './BaseLayout'
 import styled from 'styled-components'
+import { PanoramaxToggle } from '../composants/map/PanoramaxToggle'
+import { PanoramaxMap } from '../composants/map/PanoramaxMap'
+import { PANORAMAX_PICTURE_LAYER_ID } from '../config/map/panoramax'
+import PanoramaxContext from '../contexts/panoramax.context'
 
 interface MapLayoutProps {
   children?: React.ReactNode
@@ -63,6 +67,8 @@ export function MapLayout({ children }: MapLayoutProps) {
   const [cursor, setCursor] = useState<string | null>(null)
   const onMouseEnter = useCallback(() => setCursor('pointer'), [])
   const onMouseLeave = useCallback(() => setCursor(null), [])
+  const { showPanoramax, setShowPanoramax } = useContext(PanoramaxContext)
+  const isPanoramaxEnabled = Boolean(process.env.REACT_APP_PANORAMAX_API)
 
   const {
     mapRefCb,
@@ -104,7 +110,10 @@ export function MapLayout({ children }: MapLayoutProps) {
           mapStyle={mapStyles[0].uri}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
-          interactiveLayerIds={interactiveLayers.map((layer) => layer.id)}
+          interactiveLayerIds={[
+            ...interactiveLayers.map((layer) => layer.id),
+            ...(isPanoramaxEnabled && showPanoramax ? [PANORAMAX_PICTURE_LAYER_ID] : []),
+          ]}
           {...(cursor ? { cursor } : {})}
         >
           <Source
@@ -127,20 +136,30 @@ export function MapLayout({ children }: MapLayoutProps) {
           </Source>
           <AdresseSearchMap options={adresseSearchMapLayersOptions} />
           <SignalementsSearchMap options={signalementSearchMapLayerOptions} />
+          {isPanoramaxEnabled && <PanoramaxMap />}
           {mapChildren}
           <NavigationControl position='top-right' />
-          <CadastreToggle
-            layers={staticCadastreLayers.map((layer) => layer.id)}
-            showCadastre={showCadastre}
-            setShowCadastre={setShowCadastre}
-            position='top-right'
-          />
+
           <CreateAdresseButton position='top-right' navigate={navigate} />
           <CreateAlertButton
             position='top-right'
             navigate={navigate}
             setMapMessage={setMapMessage}
           />
+          <CadastreToggle
+            layers={staticCadastreLayers.map((layer) => layer.id)}
+            showCadastre={showCadastre}
+            setShowCadastre={setShowCadastre}
+            position='top-right'
+          />
+          {isPanoramaxEnabled && (
+            <PanoramaxToggle
+              showPanoramax={showPanoramax}
+              setShowPanoramax={setShowPanoramax}
+              position='top-right'
+            />
+          )}
+
           <StylesSwitch
             styles={mapStyles as [MaplibreStyleDefinition, MaplibreStyleDefinition]}
             position='bottom-right'

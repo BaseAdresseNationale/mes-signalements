@@ -131,9 +131,14 @@ const GlobalStyle = createGlobalStyle`
       filter: invert(1);
     }
   }
-}
-
- 
+  > button.disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+    > img {
+      filter: grayscale(1);
+    }
+  }
+} 
 
 .loader-wrapper {
   height: 100%;
