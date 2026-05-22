@@ -178,6 +178,44 @@ body.alert-placing * {
   user-select: none;
 }
 
+/* ─── PanoramaxLensDrag – hide native cursor while the lens follows ─── */
+body.panoramax-dragging,
+body.panoramax-dragging * {
+  cursor: none !important;
+  user-select: none;
+}
+
+/* ─── PanoramaxToggle – hint of drag-ability + scan-mode style ─── */
+#panoramax-toggle.panoramax-draggable:not(.disabled) {
+  cursor: grab !important;
+  transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
+}
+#panoramax-toggle > img {
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+}
+#panoramax-toggle.panoramax-draggable:not(.disabled) > img {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), filter 0.2s ease;
+  transform-origin: 50% 50%;
+}
+/* "Focus the lens" hover micro-animation: slight twist + zoom */
+#panoramax-toggle.panoramax-draggable:not(.disabled):not(.scan-mode):hover > img {
+  transform: rotate(25deg) scale(1.15);
+}
+/* Scan mode: looks like .active (DSFR style), and the icon is swapped to a cross */
+#panoramax-toggle.scan-mode {
+  color: white !important;
+  background-color: #000091 !important;
+  border-radius: 5px;
+  cursor: pointer !important;
+}
+#panoramax-toggle.scan-mode > img {
+  filter: invert(1);
+  transform: none;
+}
+
 /* Ghost flag element that follows the cursor */
 .alert-drag-ghost {
   position: fixed;

@@ -28,6 +28,7 @@ export class PanoramaxToggleControl implements IControl {
     if (!this.buttonElement) return
     const { showPanoramax } = this.props
     const isDisabled = this.buttonElement.hasAttribute('data-unavailable')
+    const isScanMode = this.buttonElement.classList.contains('scan-mode')
 
     if (isDisabled) {
       this.buttonElement.title = UNAVAILABLE_TITLE
@@ -36,8 +37,13 @@ export class PanoramaxToggleControl implements IControl {
       this.buttonElement.classList.remove('active')
     } else {
       this.buttonElement.classList.remove('disabled')
-      this.buttonElement.title = showPanoramax ? ENABLED_TITLE : DISABLED_TITLE
-      this.buttonElement.ariaLabel = showPanoramax ? ENABLED_TITLE : DISABLED_TITLE
+      const title = isScanMode
+        ? 'Fermer le mode scan Panoramax'
+        : showPanoramax
+          ? ENABLED_TITLE
+          : DISABLED_TITLE
+      this.buttonElement.title = title
+      this.buttonElement.ariaLabel = title
       showPanoramax
         ? this.buttonElement.classList.add('active')
         : this.buttonElement.classList.remove('active')
@@ -58,6 +64,7 @@ export class PanoramaxToggleControl implements IControl {
     this.buttonElement = buttonElement
     buttonElement.id = 'panoramax-toggle'
     buttonElement.type = 'button'
+    buttonElement.classList.add('panoramax-draggable')
     buttonElement.setAttribute('data-unavailable', '')
 
     const iconElement = document.createElement('img')
@@ -67,10 +74,9 @@ export class PanoramaxToggleControl implements IControl {
     iconElement.height = 18
     buttonElement.appendChild(iconElement)
 
-    buttonElement.addEventListener('click', () => {
-      if (this.buttonElement?.hasAttribute('data-unavailable')) return
-      this.props.setShowPanoramax(!this.props.showPanoramax)
-    })
+    // Click semantics are owned by <PanoramaxLensDrag /> (enter/exit scan mode
+    // on click, drag + drop on a picture to dive). We keep no native click
+    // handler here so the two flows don't conflict.
 
     this.controlContainer.appendChild(buttonElement)
 

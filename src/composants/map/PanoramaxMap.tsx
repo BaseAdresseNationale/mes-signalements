@@ -1,13 +1,10 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react'
-import { Layer, LayerProps, MapLayerMouseEvent, Popup, Source, useMap } from 'react-map-gl/maplibre'
-import { useLocation } from 'react-router-dom'
+import React, { useCallback, useContext, useEffect } from 'react'
+import { Layer, LayerProps, MapLayerMouseEvent, Source, useMap } from 'react-map-gl/maplibre'
 import {
   PANORAMAX_LAYERS_SOURCE,
   PANORAMAX_PICTURE_LAYER_ID,
   PANORAMAX_SOURCE_ID,
   PANORAMAX_TILE_URL,
-  PANORAMAX_VIEWER_URL,
-  getPanoramaxThumbUrl,
   panoramaxPictureLayer,
   panoramaxSequenceLayer,
 } from '../../config/map/panoramax'
@@ -15,35 +12,8 @@ import PanoramaxContext from '../../contexts/panoramax.context'
 import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
 import styled from 'styled-components'
 
-interface HoveredPicture {
-  id: string
-  longitude: number
-  latitude: number
-}
-
 const DIVE_TARGET_ZOOM = 20
 const DIVE_DURATION_MS = 900
-
-const StyledPanoramaxPopup = styled(Popup)`
-  pointer-events: none;
-
-  .maplibregl-popup-content {
-    padding: 4px;
-    border-radius: 6px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-
-    a {
-      background-image: none;
-
-      &::after {
-        display: none;
-      }
-    }
-  }
-  .maplibregl-popup-content img {
-    display: block;
-  }
-`
 
 const StyledPanoramaxOverlay = styled.div`
   @keyframes panoramax-dive-flash {
@@ -72,18 +42,13 @@ const StyledPanoramaxOverlay = styled.div`
 
 export function PanoramaxMap() {
   const map = useMap()
-  const location = useLocation()
   const { navigate } = useNavigateWithPreservedSearchParams()
   const { showPanoramax, isDiving, setIsDiving, setSavedView } = useContext(PanoramaxContext)
-  const [hoveredPicture, setHoveredPicture] = useState<HoveredPicture | null>(null)
-
-  const isViewerRoute = location.pathname.startsWith('/panoramax/')
 
   const handleClick = useCallback(
     (e: MapLayerMouseEvent) => {
       const feature = e.features?.[0]
       if (!feature || feature.sourceLayer !== PANORAMAX_LAYERS_SOURCE.PICTURES) {
-        setHoveredPicture(null)
         return
       }
       const pictureId = feature.properties?.id
@@ -104,7 +69,6 @@ export function PanoramaxMap() {
         bearing: m.getBearing(),
       })
 
-      setHoveredPicture(null)
       setIsDiving(true)
 
       const onMoveEnd = () => {
@@ -125,35 +89,18 @@ export function PanoramaxMap() {
     [map, navigate, setIsDiving, setSavedView],
   )
 
-  const handleMouseMove = useCallback((e: MapLayerMouseEvent) => {
-    const feature = e.features?.[0]
-    if (!feature || feature.sourceLayer !== PANORAMAX_LAYERS_SOURCE.PICTURES) {
-      return
-    }
-    const coords = (feature.geometry as any)?.coordinates
-    if (!coords) return
-    setHoveredPicture({
-      id: feature.properties?.id,
-      longitude: coords[0],
-      latitude: coords[1],
-    })
-  }, [])
-
   useEffect(() => {
     const m = map.current
     if (!m || !showPanoramax) {
-      setHoveredPicture(null)
       return
     }
 
     m.on('click', PANORAMAX_PICTURE_LAYER_ID, handleClick)
-    m.on('mousemove', PANORAMAX_PICTURE_LAYER_ID, handleMouseMove)
 
     return () => {
       m.off('click', PANORAMAX_PICTURE_LAYER_ID, handleClick)
-      m.off('mousemove', PANORAMAX_PICTURE_LAYER_ID, handleMouseMove)
     }
-  }, [map, showPanoramax, handleClick, handleMouseMove])
+  }, [map, showPanoramax, handleClick])
 
   // Force a re-render when toggled on, so tiles refresh
   useEffect(() => {
@@ -186,35 +133,6 @@ export function PanoramaxMap() {
           } as LayerProps)}
         />
       </Source>
-      {showPanoramax && hoveredPicture && !isDiving && !isViewerRoute && (
-        <StyledPanoramaxPopup
-          longitude={hoveredPicture.longitude}
-          latitude={hoveredPicture.latitude}
-          anchor='bottom'
-          closeButton={false}
-          closeOnClick={false}
-          offset={12}
-        >
-          <a
-            href={`${PANORAMAX_VIEWER_URL}${hoveredPicture.id}`}
-            target='_blank'
-            rel='noopener noreferrer'
-            style={{ display: 'block' }}
-            onClick={(e) => e.preventDefault()}
-          >
-            <img
-              src={getPanoramaxThumbUrl(hoveredPicture.id)}
-              alt='Aperçu Panoramax'
-              style={{
-                display: 'block',
-                width: 200,
-                height: 'auto',
-                borderRadius: 4,
-              }}
-            />
-          </a>
-        </StyledPanoramaxPopup>
-      )}
       {isDiving && <StyledPanoramaxOverlay aria-hidden='true' />}
     </>
   )

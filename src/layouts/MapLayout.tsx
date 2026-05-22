@@ -21,6 +21,7 @@ import { BaseLayout } from './BaseLayout'
 import styled from 'styled-components'
 import { PanoramaxToggle } from '../composants/map/PanoramaxToggle'
 import { PanoramaxMap } from '../composants/map/PanoramaxMap'
+import { PanoramaxLensDrag } from '../composants/map/PanoramaxLensDrag'
 import { PANORAMAX_PICTURE_LAYER_ID } from '../config/map/panoramax'
 import PanoramaxContext from '../contexts/panoramax.context'
 
@@ -137,6 +138,7 @@ export function MapLayout({ children }: MapLayoutProps) {
           <AdresseSearchMap options={adresseSearchMapLayersOptions} />
           <SignalementsSearchMap options={signalementSearchMapLayerOptions} />
           {isPanoramaxEnabled && <PanoramaxMap />}
+          {isPanoramaxEnabled && <PanoramaxLensDrag />}
           {mapChildren}
           <NavigationControl position='top-right' />
 
