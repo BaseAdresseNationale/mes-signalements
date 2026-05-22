@@ -16,6 +16,8 @@ const LENS_IDLE_SIZE = 56
 const LENS_HOVER_SIZE = 140
 
 const SCAN_MODE_MESSAGE = 'Scannez une trace Panoramax'
+const DRAG_HOVER_MESSAGE = 'Relâcher la souris pour ouvrir Panoramax'
+const SCAN_HOVER_MESSAGE = 'Cliquer pour ouvrir dans Panoramax'
 
 // Inline close icon used to replace the camera-lens image while in scan mode.
 const CLOSE_ICON_DATA_URL =
@@ -28,6 +30,7 @@ interface DragState {
   pointerId: number
   startX: number
   startY: number
+  initialShowPanoramax: boolean
   active: boolean
 }
 
@@ -138,8 +141,12 @@ export function PanoramaxLensDrag() {
     // The lens follower stays visible while in scan mode; only hide it otherwise.
     if (!scanModeRef.current) {
       setLens(null)
+      setMapMessage(null)
+    } else {
+      // Drag ended while in scan mode — reset to the default scan message.
+      setMapMessage(SCAN_MODE_MESSAGE)
     }
-  }, [])
+  }, [setMapMessage])
 
   // Replaces the toggle’s lens icon with a close icon while in scan mode.
   const swapToggleIcon = useCallback((mode: 'close' | 'lens') => {
@@ -196,18 +203,19 @@ export function PanoramaxLensDrag() {
   )
 
   // When a dive starts (whether triggered by a feature click in scan mode or by
-  // dropping the lens on a feature), the viewer flow takes over: exit scan
-  // mode without restoring the previous layer state.
+  // dropping the lens on a feature), exit scan mode. We restore the layer to
+  // its original visibility so the toggle returns to its previous state once
+  // the viewer closes.
   useEffect(() => {
     if (isDiving && scanModeRef.current) {
-      exitScanMode(false)
+      exitScanMode(true)
     }
   }, [isDiving, exitScanMode])
 
   // Always exit scan mode when navigating to the viewer route.
   useEffect(() => {
     if (isViewerRoute && scanModeRef.current) {
-      exitScanMode(false)
+      exitScanMode(true)
     }
   }, [isViewerRoute, exitScanMode])
 
@@ -228,10 +236,12 @@ export function PanoramaxLensDrag() {
           if (!showPanoramaxRef.current) {
             setShowPanoramax(true)
           }
+          setMapMessage(SCAN_MODE_MESSAGE)
         }
         const feature = queryFeatureAt(e.clientX, e.clientY)
         const pictureId = (feature?.properties?.id as string | undefined) ?? null
         setLens({ x: e.clientX, y: e.clientY, pictureId })
+        setMapMessage(pictureId ? DRAG_HOVER_MESSAGE : SCAN_MODE_MESSAGE)
         return
       }
       // Scan mode: lens follows the cursor without an active drag.
@@ -239,6 +249,7 @@ export function PanoramaxLensDrag() {
         const feature = queryFeatureAt(e.clientX, e.clientY)
         const pictureId = (feature?.properties?.id as string | undefined) ?? null
         setLens({ x: e.clientX, y: e.clientY, pictureId })
+        setMapMessage(pictureId ? SCAN_HOVER_MESSAGE : SCAN_MODE_MESSAGE)
       }
     }
 
@@ -288,14 +299,24 @@ export function PanoramaxLensDrag() {
           duration: DIVE_DURATION_MS,
           essential: true,
         })
+        const initialShowPanoramax = drag.initialShowPanoramax
         endDrag()
+        // Restore the user's previous layer preference — the toggle should
+        // return to its prior visual state once the viewer closes.
+        if (!scanModeRef.current && initialShowPanoramax !== showPanoramaxRef.current) {
+          setShowPanoramax(initialShowPanoramax)
+        }
         return
       }
 
       // Dropped outside any picture — cancel the drag and exit scan mode if any.
+      const initialShowPanoramax = drag.initialShowPanoramax
       endDrag()
       if (scanModeRef.current) {
         exitScanMode(true)
+      } else if (initialShowPanoramax !== showPanoramaxRef.current) {
+        // Drag forced the layer on; restore the user's previous preference.
+        setShowPanoramax(initialShowPanoramax)
       }
     }
 
@@ -325,6 +346,7 @@ export function PanoramaxLensDrag() {
     setShowPanoramax,
     setSavedView,
     setIsDiving,
+    setMapMessage,
     navigate,
     endDrag,
     enterScanMode,
@@ -344,6 +366,7 @@ export function PanoramaxLensDrag() {
         pointerId: e.pointerId,
         startX: e.clientX,
         startY: e.clientY,
+        initialShowPanoramax: showPanoramaxRef.current,
         active: false,
       }
     }
