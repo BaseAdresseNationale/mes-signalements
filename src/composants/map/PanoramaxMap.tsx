@@ -5,9 +5,10 @@ import {
   PANORAMAX_SEQUENCE_LAYER_ID,
   PANORAMAX_SOURCE_ID,
   PANORAMAX_TILE_URL,
-  findNearestPictureForSequence,
   panoramaxPictureLayer,
   panoramaxSequenceLayer,
+  resolveNearestPictureAfterDive,
+  snapPointToSequenceGeometry,
 } from '../../config/map/panoramax'
 import PanoramaxContext from '../../contexts/panoramax.context'
 import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
@@ -61,8 +62,11 @@ export function PanoramaxMap() {
       const m = map.current?.getMap()
       if (!m) return
 
-      const nearest = findNearestPictureForSequence(m, e.point.x, e.point.y, sequenceId)
-      if (!nearest) return
+      // Snap the click to the nearest point on the sequence polyline so the
+      // dive lands on the line itself — guaranteeing that picture features
+      // from that sequence are queryable around the viewport center after
+      // the zoom-in completes.
+      const target = snapPointToSequenceGeometry(m, feature, [e.lngLat.lng, e.lngLat.lat])
 
       // Save current view to restore later (from the viewer page)
       const center = m.getCenter()
@@ -75,16 +79,20 @@ export function PanoramaxMap() {
 
       setIsDiving(true)
 
-      const onMoveEnd = () => {
+      const onMoveEnd = async () => {
         m.off('moveend', onMoveEnd)
+        const resolved = await resolveNearestPictureAfterDive(m, target, sequenceId)
+        const pictureId = resolved?.id ?? null
         setIsDiving(false)
-        navigate(`/panoramax/${encodeURIComponent(nearest.id)}`)
+        if (pictureId) {
+          navigate(`/panoramax/${encodeURIComponent(pictureId)}`)
+        }
       }
       m.on('moveend', onMoveEnd)
 
-      // "Plunge" effect: rapid zoom-in to the picture location
+      // "Plunge" effect: rapid zoom-in to the target location
       m.easeTo({
-        center: nearest.coords,
+        center: target,
         zoom: DIVE_TARGET_ZOOM,
         duration: DIVE_DURATION_MS,
         essential: true,
@@ -198,12 +206,11 @@ export function PanoramaxMap() {
             },
           } as LayerProps)}
         />
-        <Layer
-          {...({
-            ...panoramaxPictureLayer,
-            layout: { visibility: showPanoramax ? 'visible' : 'none' },
-          } as LayerProps)}
-        />
+        {/* The picture layer is kept mounted at all times (and visually
+            invisible via circle-opacity: 0) so that `queryRenderedFeatures`
+            can still resolve the picture nearest to a dive target, even
+            after the toggle has been turned off at the end of a drag. */}
+        <Layer {...(panoramaxPictureLayer as LayerProps)} />
       </Source>
       {isDiving && <StyledPanoramaxOverlay aria-hidden='true' />}
     </>

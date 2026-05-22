@@ -6,7 +6,10 @@ import styled from 'styled-components'
 import {
   PANORAMAX_SEQUENCE_LAYER_ID,
   findNearestPictureForSequence,
+  getPanoramaxSequenceThumbUrl,
   getPanoramaxThumbUrl,
+  resolveNearestPictureAfterDive,
+  snapPointToSequenceGeometry,
 } from '../../config/map/panoramax'
 import PanoramaxContext from '../../contexts/panoramax.context'
 import MapContext from '../../contexts/map.context'
@@ -41,6 +44,7 @@ interface DragState {
 interface LensState {
   x: number
   y: number
+  sequenceId: string | null
   pictureId: string | null
 }
 
@@ -121,9 +125,11 @@ export function PanoramaxLensDrag() {
   // can restore it cleanly on exit.
   const initialShowPanoramaxRef = useRef<boolean | null>(null)
 
-  // Query the picture feature under the given client coordinates, if any.
-  // Pictures are visually hidden, so we look for a sequence under the cursor
-  // and resolve it to its nearest picture (within a search radius).
+  // Query the panoramax feature under the given client coordinates.
+  // Returns information about the sequence under the cursor and, when
+  // possible, the nearest picture (id + coords). When the picture layer is
+  // not yet populated at this zoom level, only the sequence info is returned
+  // along with the unprojected lng/lat of the cursor (used as dive target).
   const queryFeatureAt = useCallback(
     (clientX: number, clientY: number) => {
       const m = map.current?.getMap()
@@ -137,9 +143,21 @@ export function PanoramaxLensDrag() {
         layers: [PANORAMAX_SEQUENCE_LAYER_ID],
       })
       const seq = seqFeatures?.[0]
-      const sequenceId = seq?.properties?.id as string | undefined
+      const sequenceId =
+        (seq?.properties?.id as string | undefined) ??
+        (seq?.id != null ? String(seq.id) : undefined)
       if (!sequenceId) return null
-      return findNearestPictureForSequence(m, px, py, sequenceId)
+      const ll = m.unproject([px, py])
+      // Snap the cursor to the nearest point on the sequence polyline so the
+      // dive lands on the line itself (see snapPointToSequenceGeometry).
+      const snapped = snapPointToSequenceGeometry(m, seq, [ll.lng, ll.lat])
+      const nearest = findNearestPictureForSequence(m, px, py, sequenceId)
+      return {
+        sequenceId,
+        pictureId: nearest?.id ?? null,
+        coords: nearest?.coords ?? null,
+        lngLat: snapped,
+      }
     },
     [map],
   )
@@ -248,17 +266,19 @@ export function PanoramaxLensDrag() {
           setMapMessage(SCAN_MODE_MESSAGE)
         }
         const feature = queryFeatureAt(e.clientX, e.clientY)
-        const pictureId = feature?.id ?? null
-        setLens({ x: e.clientX, y: e.clientY, pictureId })
-        setMapMessage(pictureId ? DRAG_HOVER_MESSAGE : SCAN_MODE_MESSAGE)
+        const sequenceId = feature?.sequenceId ?? null
+        const pictureId = feature?.pictureId ?? null
+        setLens({ x: e.clientX, y: e.clientY, sequenceId, pictureId })
+        setMapMessage(sequenceId ? DRAG_HOVER_MESSAGE : SCAN_MODE_MESSAGE)
         return
       }
       // Scan mode: lens follows the cursor without an active drag.
       if (scanModeRef.current) {
         const feature = queryFeatureAt(e.clientX, e.clientY)
-        const pictureId = feature?.id ?? null
-        setLens({ x: e.clientX, y: e.clientY, pictureId })
-        setMapMessage(pictureId ? SCAN_HOVER_MESSAGE : SCAN_MODE_MESSAGE)
+        const sequenceId = feature?.sequenceId ?? null
+        const pictureId = feature?.pictureId ?? null
+        setLens({ x: e.clientX, y: e.clientY, sequenceId, pictureId })
+        setMapMessage(sequenceId ? SCAN_HOVER_MESSAGE : SCAN_MODE_MESSAGE)
       }
     }
 
@@ -282,12 +302,16 @@ export function PanoramaxLensDrag() {
       justDraggedRef.current = true
 
       const feature = queryFeatureAt(e.clientX, e.clientY)
-      const pictureId = feature?.id
-      const coords = feature?.coords
       const m = map.current?.getMap()
 
-      if (m && feature && pictureId && coords) {
-        // Trigger the dive + navigate flow.
+      if (m && feature) {
+        // Determine the dive target: the picture coordinates when known,
+        // otherwise the lng/lat under the cursor on the sequence.
+        const target: [number, number] = feature.coords ?? feature.lngLat
+        const knownPictureId = feature.pictureId
+        const sequenceId = feature.sequenceId
+
+        // Save current view to restore later (from the viewer page)
         const center = m.getCenter()
         setSavedView({
           center: { lng: center.lng, lat: center.lat },
@@ -296,19 +320,25 @@ export function PanoramaxLensDrag() {
           bearing: m.getBearing(),
         })
         setIsDiving(true)
-        const onMoveEnd = () => {
+        const onMoveEnd = async () => {
           m.off('moveend', onMoveEnd)
+          let pictureId: string | null = knownPictureId
+          if (!pictureId) {
+            const resolved = await resolveNearestPictureAfterDive(m, target, sequenceId)
+            pictureId = resolved?.id ?? null
+          }
           setIsDiving(false)
-          navigate(`/panoramax/${encodeURIComponent(pictureId)}`)
+          if (pictureId) {
+            navigate(`/panoramax/${encodeURIComponent(pictureId)}`)
+          }
         }
         m.on('moveend', onMoveEnd)
         m.easeTo({
-          center: coords,
+          center: target,
           zoom: DIVE_TARGET_ZOOM,
           duration: DIVE_DURATION_MS,
           essential: true,
         })
-        const initialShowPanoramax = drag.initialShowPanoramax
         endDrag()
         // After a drag, the toggle should return to its inactive state
         // (sequences only appear in scan mode or while dragging). Preserve
@@ -316,11 +346,10 @@ export function PanoramaxLensDrag() {
         if (!scanModeRef.current && showPanoramaxRef.current) {
           setShowPanoramax(false)
         }
-        void initialShowPanoramax
         return
       }
 
-      // Dropped outside any picture — cancel the drag and exit scan mode if any.
+      // Dropped outside any sequence — cancel the drag and exit scan mode if any.
       endDrag()
       if (scanModeRef.current) {
         exitScanMode(true)
@@ -404,16 +433,20 @@ export function PanoramaxLensDrag() {
 
   if (!lens) return null
 
+  const thumbUrl = lens.pictureId
+    ? getPanoramaxThumbUrl(lens.pictureId)
+    : lens.sequenceId
+      ? getPanoramaxSequenceThumbUrl(lens.sequenceId)
+      : null
+
   return createPortal(
     <StyledLens
-      $hovering={!!lens.pictureId}
+      $hovering={!!lens.sequenceId}
       style={{ transform: `translate(${lens.x}px, ${lens.y}px) translate(-50%, -50%)` }}
       aria-hidden='true'
     >
       <img src='/icons/panoramax.svg' alt='' className='panoramax-lens-icon' />
-      {lens.pictureId && (
-        <img src={getPanoramaxThumbUrl(lens.pictureId)} alt='' className='panoramax-lens-thumb' />
-      )}
+      {thumbUrl && <img src={thumbUrl} alt='' className='panoramax-lens-thumb' />}
     </StyledLens>,
     document.body,
   )
