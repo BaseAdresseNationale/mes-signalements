@@ -16,9 +16,10 @@ import { AdvancedSearchPage } from './pages/AdvancedSearchPage'
 import { AlertPage } from './pages/AlertPage'
 import { StatsPage } from './pages/StatsPage'
 import { GlobalLayout } from './layouts/GlobalLayout'
+import { PanoramaxViewerPage } from './pages/PanoramaxViewerPage'
+import { ProconnectCallbackPage } from './pages/ProconnectCallbackPage'
 
 import 'maplibre-gl/dist/maplibre-gl.css'
-import { ProconnectCallbackPage } from './pages/ProconnectCallbackPage'
 
 startReactDsfr({ defaultColorScheme: 'light' })
 
@@ -153,8 +154,16 @@ const router = createHashRouter([
   {
     path: '/stats',
     element: (
-      <GlobalLayout baseLayout>
+      <GlobalLayout>
         <StatsPage />
+      </GlobalLayout>
+    ),
+  },
+  {
+    path: '/panoramax/:pictureId',
+    element: (
+      <GlobalLayout>
+        <PanoramaxViewerPage />
       </GlobalLayout>
     ),
   },
