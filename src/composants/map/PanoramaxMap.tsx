@@ -82,7 +82,6 @@ export function PanoramaxMap() {
   const handleClick = useCallback(
     (e: MapLayerMouseEvent) => {
       const feature = e.features?.[0]
-      console.log('Clicked feature:', e)
       if (!feature || feature.sourceLayer !== PANORAMAX_LAYERS_SOURCE.PICTURES) {
         setHoveredPicture(null)
         return
@@ -147,11 +146,11 @@ export function PanoramaxMap() {
       return
     }
 
-    m.on('click', handleClick)
+    m.on('click', PANORAMAX_PICTURE_LAYER_ID, handleClick)
     m.on('mousemove', PANORAMAX_PICTURE_LAYER_ID, handleMouseMove)
 
     return () => {
-      m.off('click', handleClick)
+      m.off('click', PANORAMAX_PICTURE_LAYER_ID, handleClick)
       m.off('mousemove', PANORAMAX_PICTURE_LAYER_ID, handleMouseMove)
     }
   }, [map, showPanoramax, handleClick, handleMouseMove])
