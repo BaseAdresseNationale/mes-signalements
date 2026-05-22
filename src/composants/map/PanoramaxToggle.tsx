@@ -17,6 +17,7 @@ export class PanoramaxToggleControl implements IControl {
   private buttonElement: HTMLButtonElement | undefined
   private map?: MapInstance
   private boundSourceData?: (e: any) => void
+  private boundMoveEnd?: () => void
 
   constructor(private props: PanoramaxToggleProps) {}
 
@@ -80,22 +81,34 @@ export class PanoramaxToggleControl implements IControl {
 
     this.controlContainer.appendChild(buttonElement)
 
-    // Check if Panoramax data is available in the current view
+    // Availability check: the button is enabled only when picture features
+    // are actually present in the current viewport. Sequences alone are not
+    // enough — at low zoom the picture tiles may be empty even though
+    // sequences are rendered, which would let the user trigger an action that
+    // can't resolve to a picture.
+    const refreshAvailability = () => {
+      const m = this.map as any
+      if (!m || !this.buttonElement) return
+      const pictures = m.querySourceFeatures(PANORAMAX_SOURCE_ID, {
+        sourceLayer: PANORAMAX_LAYERS_SOURCE.PICTURES,
+      })
+      const available = !!(pictures && pictures.length > 0)
+      if (available) {
+        this.buttonElement.removeAttribute('data-unavailable')
+      } else {
+        this.buttonElement.setAttribute('data-unavailable', '')
+      }
+      this.updateButtonAppearance()
+    }
+
     this.boundSourceData = (e: any) => {
       if (e.sourceId === PANORAMAX_SOURCE_ID && e.isSourceLoaded) {
-        const sequences = (this.map as any)?.querySourceFeatures(PANORAMAX_SOURCE_ID, {
-          sourceLayer: PANORAMAX_LAYERS_SOURCE.SEQUENCES,
-        })
-        const available = !!(sequences && sequences.length > 0)
-        if (available) {
-          this.buttonElement?.removeAttribute('data-unavailable')
-        } else {
-          this.buttonElement?.setAttribute('data-unavailable', '')
-        }
-        this.updateButtonAppearance()
+        refreshAvailability()
       }
     }
+    this.boundMoveEnd = refreshAvailability
     map.on('sourcedata', this.boundSourceData as any)
+    map.on('moveend', this.boundMoveEnd)
 
     this.updateButtonAppearance()
 
@@ -105,6 +118,9 @@ export class PanoramaxToggleControl implements IControl {
   public onRemove(): void {
     if (this.map && this.boundSourceData) {
       this.map.off('sourcedata', this.boundSourceData as any)
+    }
+    if (this.map && this.boundMoveEnd) {
+      this.map.off('moveend', this.boundMoveEnd)
     }
     if (this.controlContainer && this.controlContainer.parentNode) {
       this.controlContainer.parentNode.removeChild(this.controlContainer)

@@ -3,7 +3,11 @@ import { createPortal } from 'react-dom'
 import { useMap } from 'react-map-gl/maplibre'
 import { useLocation } from 'react-router-dom'
 import styled from 'styled-components'
-import { PANORAMAX_PICTURE_LAYER_ID, getPanoramaxThumbUrl } from '../../config/map/panoramax'
+import {
+  PANORAMAX_SEQUENCE_LAYER_ID,
+  findNearestPictureForSequence,
+  getPanoramaxThumbUrl,
+} from '../../config/map/panoramax'
 import PanoramaxContext from '../../contexts/panoramax.context'
 import MapContext from '../../contexts/map.context'
 import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
@@ -118,6 +122,8 @@ export function PanoramaxLensDrag() {
   const initialShowPanoramaxRef = useRef<boolean | null>(null)
 
   // Query the picture feature under the given client coordinates, if any.
+  // Pictures are visually hidden, so we look for a sequence under the cursor
+  // and resolve it to its nearest picture (within a search radius).
   const queryFeatureAt = useCallback(
     (clientX: number, clientY: number) => {
       const m = map.current?.getMap()
@@ -127,10 +133,13 @@ export function PanoramaxLensDrag() {
       const px = clientX - rect.left
       const py = clientY - rect.top
       if (px < 0 || py < 0 || px > rect.width || py > rect.height) return null
-      const features = m.queryRenderedFeatures([px, py], {
-        layers: [PANORAMAX_PICTURE_LAYER_ID],
+      const seqFeatures = m.queryRenderedFeatures([px, py], {
+        layers: [PANORAMAX_SEQUENCE_LAYER_ID],
       })
-      return features?.[0] ?? null
+      const seq = seqFeatures?.[0]
+      const sequenceId = seq?.properties?.id as string | undefined
+      if (!sequenceId) return null
+      return findNearestPictureForSequence(m, px, py, sequenceId)
     },
     [map],
   )
@@ -239,7 +248,7 @@ export function PanoramaxLensDrag() {
           setMapMessage(SCAN_MODE_MESSAGE)
         }
         const feature = queryFeatureAt(e.clientX, e.clientY)
-        const pictureId = (feature?.properties?.id as string | undefined) ?? null
+        const pictureId = feature?.id ?? null
         setLens({ x: e.clientX, y: e.clientY, pictureId })
         setMapMessage(pictureId ? DRAG_HOVER_MESSAGE : SCAN_MODE_MESSAGE)
         return
@@ -247,7 +256,7 @@ export function PanoramaxLensDrag() {
       // Scan mode: lens follows the cursor without an active drag.
       if (scanModeRef.current) {
         const feature = queryFeatureAt(e.clientX, e.clientY)
-        const pictureId = (feature?.properties?.id as string | undefined) ?? null
+        const pictureId = feature?.id ?? null
         setLens({ x: e.clientX, y: e.clientY, pictureId })
         setMapMessage(pictureId ? SCAN_HOVER_MESSAGE : SCAN_MODE_MESSAGE)
       }
@@ -273,8 +282,8 @@ export function PanoramaxLensDrag() {
       justDraggedRef.current = true
 
       const feature = queryFeatureAt(e.clientX, e.clientY)
-      const pictureId = feature?.properties?.id as string | undefined
-      const coords = (feature?.geometry as any)?.coordinates as [number, number] | undefined
+      const pictureId = feature?.id
+      const coords = feature?.coords
       const m = map.current?.getMap()
 
       if (m && feature && pictureId && coords) {
@@ -301,22 +310,23 @@ export function PanoramaxLensDrag() {
         })
         const initialShowPanoramax = drag.initialShowPanoramax
         endDrag()
-        // Restore the user's previous layer preference — the toggle should
-        // return to its prior visual state once the viewer closes.
-        if (!scanModeRef.current && initialShowPanoramax !== showPanoramaxRef.current) {
-          setShowPanoramax(initialShowPanoramax)
+        // After a drag, the toggle should return to its inactive state
+        // (sequences only appear in scan mode or while dragging). Preserve
+        // it only when the user was already in scan mode.
+        if (!scanModeRef.current && showPanoramaxRef.current) {
+          setShowPanoramax(false)
         }
+        void initialShowPanoramax
         return
       }
 
       // Dropped outside any picture — cancel the drag and exit scan mode if any.
-      const initialShowPanoramax = drag.initialShowPanoramax
       endDrag()
       if (scanModeRef.current) {
         exitScanMode(true)
-      } else if (initialShowPanoramax !== showPanoramaxRef.current) {
-        // Drag forced the layer on; restore the user's previous preference.
-        setShowPanoramax(initialShowPanoramax)
+      } else if (showPanoramaxRef.current) {
+        // Drag forced the layer on; turn it back off.
+        setShowPanoramax(false)
       }
     }
 
@@ -391,24 +401,6 @@ export function PanoramaxLensDrag() {
     document.addEventListener('click', onClickCapture, true)
     return () => document.removeEventListener('click', onClickCapture, true)
   }, [])
-
-  // In scan mode: a click anywhere that is NOT on a Panoramax feature (and not
-  // on the toggle button itself, which has its own click semantics) exits scan
-  // mode. Clicks on a feature are handled by PanoramaxMap.handleClick, which
-  // triggers the dive and indirectly closes scan mode via the isDiving effect.
-  useEffect(() => {
-    if (!scanMode) return
-    const onClick = (e: MouseEvent) => {
-      if (justDraggedRef.current) return
-      const target = e.target as HTMLElement | null
-      if (target?.closest?.('#panoramax-toggle')) return
-      const feature = queryFeatureAt(e.clientX, e.clientY)
-      if (feature) return
-      exitScanMode(true)
-    }
-    document.addEventListener('click', onClick)
-    return () => document.removeEventListener('click', onClick)
-  }, [scanMode, queryFeatureAt, exitScanMode])
 
   if (!lens) return null
 
