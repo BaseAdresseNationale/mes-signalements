@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import { createPortal } from 'react-dom'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
 
 interface PanoramaxViewerProps {
@@ -57,13 +56,6 @@ const StyledPanoramaxViewer = styled.div`
 `
 
 export function PanoramaxViewer({ src, onClose }: Readonly<PanoramaxViewerProps>) {
-  const [mainEl, setMainEl] = useState<HTMLElement | null>(null)
-
-  // Find the <main> element to portal into.
-  useEffect(() => {
-    setMainEl(document.querySelector('main'))
-  }, [])
-
   // Close on Escape
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -73,9 +65,7 @@ export function PanoramaxViewer({ src, onClose }: Readonly<PanoramaxViewerProps>
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [onClose])
 
-  if (!mainEl) return null
-
-  return createPortal(
+  return (
     <StyledPanoramaxViewer>
       <button
         type='button'
@@ -93,7 +83,6 @@ export function PanoramaxViewer({ src, onClose }: Readonly<PanoramaxViewerProps>
         allow='fullscreen; geolocation; xr-spatial-tracking'
         allowFullScreen
       />
-    </StyledPanoramaxViewer>,
-    mainEl,
+    </StyledPanoramaxViewer>
   )
 }

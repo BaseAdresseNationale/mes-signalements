@@ -6,15 +6,13 @@ import { SignalementContextProvider } from '../contexts/signalement.context'
 import { SourceContextProvider } from '../contexts/source.context'
 import { PanoramaxContextProvider } from '../contexts/panoramax.context'
 import { MapLayout } from './MapLayout'
-import { BaseLayout } from './BaseLayout'
 import { useMatomoTracking } from '../hooks/useMatomoTracking'
 
 interface GlobalLayoutProps {
   children?: React.ReactNode
-  baseLayout?: boolean
 }
 
-export function GlobalLayout({ children, baseLayout }: GlobalLayoutProps) {
+export function GlobalLayout({ children }: GlobalLayoutProps) {
   useMatomoTracking()
 
   return (
@@ -24,11 +22,7 @@ export function GlobalLayout({ children, baseLayout }: GlobalLayoutProps) {
           <SignalementContextProvider>
             <SignalementViewerContextProvider>
               <PanoramaxContextProvider>
-                {baseLayout ? (
-                  <BaseLayout>{children}</BaseLayout>
-                ) : (
-                  <MapLayout>{children}</MapLayout>
-                )}
+                <MapLayout>{children}</MapLayout>
               </PanoramaxContextProvider>
             </SignalementViewerContextProvider>
           </SignalementContextProvider>

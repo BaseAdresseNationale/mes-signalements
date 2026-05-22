@@ -4,6 +4,7 @@ import { PanoramaxViewer } from '../composants/panoramax/PanoramaxViewer'
 import { PANORAMAX_VIEWER_URL } from '../config/map/panoramax'
 import MapContext from '../contexts/map.context'
 import PanoramaxContext from '../contexts/panoramax.context'
+import { useMainElPortal } from '../hooks/useMainElPortal'
 
 const RESTORE_DURATION_MS = 700
 
@@ -12,6 +13,7 @@ export function PanoramaxViewerPage() {
   const navigate = useNavigate()
   const { mapRef } = useContext(MapContext)
   const { savedView, setSavedView } = useContext(PanoramaxContext)
+  const { mainElPortal } = useMainElPortal()
 
   const handleClose = useCallback(() => {
     const m = mapRef?.getMap()
@@ -42,5 +44,5 @@ export function PanoramaxViewerPage() {
 
   const src = `${PANORAMAX_VIEWER_URL}${encodeURIComponent(pictureId)}`
 
-  return <PanoramaxViewer src={src} onClose={handleClose} />
+  return mainElPortal ? mainElPortal(<PanoramaxViewer src={src} onClose={handleClose} />) : null
 }
