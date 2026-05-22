@@ -81,18 +81,17 @@ export class PanoramaxToggleControl implements IControl {
 
     this.controlContainer.appendChild(buttonElement)
 
-    // Availability check: the button is enabled only when picture features
-    // are actually present in the current viewport. Sequences alone are not
-    // enough — at low zoom the picture tiles may be empty even though
-    // sequences are rendered, which would let the user trigger an action that
-    // can't resolve to a picture.
+    // Availability check: the button is enabled as soon as a Panoramax
+    // sequence is present in the viewport. The picture-level dive target is
+    // resolved later, after the dive zoom finishes (see PanoramaxMap /
+    // PanoramaxLensDrag).
     const refreshAvailability = () => {
       const m = this.map as any
       if (!m || !this.buttonElement) return
-      const pictures = m.querySourceFeatures(PANORAMAX_SOURCE_ID, {
-        sourceLayer: PANORAMAX_LAYERS_SOURCE.PICTURES,
+      const sequences = m.querySourceFeatures(PANORAMAX_SOURCE_ID, {
+        sourceLayer: PANORAMAX_LAYERS_SOURCE.SEQUENCES,
       })
-      const available = !!(pictures && pictures.length > 0)
+      const available = !!(sequences && sequences.length > 0)
       if (available) {
         this.buttonElement.removeAttribute('data-unavailable')
       } else {
