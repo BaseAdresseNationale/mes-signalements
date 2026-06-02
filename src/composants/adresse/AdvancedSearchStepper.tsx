@@ -89,7 +89,7 @@ export const AdvancedSearchStepper = () => {
               }
             }}
             label='Rechercher ma commune :'
-            nativeInputProps={{ placeholder: 'Bobigny' }}
+            nativeInputProps={{ placeholder: 'Bar-le-Duc' }}
           />
         )}
       </div>
