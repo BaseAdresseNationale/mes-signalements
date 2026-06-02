@@ -48,7 +48,7 @@ const CreateAdresseStepper = () => {
               }
             }}
             label='Rechercher ma commune :'
-            nativeInputProps={{ placeholder: 'Bobigny' }}
+            nativeInputProps={{ placeholder: 'Pélissanne' }}
           />
         )}
       </div>
