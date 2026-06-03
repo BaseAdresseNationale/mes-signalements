@@ -18,6 +18,7 @@ import { StatsPage } from './pages/StatsPage'
 import { GlobalLayout } from './layouts/GlobalLayout'
 import { PanoramaxViewerPage } from './pages/PanoramaxViewerPage'
 import { ProconnectCallbackPage } from './pages/ProconnectCallbackPage'
+import { getInitialFilter } from './utils/signalement-browser.utils'
 
 import 'maplibre-gl/dist/maplibre-gl.css'
 
@@ -86,6 +87,7 @@ const router = createHashRouter([
         <SourcePage />
       </GlobalLayout>
     ),
+    loader: getInitialFilter,
   },
   {
     path: '/all',
@@ -94,6 +96,7 @@ const router = createHashRouter([
         <AllPage />
       </GlobalLayout>
     ),
+    loader: getInitialFilter,
   },
   {
     path: '/create-adresse',
