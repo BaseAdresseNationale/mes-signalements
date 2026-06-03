@@ -19,6 +19,43 @@ export function useBrowserData<
   const [filter, setFilter] = useState<BrowserFilter<TType, TStatus>>(initialFilter)
   const [page, setPage] = useState(1)
 
+  const syncFilterToUrl = useCallback((newFilter: BrowserFilter<TType, TStatus>) => {
+    // Update the URL directly via the History API so react-router's loader is not re-triggered.
+    // HashRouter stores the route (and its search params) inside window.location.hash.
+    const url = new URL(window.location.href)
+    const [hashPath, hashSearch = ''] = (url.hash.startsWith('#') ? url.hash.slice(1) : '').split(
+      '?',
+    )
+    const params = new URLSearchParams(hashSearch)
+    const apply = (key: string, values: string[]) => {
+      if (values.length === 0) {
+        params.delete(key)
+      } else {
+        params.set(key, values.join(','))
+      }
+    }
+    apply(
+      'status',
+      newFilter.status.map((s) => s.value),
+    )
+    apply(
+      'types',
+      newFilter.types.map((t) => t.value),
+    )
+    apply(
+      'communes',
+      newFilter.communes.map((c) => c.value),
+    )
+    const search = params.toString()
+    url.hash = '#' + (hashPath || '/') + (search ? '?' + search : '')
+    window.history.replaceState(window.history.state, '', url.toString())
+  }, [])
+
+  // Update URL when filter changes
+  useEffect(() => {
+    syncFilterToUrl(filter)
+  }, [filter, syncFilterToUrl])
+
   useEffect(() => {
     let cancelled = false
     setIsLoading(true)
@@ -43,14 +80,23 @@ export function useBrowserData<
   }, [fetcher, page, filter])
 
   const resetFilter = useCallback(() => {
-    setFilter(initialFilter)
+    const reset = {
+      types: [],
+      status: [],
+      communes: [],
+      sources: initialFilter.sources,
+    }
+    setFilter(reset)
     setPage(1)
-  }, [initialFilter])
+  }, [initialFilter, syncFilterToUrl])
 
-  const updateFilter = useCallback((newFilter: BrowserFilter<TType, TStatus>) => {
-    setFilter(newFilter)
-    setPage(1)
-  }, [])
+  const updateFilter = useCallback(
+    (newFilter: BrowserFilter<TType, TStatus>) => {
+      setFilter(newFilter)
+      setPage(1)
+    },
+    [syncFilterToUrl],
+  )
 
   return {
     paginatedData,

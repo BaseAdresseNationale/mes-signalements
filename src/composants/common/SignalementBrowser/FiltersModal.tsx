@@ -175,12 +175,16 @@ export function FiltersModal<TType extends string, TStatus extends string>({
               limit: 10,
             })
 
-            return results.features.map(
-              ({ properties }: { properties: { id: string; name: string } }) => ({
+            return results.features
+              .map(({ properties }: { properties: { id: string; name: string } }) => ({
                 value: properties.id,
                 label: `${properties.name} (${properties.id})`,
-              }),
-            )
+              }))
+              .filter(
+                (option) =>
+                  // Filter out options that are already selected
+                  !value.communes.some((selected) => selected.value === option.value),
+              )
           }}
           hint={communeHint}
           searchMinLength={3}
