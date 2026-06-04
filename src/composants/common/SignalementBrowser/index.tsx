@@ -29,6 +29,8 @@ import {
 import { AlertBrowserFilter, SignalementBrowserFilter } from './types'
 
 interface SignalementBrowserProps {
+  signalementsInitialFilter: SignalementBrowserFilter
+  alertsInitialFilter: AlertBrowserFilter
   fromSource?: { value: string; label: string }
 }
 
@@ -45,21 +47,15 @@ const PAGE_SIZE = 20
 const SIGNALEMENTS_TAB_ID = 'signalements'
 const ALERTS_TAB_ID = 'alerts'
 
-export function SignalementBrowser({ fromSource }: SignalementBrowserProps) {
+export function SignalementBrowser({
+  fromSource,
+  signalementsInitialFilter,
+  alertsInitialFilter,
+}: SignalementBrowserProps) {
   const hideSourceFilter = !!fromSource
   const { setViewedSignalement } = useContext(SignalementViewerContext)
   const { setAdresseSearchMapLayersOptions, setSignalementSearchMapLayerOptions, mapRef } =
     useContext(MapContext)
-
-  const initialFilter = useMemo(
-    () => ({
-      status: [],
-      types: [],
-      communes: [],
-      sources: fromSource ? [fromSource] : [],
-    }),
-    [fromSource],
-  )
 
   const [activeTabId, setActiveTabId] = useState<string>(SIGNALEMENTS_TAB_ID)
   const [hoveredSignalement, setHoveredSignalement] = useState<Signalement>()
@@ -130,11 +126,8 @@ export function SignalementBrowser({ fromSource }: SignalementBrowserProps) {
     [],
   )
 
-  const signalementsBrowser = useBrowserData(
-    fetchSignalements,
-    initialFilter as SignalementBrowserFilter,
-  )
-  const alertsBrowser = useBrowserData(fetchAlerts, initialFilter as AlertBrowserFilter)
+  const signalementsBrowser = useBrowserData(fetchSignalements, signalementsInitialFilter)
+  const alertsBrowser = useBrowserData(fetchAlerts, alertsInitialFilter)
 
   // flyTo helper
   const flyTo = useCallback(
@@ -223,7 +216,7 @@ export function SignalementBrowser({ fromSource }: SignalementBrowserProps) {
           page={signalementsBrowser.page}
           onPageChange={signalementsBrowser.setPage}
           filter={signalementsBrowser.filter}
-          initialFilter={initialFilter as SignalementBrowserFilter}
+          initialFilter={signalementsInitialFilter}
           onFilterChange={signalementsBrowser.setFilter}
           onResetFilter={signalementsBrowser.resetFilter}
           renderItem={(signalement) => <SignalementCard signalement={signalement} />}
@@ -251,7 +244,7 @@ export function SignalementBrowser({ fromSource }: SignalementBrowserProps) {
           page={alertsBrowser.page}
           onPageChange={alertsBrowser.setPage}
           filter={alertsBrowser.filter}
-          initialFilter={initialFilter as AlertBrowserFilter}
+          initialFilter={alertsInitialFilter}
           onFilterChange={alertsBrowser.setFilter}
           onResetFilter={alertsBrowser.resetFilter}
           renderItem={(alert) => <AlertCard alert={alert} />}

@@ -59,7 +59,11 @@ export function BrowserTab<TItem, TType extends string, TStatus extends string>(
   const [showFilters, setShowFilters] = useState(false)
 
   const hasCustomFilters = useMemo(
-    () => JSON.stringify(filter) !== JSON.stringify(initialFilter),
+    () =>
+      filter.status.length > 0 ||
+      filter.types.length > 0 ||
+      filter.communes.length > 0 ||
+      JSON.stringify(filter.sources) !== JSON.stringify(initialFilter.sources),
     [filter, initialFilter],
   )
 
