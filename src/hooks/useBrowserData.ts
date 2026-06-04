@@ -53,10 +53,6 @@ export function useBrowserData<
 
   // Update URL when filter changes
   useEffect(() => {
-    syncFilterToUrl(filter)
-  }, [filter, syncFilterToUrl])
-
-  useEffect(() => {
     let cancelled = false
     setIsLoading(true)
     fetcher(page, filter)
@@ -88,12 +84,14 @@ export function useBrowserData<
     }
     setFilter(reset)
     setPage(1)
+    syncFilterToUrl(reset)
   }, [initialFilter, syncFilterToUrl])
 
   const updateFilter = useCallback(
     (newFilter: BrowserFilter<TType, TStatus>) => {
       setFilter(newFilter)
       setPage(1)
+      syncFilterToUrl(newFilter)
     },
     [syncFilterToUrl],
   )
