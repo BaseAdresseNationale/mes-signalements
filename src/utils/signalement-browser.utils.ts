@@ -56,17 +56,19 @@ export async function getInitialFilter({ request }: { request: Request }): Promi
   const typesParam = url.searchParams.get('types')?.split(',') || null
   const statusParam = url.searchParams.get('status')?.split(',') || null
 
+  const communes = await resolveCommunes(communesParam)
+
   const signalementsInitialFilter = {
     status: resolveOptions(statusParam, signalementFilterStatusOptions),
     types: resolveOptions(typesParam, signalementFilterTypesOptions),
-    communes: await resolveCommunes(communesParam),
+    communes,
     sources: [], // Source filter is only applied on SourcePage and options are loaded in the component, so we can ignore URL params for sources
   } as SignalementBrowserFilter
 
   const alertsInitialFilter = {
     status: resolveOptions(statusParam, alertFilterStatusOptions),
     types: resolveOptions(typesParam, alertFilterTypesOptions),
-    communes: await resolveCommunes(communesParam),
+    communes,
     sources: [], // Source filter is only applied on SourcePage and options are loaded in the component, so we can ignore URL params for sources
   } as AlertBrowserFilter
 
