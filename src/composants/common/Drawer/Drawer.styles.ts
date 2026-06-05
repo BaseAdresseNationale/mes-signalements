@@ -50,6 +50,18 @@ export const StyledSheetHeader = styled.div`
   }
 `
 
+// Conteneur invisible utilisé pour garder les enfants montés (et leurs effets actifs)
+// quand la Sheet est fermée — la Sheet de react-modal-sheet démonte ses children
+// quand isOpen=false.
+export const StyledHiddenDrawerContent = styled.div`
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+  visibility: hidden;
+`
+
 // react-modal-sheet est monté via un portail dans document.body :
 // on garantit qu'il reste au-dessus de la carte et des autres calques.
 export const StyledSheetGlobal = createGlobalStyle`

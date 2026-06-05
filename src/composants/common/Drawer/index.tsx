@@ -1,6 +1,11 @@
 import React, { forwardRef, useContext, useEffect } from 'react'
 import { Sheet } from 'react-modal-sheet'
-import { StyledDrawer, StyledSheetGlobal, StyledSheetHeader } from './Drawer.styles'
+import {
+  StyledDrawer,
+  StyledHiddenDrawerContent,
+  StyledSheetGlobal,
+  StyledSheetHeader,
+} from './Drawer.styles'
 import LayoutContext, { ANIMATION_DURATION } from '../../../contexts/layout.context'
 import useWindowSize from '../../../hooks/useWindowSize'
 
@@ -42,25 +47,33 @@ function _Drawer({ children, onClose }: DrawerProps, ref: React.Ref<HTMLDivEleme
   )
 
   if (isMobile) {
+    // La Sheet de react-modal-sheet démonte ses enfants quand isOpen=false.
+    // Pour garder le comportement du drawer desktop (enfants toujours montés,
+    // visibilité gérée par show/hide), on rend les enfants hors de la Sheet
+    // dans un conteneur masqué quand le drawer doit être fermé.
     return (
       <>
         <StyledSheetGlobal />
-        <Sheet
-          isOpen={showDrawer}
-          onClose={onClose}
-          snapPoints={MOBILE_SNAP_POINTS}
-          initialSnap={MOBILE_INITIAL_SNAP}
-        >
-          <Sheet.Container>
-            <Sheet.Header>
-              <StyledSheetHeader>
-                <Sheet.DragIndicator />
-                {closeButton}
-              </StyledSheetHeader>
-            </Sheet.Header>
-            <Sheet.Content>{children}</Sheet.Content>
-          </Sheet.Container>
-        </Sheet>
+        {showDrawer ? (
+          <Sheet
+            isOpen
+            onClose={onClose}
+            snapPoints={MOBILE_SNAP_POINTS}
+            initialSnap={MOBILE_INITIAL_SNAP}
+          >
+            <Sheet.Container>
+              <Sheet.Header>
+                <StyledSheetHeader>
+                  <Sheet.DragIndicator />
+                  {closeButton}
+                </StyledSheetHeader>
+              </Sheet.Header>
+              <Sheet.Content>{children}</Sheet.Content>
+            </Sheet.Container>
+          </Sheet>
+        ) : (
+          <StyledHiddenDrawerContent aria-hidden='true'>{children}</StyledHiddenDrawerContent>
+        )}
       </>
     )
   }
