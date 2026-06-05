@@ -1,5 +1,4 @@
 import React, { createContext, useEffect, useMemo, useRef, useState } from 'react'
-import useWindowSize from '../hooks/useWindowSize'
 import { useLocation, useNavigation } from 'react-router-dom'
 
 export const ANIMATION_DURATION = 300
@@ -7,7 +6,6 @@ export const ANIMATION_DURATION = 300
 interface LayoutContextValue {
   searchRef: React.RefObject<HTMLDivElement>
   drawerRef: React.RefObject<HTMLDivElement>
-  searchMobileButtonRef: React.RefObject<HTMLButtonElement>
   setShowSearch: React.Dispatch<React.SetStateAction<boolean>>
   setShowDrawer: React.Dispatch<React.SetStateAction<boolean>>
   showSearch: boolean
@@ -17,7 +15,6 @@ interface LayoutContextValue {
 export const LayoutContext = createContext<LayoutContextValue>({
   searchRef: { current: null },
   drawerRef: { current: null },
-  searchMobileButtonRef: { current: null },
   setShowSearch: () => {},
   setShowDrawer: () => {},
   showSearch: true,
@@ -25,16 +22,14 @@ export const LayoutContext = createContext<LayoutContextValue>({
 })
 
 export function LayoutContextProvider(props: { children: React.ReactNode }) {
-  const { isMobile } = useWindowSize()
   const navigation = useNavigation()
   const location = useLocation()
 
-  const [showSearch, setShowSearch] = useState(!isMobile)
+  const [showSearch, setShowSearch] = useState(true)
   const [showDrawer, setShowDrawer] = useState(false)
 
   const searchRef = useRef<HTMLDivElement>(null)
   const drawerRef = useRef<HTMLDivElement>(null)
-  const searchMobileButtonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     if (location.pathname !== '/' || navigation.location) {
@@ -42,14 +37,8 @@ export function LayoutContextProvider(props: { children: React.ReactNode }) {
       setShowDrawer(true)
     } else {
       setShowDrawer(false)
-
-      if (isMobile) {
-        setShowSearch(false)
-      } else {
-        setShowSearch(true)
-      }
     }
-  }, [navigation, location, isMobile])
+  }, [navigation, location])
 
   useEffect(() => {
     if (searchRef.current) {
@@ -79,7 +68,6 @@ export function LayoutContextProvider(props: { children: React.ReactNode }) {
     () => ({
       searchRef,
       drawerRef,
-      searchMobileButtonRef,
       setShowSearch,
       setShowDrawer,
       showSearch,
