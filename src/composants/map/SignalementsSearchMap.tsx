@@ -13,6 +13,7 @@ import { getAlertFromFeatureAPISignalement } from '../../utils/alert.utils'
 import AlertCard from '../alert/AlertCard'
 import { ReportViewerContext } from '../../contexts/report-viewer.context'
 import SourceContext from '../../contexts/source.context'
+import { mergeLayerOptions } from '../../utils/map.utils'
 
 interface SignalementSearchMapProps {
   options: Partial<LayerProps>
@@ -201,8 +202,14 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
         maxzoom={14}
         promoteId='id'
       >
-        <Layer key={signalementPointsLayer.id} {...(signalementPointsLayer as any)} {...options} />
-        <Layer key={alertPointsLayer.id} {...(alertPointsLayer as any)} {...options} />
+        <Layer
+          key={signalementPointsLayer.id}
+          {...(mergeLayerOptions(signalementPointsLayer, options) as any)}
+        />
+        <Layer
+          key={alertPointsLayer.id}
+          {...(mergeLayerOptions(alertPointsLayer, options) as any)}
+        />
       </Source>
       <Source
         id='decoupage-administratif'
@@ -211,7 +218,10 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
         maxzoom={12}
         promoteId='code'
       >
-        <Layer key={communeStatusLayer.id} {...(communeStatusLayer as any)} {...options} />
+        <Layer
+          key={communeStatusLayer.id}
+          {...(mergeLayerOptions(communeStatusLayer, options) as any)}
+        />
       </Source>
     </>
   )
