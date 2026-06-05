@@ -69,7 +69,6 @@ export function MapLayout({ children }: MapLayoutProps) {
   const onMouseEnter = useCallback(() => setCursor('pointer'), [])
   const onMouseLeave = useCallback(() => setCursor(null), [])
   const { showPanoramax, setShowPanoramax } = useContext(PanoramaxContext)
-  const isPanoramaxEnabled = Boolean(process.env.REACT_APP_PANORAMAX_API)
 
   const {
     mapRefCb,
@@ -113,7 +112,7 @@ export function MapLayout({ children }: MapLayoutProps) {
           onMouseLeave={onMouseLeave}
           interactiveLayerIds={[
             ...interactiveLayers.map((layer) => layer.id),
-            ...(isPanoramaxEnabled && showPanoramax ? [PANORAMAX_PICTURE_LAYER_ID] : []),
+            ...[PANORAMAX_PICTURE_LAYER_ID],
           ]}
           {...(cursor ? { cursor } : {})}
         >
@@ -137,8 +136,8 @@ export function MapLayout({ children }: MapLayoutProps) {
           </Source>
           <AdresseSearchMap options={adresseSearchMapLayersOptions} />
           <SignalementsSearchMap options={signalementSearchMapLayerOptions} />
-          {isPanoramaxEnabled && <PanoramaxMap />}
-          {isPanoramaxEnabled && <PanoramaxLensDrag />}
+          <PanoramaxMap />
+          <PanoramaxLensDrag />
           {mapChildren}
           <NavigationControl position='top-right' />
 
@@ -154,13 +153,11 @@ export function MapLayout({ children }: MapLayoutProps) {
             setShowCadastre={setShowCadastre}
             position='top-right'
           />
-          {isPanoramaxEnabled && (
-            <PanoramaxToggle
-              showPanoramax={showPanoramax}
-              setShowPanoramax={setShowPanoramax}
-              position='top-right'
-            />
-          )}
+          <PanoramaxToggle
+            showPanoramax={showPanoramax}
+            setShowPanoramax={setShowPanoramax}
+            position='top-right'
+          />
 
           <StylesSwitch
             styles={mapStyles as [MaplibreStyleDefinition, MaplibreStyleDefinition]}
