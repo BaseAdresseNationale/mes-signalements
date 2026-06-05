@@ -1,5 +1,4 @@
-import styled from 'styled-components'
-import { MOBILE_BREAKPOINT } from '../../../hooks/useWindowSize'
+import styled, { createGlobalStyle } from 'styled-components'
 
 export const StyledDrawer = styled.div<{ $animationDuration: number }>`
   position: absolute;
@@ -32,19 +31,32 @@ export const StyledDrawer = styled.div<{ $animationDuration: number }>`
     margin-top: 32px;
     overflow-y: auto;
   }
+`
 
-  @media screen and (max-width: ${MOBILE_BREAKPOINT}px) {
+export const StyledSheetHeader = styled.div`
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 8px 4px;
+
+  > .fr-btn--close {
     position: absolute;
-    height: 50%;
-    bottom: -50%;
-    width: 100%;
-    top: unset;
-    left: 0;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    background: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    transition: ${({ $animationDuration }) => `bottom ${$animationDuration}ms ease-in-out`};
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+`
+
+// react-modal-sheet est monté via un portail dans document.body :
+// on garantit qu'il reste au-dessus de la carte et des autres calques.
+export const StyledSheetGlobal = createGlobalStyle`
+  .react-modal-sheet-container {
+    z-index: 1000;
+  }
+  .react-modal-sheet-backdrop {
+    z-index: 999;
   }
 `
