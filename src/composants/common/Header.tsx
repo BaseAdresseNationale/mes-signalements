@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { Source } from '../../api/signalement'
 import { AuthentificationModal } from '../authentification/AuthentificationModal'
 import { Header as HeaderDSFR } from '@codegouvfr/react-dsfr/Header'
-import SearchMobileButton from './SearchMobileButton'
 import SourcePortal from '../authentification/SourceMenu'
 
 interface HeaderProps {
@@ -51,7 +50,6 @@ export function Header({ customSource, toggleShowInfo }: HeaderProps) {
           ),
         ]}
       />
-      <SearchMobileButton />
       {showConnectionModal && (
         <AuthentificationModal onClose={() => setShowConnectionModal(false)} />
       )}
