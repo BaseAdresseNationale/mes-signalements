@@ -3,7 +3,7 @@ import { Sheet } from 'react-modal-sheet'
 import {
   StyledDrawer,
   StyledHiddenDrawerContent,
-  StyledSheetGlobal,
+  StyledSheet,
   StyledSheetHeader,
 } from './Drawer.styles'
 import LayoutContext, { ANIMATION_DURATION } from '../../../contexts/layout.context'
@@ -51,30 +51,25 @@ function _Drawer({ children, onClose }: DrawerProps, ref: React.Ref<HTMLDivEleme
     // Pour garder le comportement du drawer desktop (enfants toujours montés,
     // visibilité gérée par show/hide), on rend les enfants hors de la Sheet
     // dans un conteneur masqué quand le drawer doit être fermé.
-    return (
-      <>
-        <StyledSheetGlobal />
-        {showDrawer ? (
-          <Sheet
-            isOpen
-            onClose={onClose}
-            snapPoints={MOBILE_SNAP_POINTS}
-            initialSnap={MOBILE_INITIAL_SNAP}
-          >
-            <Sheet.Container>
-              <Sheet.Header>
-                <StyledSheetHeader>
-                  <Sheet.DragIndicator />
-                  {closeButton}
-                </StyledSheetHeader>
-              </Sheet.Header>
-              <Sheet.Content>{children}</Sheet.Content>
-            </Sheet.Container>
-          </Sheet>
-        ) : (
-          <StyledHiddenDrawerContent aria-hidden='true'>{children}</StyledHiddenDrawerContent>
-        )}
-      </>
+    return showDrawer ? (
+      <StyledSheet
+        isOpen
+        onClose={onClose}
+        snapPoints={MOBILE_SNAP_POINTS}
+        initialSnap={MOBILE_INITIAL_SNAP}
+      >
+        <Sheet.Container>
+          <Sheet.Header>
+            <StyledSheetHeader>
+              <Sheet.DragIndicator />
+              {closeButton}
+            </StyledSheetHeader>
+          </Sheet.Header>
+          <Sheet.Content>{children}</Sheet.Content>
+        </Sheet.Container>
+      </StyledSheet>
+    ) : (
+      <StyledHiddenDrawerContent aria-hidden='true'>{children}</StyledHiddenDrawerContent>
     )
   }
 
@@ -84,6 +79,8 @@ function _Drawer({ children, onClose }: DrawerProps, ref: React.Ref<HTMLDivEleme
       $animationDuration={ANIMATION_DURATION}
       role='complementary'
       aria-label='Panneau latéral'
+      className={showDrawer ? 'open' : ''}
+      aria-hidden={!showDrawer}
     >
       {closeButton}
       <div className='content'>{children}</div>

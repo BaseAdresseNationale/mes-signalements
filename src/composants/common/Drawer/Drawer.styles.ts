@@ -1,4 +1,5 @@
-import styled, { createGlobalStyle } from 'styled-components'
+import { Sheet } from 'react-modal-sheet'
+import styled from 'styled-components'
 
 export const StyledDrawer = styled.div<{ $animationDuration: number }>`
   position: absolute;
@@ -64,8 +65,9 @@ export const StyledHiddenDrawerContent = styled.div`
 
 // react-modal-sheet est monté via un portail dans document.body :
 // on garantit qu'il reste au-dessus de la carte et des autres calques.
-export const StyledSheetGlobal = createGlobalStyle`
+export const StyledSheet = styled(Sheet)`
   .react-modal-sheet-container {
+    padding: 5px;
     z-index: 1000;
   }
   .react-modal-sheet-backdrop {
