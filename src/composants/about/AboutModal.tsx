@@ -86,9 +86,9 @@ export function AboutModal({ onClose }: ModalProps) {
 
         <p style={{ marginTop: 15 }}>
           <i>
-            L&apos;application Mes Signalement vous est proposé par le{' '}
+            L&apos;application Mes Signalement vous est proposée par le{' '}
             <a href='https://adresse.data.gouv.fr/programme-bal' target='_blank' rel='noreferrer'>
-              Programme Base Adresse Locale
+              Programme Bases Adresses Locales
             </a>
           </i>
         </p>
