@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect } from 'react'
 import { Alert } from '../../api/signalement'
 import { FeatureCollection, Geometry } from 'geojson'
 import { Layer, LayerProps, MapLayerMouseEvent, Popup, Source, useMap } from 'react-map-gl/maplibre'
@@ -48,7 +48,6 @@ export default function AlertBrowserMap({
   alerts,
   onSelectAlert,
   hoveredAlert,
-  selectedAlert,
   setHoveredAlert,
 }: AlertBrowserMapProps) {
   const map = useMap()
@@ -113,21 +112,17 @@ export default function AlertBrowserMap({
     })),
   }
 
-  const popupAlert = useMemo(() => {
-    return selectedAlert ?? hoveredAlert
-  }, [selectedAlert, hoveredAlert])
-
   return (
     <>
-      {popupAlert && (
+      {hoveredAlert && (
         <Popup
           offset={5}
-          longitude={popupAlert.point.coordinates[0]}
-          latitude={popupAlert.point.coordinates[1]}
+          longitude={hoveredAlert.point.coordinates[0]}
+          latitude={hoveredAlert.point.coordinates[1]}
           anchor='top'
           closeButton={false}
         >
-          <AlertCard alert={popupAlert} />
+          <AlertCard alert={hoveredAlert} />
         </Popup>
       )}
       <Source id='alert-browser-points' type='geojson' data={data}>

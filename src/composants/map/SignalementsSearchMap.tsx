@@ -11,7 +11,7 @@ import SignalementCard from '../signalement/SignalementCard'
 import { getSignalementFromFeatureAPISignalement } from '../../utils/signalement.utils'
 import { getAlertFromFeatureAPISignalement } from '../../utils/alert.utils'
 import AlertCard from '../alert/AlertCard'
-import { SignalementViewerContext } from '../../contexts/signalement-viewer.context'
+import { ReportViewerContext } from '../../contexts/report-viewer.context'
 import SourceContext from '../../contexts/source.context'
 
 interface SignalementSearchMapProps {
@@ -25,7 +25,7 @@ enum FeatureType {
 
 export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMapProps>) {
   const map = useMap()
-  const { setViewedSignalement } = useContext(SignalementViewerContext)
+  const { setViewedReport } = useContext(ReportViewerContext)
   const [communeSettings, setCommuneSettings] = useState<Record<string, CommuneSettingsDTO>>({})
   const [hoveredFeature, setHoveredFeature] = useState<{
     type: FeatureType
@@ -96,8 +96,11 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
 
       if (e.features.length > 0) {
         const feature = e.features[0]
+        console.log('feature', feature)
         if (feature.layer.id === signalementPointsLayer.id) {
-          setViewedSignalement(getSignalementFromFeatureAPISignalement(feature))
+          setViewedReport(getSignalementFromFeatureAPISignalement(feature))
+        } else if (feature.layer.id === alertPointsLayer.id) {
+          setViewedReport(getAlertFromFeatureAPISignalement(feature))
         }
       }
     }
@@ -146,6 +149,7 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
       map.current.on('mousemove', signalementPointsLayer.id, handleMouseMove)
       map.current.on('mouseleave', signalementPointsLayer.id, handleMouseLeave)
 
+      map.current.on('click', alertPointsLayer.id, handleSelect)
       map.current.on('mousemove', alertPointsLayer.id, handleMouseMove)
       map.current.on('mouseleave', alertPointsLayer.id, handleMouseLeave)
     }
@@ -154,10 +158,12 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
       if (map?.current) {
         map.current.off('sourcedata', onSourceData)
         map.current.off('styledata', onStyleData)
+
         map.current.off('click', signalementPointsLayer.id, handleSelect)
         map.current.off('mousemove', signalementPointsLayer.id, handleMouseMove)
         map.current.off('mouseleave', signalementPointsLayer.id, handleMouseLeave)
 
+        map.current.off('click', alertPointsLayer.id, handleSelect)
         map.current.off('mousemove', alertPointsLayer.id, handleMouseMove)
         map.current.off('mouseleave', alertPointsLayer.id, handleMouseLeave)
       }
