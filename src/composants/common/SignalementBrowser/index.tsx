@@ -11,7 +11,7 @@ import {
   SourcesService,
 } from '../../../api/signalement'
 import MapContext from '../../../contexts/map.context'
-import { SignalementViewerContext } from '../../../contexts/signalement-viewer.context'
+import { ReportViewerContext } from '../../../contexts/report-viewer.context'
 import { useMapContent } from '../../../hooks/useMapContent'
 import { useBrowserData } from '../../../hooks/useBrowserData'
 import { SelectOptionType } from '../MuiSelectInput'
@@ -53,14 +53,13 @@ export function SignalementBrowser({
   alertsInitialFilter,
 }: SignalementBrowserProps) {
   const hideSourceFilter = !!fromSource
-  const { setViewedSignalement } = useContext(SignalementViewerContext)
+  const { setViewedReport } = useContext(ReportViewerContext)
   const { setAdresseSearchMapLayersOptions, setSignalementSearchMapLayerOptions, mapRef } =
     useContext(MapContext)
 
   const [activeTabId, setActiveTabId] = useState<string>(SIGNALEMENTS_TAB_ID)
   const [hoveredSignalement, setHoveredSignalement] = useState<Signalement>()
   const [hoveredAlert, setHoveredAlert] = useState<Alert>()
-  const [selectedAlert, setSelectedAlert] = useState<Alert>()
   const [sourceOptions, setSourceOptions] = useState<SelectOptionType<string>[]>([])
 
   // Shared: fetch source options
@@ -142,22 +141,22 @@ export function SignalementBrowser({
 
   const handleSelectSignalement = useCallback(
     (signalement: Signalement) => {
-      setViewedSignalement(signalement)
+      setViewedReport(signalement)
       if (signalement.point) {
         flyTo(signalement.point.coordinates as [number, number])
       }
     },
-    [flyTo, setViewedSignalement],
+    [flyTo, setViewedReport],
   )
 
   const handleSelectAlert = useCallback(
     (alert: Alert) => {
-      setSelectedAlert(alert)
+      setViewedReport(alert)
       if (alert.point) {
         flyTo(alert.point.coordinates as [number, number])
       }
     },
-    [flyTo],
+    [flyTo, setViewedReport],
   )
 
   // Map content per active tab
@@ -183,12 +182,11 @@ export function SignalementBrowser({
       <AlertBrowserMap
         alerts={alertsBrowser.paginatedData.data}
         hoveredAlert={hoveredAlert}
-        selectedAlert={selectedAlert}
         setHoveredAlert={setHoveredAlert}
         onSelectAlert={handleSelectAlert}
       />
     )
-  }, [alertsBrowser.paginatedData, hoveredAlert, selectedAlert, handleSelectAlert])
+  }, [alertsBrowser.paginatedData, hoveredAlert, handleSelectAlert])
 
   const mapContent = useMemo(
     () => (activeTabId === ALERTS_TAB_ID ? alertsMapContent : signalementsMapContent),
