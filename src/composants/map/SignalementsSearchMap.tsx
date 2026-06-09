@@ -96,7 +96,6 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
 
       if (e.features.length > 0) {
         const feature = e.features[0]
-        console.log('feature', feature)
         if (feature.layer.id === signalementPointsLayer.id) {
           setViewedReport(getSignalementFromFeatureAPISignalement(feature))
         } else if (feature.layer.id === alertPointsLayer.id) {
