@@ -16,16 +16,15 @@ const StyledHeaderDSFR = styled(HeaderDSFR)`
     .fr-header__service {
       display: none;
     }
-  }
-
-  #header-menu-modal-mes-signalements-header {
-    .fr-container::before {
-      position: absolute;
-      content: 'Mes Signalements';
-      display: block;
-      margin-top: 0.2rem;
-      font-size: 1.2rem;
-      font-weight: 700;
+    #header-menu-modal-mes-signalements-header {
+      .fr-container::before {
+        position: absolute;
+        content: 'Mes Signalements';
+        display: block;
+        margin-top: 0.2rem;
+        font-size: 1.2rem;
+        font-weight: 700;
+      }
     }
   }
 `
