@@ -1,7 +1,12 @@
 import React, { createContext, useEffect, useMemo, useRef, useState } from 'react'
-import { useLocation, useNavigation } from 'react-router-dom'
 
 export const ANIMATION_DURATION = 300
+
+interface LayoutContextProviderProps {
+  children: React.ReactNode
+  showSearch?: boolean
+  showDrawer?: boolean
+}
 
 interface LayoutContextValue {
   searchRef: React.RefObject<HTMLDivElement>
@@ -21,24 +26,20 @@ export const LayoutContext = createContext<LayoutContextValue>({
   showDrawer: false,
 })
 
-export function LayoutContextProvider(props: { children: React.ReactNode }) {
-  const navigation = useNavigation()
-  const location = useLocation()
-
-  const [showSearch, setShowSearch] = useState(true)
-  const [showDrawer, setShowDrawer] = useState(false)
-
+export function LayoutContextProvider({
+  children,
+  showSearch: initialShowSearch,
+  showDrawer: initialShowDrawer,
+}: LayoutContextProviderProps) {
+  const [showSearch, setShowSearch] = useState(Boolean(initialShowSearch))
+  const [showDrawer, setShowDrawer] = useState(Boolean(initialShowDrawer))
   const searchRef = useRef<HTMLDivElement>(null)
   const drawerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (location.pathname !== '/' || navigation.location) {
-      setShowSearch(false)
-      setShowDrawer(true)
-    } else {
-      setShowDrawer(false)
-    }
-  }, [navigation, location])
+    initialShowSearch ? setShowSearch(true) : setShowSearch(false)
+    initialShowDrawer ? setShowDrawer(true) : setShowDrawer(false)
+  }, [initialShowSearch, initialShowDrawer])
 
   useEffect(() => {
     if (searchRef.current) {
@@ -76,7 +77,7 @@ export function LayoutContextProvider(props: { children: React.ReactNode }) {
     [showSearch, showDrawer],
   )
 
-  return <LayoutContext.Provider value={value} {...props} />
+  return <LayoutContext.Provider value={value}>{children}</LayoutContext.Provider>
 }
 
 export default LayoutContext
