@@ -171,7 +171,7 @@ export default function SourceMenuPopover({ open, anchorRef, onClose }: SourceMe
           <MenuLink
             href='/#/source-settings'
             onClick={onClose}
-            className='fr-link fr-link--icon-left fr-icon-settings-line'
+            className='fr-link fr-link--icon-left fr-icon-settings-5-line'
           >
             Paramètres
           </MenuLink>
