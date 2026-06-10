@@ -164,7 +164,16 @@ export default function SourceMenuPopover({ open, anchorRef, onClose }: SourceMe
             onClick={onClose}
             className='fr-link fr-link--icon-left fr-icon-bar-chart-line'
           >
-            Tableau de suivi
+            Suivi des signalements
+          </MenuLink>
+        </MenuItem>
+        <MenuItem>
+          <MenuLink
+            href='/#/source-settings'
+            onClick={onClose}
+            className='fr-link fr-link--icon-left fr-icon-settings-line'
+          >
+            Paramètres
           </MenuLink>
         </MenuItem>
         <MenuItem>

@@ -9,11 +9,13 @@ import {
 
 interface SourceContextValue {
   source?: Source
+  setSource: (source: Source | undefined) => void
   fetchSourceByToken: (sourceToken: string) => Promise<void>
 }
 
 export const SourceContext = createContext<SourceContextValue>({
   fetchSourceByToken: async () => {},
+  setSource: () => {},
 })
 
 export function SourceContextProvider(props: { children: React.ReactNode }) {
@@ -46,7 +48,10 @@ export function SourceContextProvider(props: { children: React.ReactNode }) {
     }
   }, [sourceId, fetchSourceById, fetchSourceByToken])
 
-  const value = useMemo(() => ({ source, fetchSourceByToken }), [source, fetchSourceByToken])
+  const value = useMemo(
+    () => ({ source, setSource, fetchSourceByToken }),
+    [source, setSource, fetchSourceByToken],
+  )
 
   return <SourceContext.Provider value={value} {...props} />
 }

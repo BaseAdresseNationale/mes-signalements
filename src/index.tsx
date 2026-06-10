@@ -19,6 +19,7 @@ import { GlobalLayout } from './layouts/GlobalLayout'
 import { PanoramaxViewerPage } from './pages/PanoramaxViewerPage'
 import { ProconnectCallbackPage } from './pages/ProconnectCallbackPage'
 import { getInitialFilter } from './utils/signalement-browser.utils'
+import { SourceSettingsPage } from './pages/SourceSettingsPage'
 
 import 'maplibre-gl/dist/maplibre-gl.css'
 
@@ -88,6 +89,14 @@ const router = createHashRouter([
       </GlobalLayout>
     ),
     loader: getInitialFilter,
+  },
+  {
+    path: '/source-settings',
+    element: (
+      <GlobalLayout>
+        <SourceSettingsPage />
+      </GlobalLayout>
+    ),
   },
   {
     path: '/all',
