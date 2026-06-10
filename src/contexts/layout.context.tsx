@@ -1,13 +1,16 @@
 import React, { createContext, useEffect, useMemo, useRef, useState } from 'react'
-import useWindowSize from '../hooks/useWindowSize'
-import { useLocation, useNavigation } from 'react-router-dom'
 
 export const ANIMATION_DURATION = 300
+
+interface LayoutContextProviderProps {
+  children: React.ReactNode
+  showSearch?: boolean
+  showDrawer?: boolean
+}
 
 interface LayoutContextValue {
   searchRef: React.RefObject<HTMLDivElement>
   drawerRef: React.RefObject<HTMLDivElement>
-  searchMobileButtonRef: React.RefObject<HTMLButtonElement>
   setShowSearch: React.Dispatch<React.SetStateAction<boolean>>
   setShowDrawer: React.Dispatch<React.SetStateAction<boolean>>
   showSearch: boolean
@@ -17,39 +20,26 @@ interface LayoutContextValue {
 export const LayoutContext = createContext<LayoutContextValue>({
   searchRef: { current: null },
   drawerRef: { current: null },
-  searchMobileButtonRef: { current: null },
   setShowSearch: () => {},
   setShowDrawer: () => {},
   showSearch: true,
   showDrawer: false,
 })
 
-export function LayoutContextProvider(props: { children: React.ReactNode }) {
-  const { isMobile } = useWindowSize()
-  const navigation = useNavigation()
-  const location = useLocation()
-
-  const [showSearch, setShowSearch] = useState(!isMobile)
-  const [showDrawer, setShowDrawer] = useState(false)
-
+export function LayoutContextProvider({
+  children,
+  showSearch: initialShowSearch,
+  showDrawer: initialShowDrawer,
+}: LayoutContextProviderProps) {
+  const [showSearch, setShowSearch] = useState(Boolean(initialShowSearch))
+  const [showDrawer, setShowDrawer] = useState(Boolean(initialShowDrawer))
   const searchRef = useRef<HTMLDivElement>(null)
   const drawerRef = useRef<HTMLDivElement>(null)
-  const searchMobileButtonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
-    if (location.pathname !== '/' || navigation.location) {
-      setShowSearch(false)
-      setShowDrawer(true)
-    } else {
-      setShowDrawer(false)
-
-      if (isMobile) {
-        setShowSearch(false)
-      } else {
-        setShowSearch(true)
-      }
-    }
-  }, [navigation, location, isMobile])
+    initialShowSearch ? setShowSearch(true) : setShowSearch(false)
+    initialShowDrawer ? setShowDrawer(true) : setShowDrawer(false)
+  }, [initialShowSearch, initialShowDrawer])
 
   useEffect(() => {
     if (searchRef.current) {
@@ -79,7 +69,6 @@ export function LayoutContextProvider(props: { children: React.ReactNode }) {
     () => ({
       searchRef,
       drawerRef,
-      searchMobileButtonRef,
       setShowSearch,
       setShowDrawer,
       showSearch,
@@ -88,7 +77,7 @@ export function LayoutContextProvider(props: { children: React.ReactNode }) {
     [showSearch, showDrawer],
   )
 
-  return <LayoutContext.Provider value={value} {...props} />
+  return <LayoutContext.Provider value={value}>{children}</LayoutContext.Provider>
 }
 
 export default LayoutContext

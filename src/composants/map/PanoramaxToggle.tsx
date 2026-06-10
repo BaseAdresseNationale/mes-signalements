@@ -67,6 +67,9 @@ export class PanoramaxToggleControl implements IControl {
     buttonElement.type = 'button'
     buttonElement.classList.add('panoramax-draggable')
     buttonElement.setAttribute('data-unavailable', '')
+    // Prevent the browser from interpreting touch gestures on the button as
+    // scroll/pinch (which would fire pointercancel and break the drag flow).
+    buttonElement.style.touchAction = 'none'
 
     const iconElement = document.createElement('img')
     iconElement.src = '/icons/panoramax.svg'

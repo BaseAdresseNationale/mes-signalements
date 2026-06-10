@@ -401,6 +401,20 @@ export function PanoramaxLensDrag() {
       const button = target?.closest?.('#panoramax-toggle') as HTMLButtonElement | null
       if (!button) return
       if (button.hasAttribute('data-unavailable')) return
+      // On touch, prevent the browser from turning this into a scroll/zoom
+      // gesture (which would emit pointercancel and abort the drag).
+      if (e.pointerType !== 'mouse' && e.cancelable) {
+        e.preventDefault()
+      }
+      // Capture the pointer on the button so subsequent pointermove/up keep
+      // being delivered to the window listeners even when the finger/cursor
+      // leaves the button and moves over the map (whose maplibre handlers
+      // would otherwise swallow touch events).
+      try {
+        button.setPointerCapture(e.pointerId)
+      } catch {
+        /* setPointerCapture may throw if the pointer is already captured */
+      }
       dragRef.current = {
         pointerId: e.pointerId,
         startX: e.clientX,

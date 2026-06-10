@@ -54,7 +54,7 @@ const router = createHashRouter([
   {
     path: '/',
     element: (
-      <GlobalLayout>
+      <GlobalLayout showSearch>
         <AdresseSearchPage />
       </GlobalLayout>
     ),
@@ -62,7 +62,7 @@ const router = createHashRouter([
   {
     path: '/:code',
     element: (
-      <GlobalLayout>
+      <GlobalLayout showDrawer>
         <SignalementPage />
       </GlobalLayout>
     ),
@@ -84,7 +84,7 @@ const router = createHashRouter([
   {
     path: '/source',
     element: (
-      <GlobalLayout>
+      <GlobalLayout showDrawer>
         <SourcePage />
       </GlobalLayout>
     ),
@@ -93,7 +93,7 @@ const router = createHashRouter([
   {
     path: '/source-settings',
     element: (
-      <GlobalLayout>
+      <GlobalLayout showDrawer>
         <SourceSettingsPage />
       </GlobalLayout>
     ),
@@ -101,7 +101,7 @@ const router = createHashRouter([
   {
     path: '/all',
     element: (
-      <GlobalLayout>
+      <GlobalLayout showDrawer>
         <AllPage />
       </GlobalLayout>
     ),
@@ -110,7 +110,7 @@ const router = createHashRouter([
   {
     path: '/create-adresse',
     element: (
-      <GlobalLayout>
+      <GlobalLayout showDrawer>
         <CreateAdressePage />
       </GlobalLayout>
     ),
@@ -118,7 +118,7 @@ const router = createHashRouter([
   {
     path: '/alert',
     element: (
-      <GlobalLayout>
+      <GlobalLayout showDrawer>
         <AlertPage />
       </GlobalLayout>
     ),
@@ -158,7 +158,7 @@ const router = createHashRouter([
   {
     path: '/advanced-search',
     element: (
-      <GlobalLayout>
+      <GlobalLayout showDrawer>
         <AdvancedSearchPage />
       </GlobalLayout>
     ),
@@ -207,7 +207,7 @@ const router = createHashRouter([
       }
     },
     element: (
-      <GlobalLayout>
+      <GlobalLayout showDrawer>
         <ProconnectCallbackPage />
       </GlobalLayout>
     ),

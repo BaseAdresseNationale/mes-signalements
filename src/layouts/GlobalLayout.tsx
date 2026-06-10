@@ -10,14 +10,16 @@ import { useMatomoTracking } from '../hooks/useMatomoTracking'
 
 interface GlobalLayoutProps {
   children?: React.ReactNode
+  showSearch?: boolean
+  showDrawer?: boolean
 }
 
-export function GlobalLayout({ children }: GlobalLayoutProps) {
+export function GlobalLayout({ children, showSearch, showDrawer }: GlobalLayoutProps) {
   useMatomoTracking()
 
   return (
     <MapContextProvider>
-      <LayoutContextProvider>
+      <LayoutContextProvider showSearch={showSearch} showDrawer={showDrawer}>
         <SourceContextProvider>
           <SignalementContextProvider>
             <ReportViewerContextProvider>

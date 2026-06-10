@@ -1,5 +1,5 @@
+import { Sheet } from 'react-modal-sheet'
 import styled from 'styled-components'
-import { MOBILE_BREAKPOINT } from '../../../hooks/useWindowSize'
 
 export const StyledDrawer = styled.div<{ $animationDuration: number }>`
   position: absolute;
@@ -32,19 +32,42 @@ export const StyledDrawer = styled.div<{ $animationDuration: number }>`
     margin-top: 32px;
     overflow-y: auto;
   }
+`
 
-  @media screen and (max-width: ${MOBILE_BREAKPOINT}px) {
+export const StyledSheetHeader = styled.div`
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 8px 4px;
+
+  > .fr-btn--close {
     position: absolute;
-    height: 50%;
-    bottom: -50%;
-    width: 100%;
-    top: unset;
-    left: 0;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    background: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    transition: ${({ $animationDuration }) => `bottom ${$animationDuration}ms ease-in-out`};
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+`
+
+// Conteneur invisible utilisé pour garder les enfants montés (et leurs effets actifs)
+// quand la Sheet est fermée — la Sheet de react-modal-sheet démonte ses children
+// quand isOpen=false.
+export const StyledHiddenDrawerContent = styled.div`
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+  visibility: hidden;
+`
+
+// La Sheet est rendue dans un portail (document.body) et applique un z-index
+// inline sur sa racine via la prop `style`. Les styles ci-dessous portent
+// uniquement sur la décoration interne.
+export const StyledSheet = styled(Sheet)`
+  .react-modal-sheet-container {
+    padding: 5px;
   }
 `
