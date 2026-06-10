@@ -1,5 +1,6 @@
-import React, { forwardRef, useContext, useEffect } from 'react'
-import { Sheet } from 'react-modal-sheet'
+import React, { forwardRef, useContext, useEffect, useRef } from 'react'
+import { Sheet, type SheetRef } from 'react-modal-sheet'
+import { useTransform } from 'motion/react'
 import {
   StyledDrawer,
   StyledHiddenDrawerContent,
@@ -20,9 +21,21 @@ interface DrawerProps {
 const MOBILE_SNAP_POINTS = [0, 0.15, 0.5, 1]
 const MOBILE_INITIAL_SNAP = 2
 
+function MobileSheetContent({ children }: { children: React.ReactNode }) {
+  // Le scroller interne de Sheet.Content ne donne accès qu'à la portion visible.
+  // En ajoutant un padding-bottom égal à la distance qui sépare la sheet de sa
+  // position totalement ouverte (`y`), l'utilisateur peut atteindre tout le
+  // contenu même quand la sheet est sur un snap point intermédiaire.
+  const { y } = Sheet.useContext()
+  const paddingBottom = useTransform(y, (val) => val)
+
+  return <Sheet.Content scrollStyle={{ paddingBottom }}>{children}</Sheet.Content>
+}
+
 function _Drawer({ children, onClose }: DrawerProps, ref: React.Ref<HTMLDivElement>) {
   const { isMobile } = useWindowSize()
   const { showDrawer } = useContext(LayoutContext)
+  const sheetRef = useRef<SheetRef>(null)
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -53,6 +66,7 @@ function _Drawer({ children, onClose }: DrawerProps, ref: React.Ref<HTMLDivEleme
     // dans un conteneur masqué quand le drawer doit être fermé.
     return showDrawer ? (
       <StyledSheet
+        ref={sheetRef}
         isOpen
         onClose={onClose}
         snapPoints={MOBILE_SNAP_POINTS}
@@ -65,7 +79,7 @@ function _Drawer({ children, onClose }: DrawerProps, ref: React.Ref<HTMLDivEleme
               {closeButton}
             </StyledSheetHeader>
           </Sheet.Header>
-          <Sheet.Content>{children}</Sheet.Content>
+          <MobileSheetContent>{children}</MobileSheetContent>
         </Sheet.Container>
       </StyledSheet>
     ) : (
