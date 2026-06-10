@@ -63,14 +63,11 @@ export const StyledHiddenDrawerContent = styled.div`
   visibility: hidden;
 `
 
-// react-modal-sheet est monté via un portail dans document.body :
-// on garantit qu'il reste au-dessus de la carte et des autres calques.
+// La Sheet est rendue dans un portail (document.body) et applique un z-index
+// inline sur sa racine via la prop `style`. Les styles ci-dessous portent
+// uniquement sur la décoration interne.
 export const StyledSheet = styled(Sheet)`
   .react-modal-sheet-container {
     padding: 5px;
-    z-index: 1000;
-  }
-  .react-modal-sheet-backdrop {
-    z-index: 999;
   }
 `

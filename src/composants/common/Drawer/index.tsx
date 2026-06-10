@@ -71,6 +71,7 @@ function _Drawer({ children, onClose }: DrawerProps, ref: React.Ref<HTMLDivEleme
         onClose={onClose}
         snapPoints={MOBILE_SNAP_POINTS}
         initialSnap={MOBILE_INITIAL_SNAP}
+        style={{ zIndex: 1000 }}
       >
         <Sheet.Container>
           <Sheet.Header>
