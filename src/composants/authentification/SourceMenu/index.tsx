@@ -65,7 +65,12 @@ export default function SourceMenu({ source }: SourceMenuProps) {
           <span>{source.nom}</span>
         </ButtonLabel>
       </MenuButton>
-      <SourceMenuPopover open={open} anchorRef={buttonRef} onClose={() => setOpen(false)} />
+      <SourceMenuPopover
+        source={source}
+        open={open}
+        anchorRef={buttonRef}
+        onClose={() => setOpen(false)}
+      />
     </div>
   )
 }

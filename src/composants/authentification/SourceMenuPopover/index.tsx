@@ -8,7 +8,7 @@ import {
   LocalStorageKeys,
   removeValueFromLocalStorage,
 } from '../../../utils/localStorage.utils'
-import { Author, OpenAPI } from '../../../api/signalement'
+import { Author, OpenAPI, Source } from '../../../api/signalement'
 
 const Popover = styled.div`
   position: fixed;
@@ -67,9 +67,15 @@ interface SourceMenuPopoverProps {
   open: boolean
   anchorRef: React.RefObject<HTMLElement>
   onClose: () => void
+  source: Source
 }
 
-export default function SourceMenuPopover({ open, anchorRef, onClose }: SourceMenuPopoverProps) {
+export default function SourceMenuPopover({
+  open,
+  anchorRef,
+  onClose,
+  source,
+}: SourceMenuPopoverProps) {
   const [position, setPosition] = useState<{ top: number; left: number } | null>(null)
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const focusTrapRef = useRef<focusTrap.FocusTrap | null>(null)
@@ -167,15 +173,17 @@ export default function SourceMenuPopover({ open, anchorRef, onClose }: SourceMe
             Suivi des signalements
           </MenuLink>
         </MenuItem>
-        <MenuItem>
-          <MenuLink
-            href='/#/source-settings'
-            onClick={onClose}
-            className='fr-link fr-link--icon-left fr-icon-settings-5-line'
-          >
-            Paramètres
-          </MenuLink>
-        </MenuItem>
+        {source.type === Source.type.PRIVATE && (
+          <MenuItem>
+            <MenuLink
+              href='/#/source-settings'
+              onClick={onClose}
+              className='fr-link fr-link--icon-left fr-icon-settings-5-line'
+            >
+              Paramètres
+            </MenuLink>
+          </MenuItem>
+        )}
         <MenuItem>
           <MenuLink
             href='/'
