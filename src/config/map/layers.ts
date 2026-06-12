@@ -247,6 +247,7 @@ export const signalementPointsLayer = {
   type: 'symbol',
   minzoom: 10,
   layout: {
+    visibility: 'visible',
     'icon-image': [
       'case',
       ['==', ['get', 'type'], Signalement.type.LOCATION_TO_CREATE],
