@@ -83,7 +83,3 @@ Toutes ces variables ont des valeurs par défaut que vous trouverez dans le fich
 ## Gouvernance
 
 ANCT
-
-## Licence
-
-MIT
