@@ -7,19 +7,23 @@ export interface PaginatedData<TItem> {
 }
 
 export function useBrowserData<
-  TType extends string,
-  TStatus extends string,
-  TPaginated extends PaginatedData<unknown>,
+  SPaginated extends PaginatedData<unknown>,
+  APaginated extends PaginatedData<unknown>,
 >(
-  fetcher: (page: number, filter: BrowserFilter<TType, TStatus>) => Promise<TPaginated>,
-  initialFilter: BrowserFilter<TType, TStatus>,
+  {
+    fetchSignalements,
+    fetchAlerts,
+  }: {
+    fetchSignalements: (page: number, filter: BrowserFilter) => Promise<SPaginated>
+    fetchAlerts: (page: number, filter: BrowserFilter) => Promise<APaginated>
+  },
+  initialFilter: BrowserFilter,
 ) {
-  const [paginatedData, setPaginatedData] = useState<TPaginated>()
-  const [isLoading, setIsLoading] = useState(false)
-  const [filter, setFilter] = useState<BrowserFilter<TType, TStatus>>(initialFilter)
-  const [page, setPage] = useState(1)
+  const [filter, setFilter] = useState<BrowserFilter>(initialFilter)
+  const signalementsBrowser = useTabData<SPaginated>(fetchSignalements, initialFilter)
+  const alertsBrowser = useTabData<APaginated>(fetchAlerts, initialFilter)
 
-  const syncFilterToUrl = useCallback((newFilter: BrowserFilter<TType, TStatus>) => {
+  const syncFilterToUrl = useCallback((newFilter: BrowserFilter) => {
     // Update the URL directly via the History API so react-router's loader is not re-triggered.
     // HashRouter stores the route (and its search params) inside window.location.hash.
     const url = new URL(window.location.href)
@@ -39,8 +43,12 @@ export function useBrowserData<
       newFilter.status.map((s) => s.value),
     )
     apply(
-      'types',
-      newFilter.types.map((t) => t.value),
+      'signalementTypes',
+      newFilter.signalementTypes.map((t) => t.value),
+    )
+    apply(
+      'alertTypes',
+      newFilter.alertTypes.map((t) => t.value),
     )
     apply(
       'communes',
@@ -51,8 +59,50 @@ export function useBrowserData<
     window.history.replaceState(window.history.state, '', url.toString())
   }, [])
 
+  const resetFilter = useCallback(() => {
+    const reset = {
+      signalementTypes: [],
+      alertTypes: [],
+      status: [],
+      communes: [],
+      sources: initialFilter.sources,
+    }
+    setFilter(reset)
+    signalementsBrowser.setPage(1)
+    alertsBrowser.setPage(1)
+    syncFilterToUrl(reset)
+  }, [initialFilter, syncFilterToUrl])
+
+  const updateFilter = useCallback(
+    (newFilter: BrowserFilter) => {
+      setFilter(newFilter)
+      signalementsBrowser.setPage(1)
+      alertsBrowser.setPage(1)
+      syncFilterToUrl(newFilter)
+    },
+    [syncFilterToUrl],
+  )
+
+  return {
+    signalementsBrowser,
+    alertsBrowser,
+    filter,
+    setFilter: updateFilter,
+    resetFilter,
+  }
+}
+
+function useTabData<TPaginated>(
+  fetcher: (page: number, filter: BrowserFilter) => Promise<TPaginated>,
+  filter: BrowserFilter,
+) {
+  const [paginatedData, setPaginatedData] = useState<TPaginated>()
+  const [isLoading, setIsLoading] = useState(false)
+  const [page, setPage] = useState(1)
+
   // Update URL when filter changes
   useEffect(() => {
+    console.log('Filter changed, resetting page to 1')
     let cancelled = false
     setIsLoading(true)
     fetcher(page, filter)
@@ -75,34 +125,12 @@ export function useBrowserData<
     }
   }, [fetcher, page, filter])
 
-  const resetFilter = useCallback(() => {
-    const reset = {
-      types: [],
-      status: [],
-      communes: [],
-      sources: initialFilter.sources,
-    }
-    setFilter(reset)
-    setPage(1)
-    syncFilterToUrl(reset)
-  }, [initialFilter, syncFilterToUrl])
-
-  const updateFilter = useCallback(
-    (newFilter: BrowserFilter<TType, TStatus>) => {
-      setFilter(newFilter)
-      setPage(1)
-      syncFilterToUrl(newFilter)
-    },
-    [syncFilterToUrl],
-  )
-
   return {
     paginatedData,
     isLoading,
-    filter,
-    setFilter: updateFilter,
     page,
     setPage,
-    resetFilter,
+    setPaginatedData,
+    setIsLoading,
   }
 }

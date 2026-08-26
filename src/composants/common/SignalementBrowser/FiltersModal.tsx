@@ -78,20 +78,21 @@ const StyledForm = styled.form`
   }
 `
 
-interface FiltersModalProps<TType extends string, TStatus extends string> {
-  filters: BrowserFilter<TType, TStatus>
+interface FiltersModalProps {
+  filters: BrowserFilter
   onClose: () => void
-  onSubmit: (newFilters: BrowserFilter<TType, TStatus>) => void
+  onSubmit: (newFilters: BrowserFilter) => void
   onReset?: () => void
   sourceOptions?: SelectOptionType<string>[]
   title?: string
-  statusOptions: SelectOptionType<TStatus>[]
-  typeOptions: SelectOptionType<TType>[]
+  statusOptions: SelectOptionType<Alert.status | Signalement.status>[]
+  typeOptions: SelectOptionType<Alert.type | Signalement.type>[]
+  typeKey: 'signalementTypes' | 'alertTypes'
   sourceHint?: string
   communeHint?: string
 }
 
-export function FiltersModal<TType extends string, TStatus extends string>({
+export function FiltersModal({
   filters,
   onClose,
   onSubmit,
@@ -100,10 +101,11 @@ export function FiltersModal<TType extends string, TStatus extends string>({
   title = 'Filtrer',
   statusOptions,
   typeOptions,
+  typeKey,
   sourceHint,
   communeHint,
-}: Readonly<FiltersModalProps<TType, TStatus>>) {
-  const [value, setValue] = useState<BrowserFilter<TType, TStatus>>(filters)
+}: Readonly<FiltersModalProps>) {
+  const [value, setValue] = useState<BrowserFilter>(filters)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -122,7 +124,7 @@ export function FiltersModal<TType extends string, TStatus extends string>({
           onChange={(newValue) =>
             setValue((prev) => ({
               ...prev,
-              status: newValue as SelectOptionType<TStatus>[],
+              status: newValue as SelectOptionType<Alert.status | Signalement.status>[],
             }))
           }
           hint={statusOptions.map((option) => option.label).join(', ')}
@@ -131,12 +133,12 @@ export function FiltersModal<TType extends string, TStatus extends string>({
         <MuiSelectInput
           isMultiSelect
           label='Types'
-          value={value.types}
+          value={value[typeKey]}
           options={typeOptions}
           onChange={(newValue) =>
             setValue((prev) => ({
               ...prev,
-              types: newValue as SelectOptionType<TType>[],
+              [typeKey]: newValue as SelectOptionType<Alert.type | Signalement.type>[],
             }))
           }
           hint={typeOptions.map((option) => option.label).join(', ')}

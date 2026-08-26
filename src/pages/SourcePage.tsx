@@ -1,31 +1,25 @@
 import React, { useContext } from 'react'
 import { SignalementBrowser } from '../composants/common/SignalementBrowser'
 import SourceContext from '../contexts/source.context'
-import {
-  AlertBrowserFilter,
-  SignalementBrowserFilter,
-} from '../composants/common/SignalementBrowser/types'
+import { BrowserFilter } from '../composants/common/SignalementBrowser/types'
 import { useLoaderData } from 'react-router-dom'
 
 export function SourcePage() {
   const { source } = useContext(SourceContext)
-  const loaderData = useLoaderData() as {
-    signalementsInitialFilter: SignalementBrowserFilter
-    alertsInitialFilter: AlertBrowserFilter
+  const { initialFilters } = useLoaderData() as {
+    initialFilters: BrowserFilter
   }
   const sourceOption = source ? [{ value: source.id, label: source.nom }] : []
 
-  const signalementsInitialFilter = {
-    ...loaderData.signalementsInitialFilter,
+  const initialFiltersWithSource = {
+    ...initialFilters,
     sources: sourceOption,
   }
-  const alertsInitialFilter = { ...loaderData.alertsInitialFilter, sources: sourceOption }
 
   return source ? (
     <SignalementBrowser
       fromSource={{ value: source.id, label: source.nom }}
-      signalementsInitialFilter={signalementsInitialFilter}
-      alertsInitialFilter={alertsInitialFilter}
+      initialFilters={initialFiltersWithSource}
     />
   ) : null
 }
