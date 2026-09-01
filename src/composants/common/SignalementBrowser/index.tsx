@@ -192,7 +192,15 @@ export function SignalementBrowser({ fromSource, initialFilters }: SignalementBr
 
   useMapContent(mapContent)
 
-  const sharedSourceOptions = hideSourceFilter ? undefined : sourceOptions
+  const getAvailableFiltersWithSource = useCallback(
+    (filters: string[]) => {
+      if (hideSourceFilter) {
+        return filters
+      }
+      return [...filters, 'sources']
+    },
+    [hideSourceFilter, sourceOptions],
+  )
 
   return (
     <StyledTabs
@@ -218,16 +226,21 @@ export function SignalementBrowser({ fromSource, initialFilters }: SignalementBr
           onItemHover={setHoveredSignalement}
           onItemSelect={handleSelectSignalement}
           emptyMessage='Aucun signalement'
-          filterButtonLabel='Filtrer les signalements'
-          filterButtonLabelActive='Modifier les filtres'
           filtersConfig={{
             title: 'Filtrer les signalements',
             statusOptions: signalementFilterStatusOptions,
             typeOptions: signalementFilterTypesOptions,
-            sourceOptions: sharedSourceOptions,
+            sourceOptions: sourceOptions,
             sourceHint: 'Sources de provenance des signalements',
             communeHint: 'Communes sur lesquelles les signalements ont été effectués',
             typeKey: 'signalementTypes',
+            availableFilters: getAvailableFiltersWithSource([
+              'status',
+              'signalementTypes',
+              'communes',
+            ]),
+            buttonLabel: 'Filtrer les signalements',
+            buttonLabelActive: 'Modifier les filtres',
           }}
         />
       )}
@@ -246,16 +259,17 @@ export function SignalementBrowser({ fromSource, initialFilters }: SignalementBr
           onItemHover={setHoveredAlert}
           onItemSelect={handleSelectAlert}
           emptyMessage='Aucune alerte'
-          filterButtonLabel='Filtrer les alertes'
-          filterButtonLabelActive='Modifier les filtres'
           filtersConfig={{
             title: 'Filtrer les alertes',
             statusOptions: alertFilterStatusOptions,
             typeOptions: alertFilterTypesOptions,
-            sourceOptions: sharedSourceOptions,
+            sourceOptions: sourceOptions,
             sourceHint: 'Sources de provenance des alertes',
             communeHint: 'Communes sur lesquelles les alertes ont été effectuées',
+            availableFilters: getAvailableFiltersWithSource(['status', 'alertTypes', 'communes']),
             typeKey: 'alertTypes',
+            buttonLabel: 'Filtrer les alertes',
+            buttonLabelActive: 'Modifier les filtres',
           }}
         />
       )}

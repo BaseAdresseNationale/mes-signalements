@@ -13,10 +13,13 @@ export interface BrowserTabFiltersConfig {
   title: string
   statusOptions: SelectOptionType<Alert.status | Signalement.status>[]
   typeOptions: SelectOptionType<Alert.type | Signalement.type>[]
-  typeKey: 'signalementTypes' | 'alertTypes'
+  availableFilters: string[]
   sourceOptions?: SelectOptionType<string>[]
   sourceHint?: string
   communeHint?: string
+  buttonLabel: string
+  buttonLabelActive: string
+  typeKey: 'signalementTypes' | 'alertTypes'
 }
 
 interface BrowserTabProps<TItem> {
@@ -33,8 +36,6 @@ interface BrowserTabProps<TItem> {
   onItemHover?: (item: TItem | undefined) => void
   onItemSelect?: (item: TItem) => void
   emptyMessage: string
-  filterButtonLabel: string
-  filterButtonLabelActive: string
   filtersConfig: BrowserTabFiltersConfig
 }
 
@@ -52,19 +53,19 @@ export function BrowserTab<TItem>({
   onItemHover,
   onItemSelect,
   emptyMessage,
-  filterButtonLabel,
-  filterButtonLabelActive,
   filtersConfig,
 }: BrowserTabProps<TItem>) {
   const [showFilters, setShowFilters] = useState(false)
 
   const hasCustomFilters = useMemo(
     () =>
-      filter.status.length > 0 ||
-      filter.signalementTypes.length > 0 ||
-      filter.communes.length > 0 ||
-      JSON.stringify(filter.sources) !==
-        JSON.stringify(filtersConfig.sourceOptions?.map((option) => option.value) || []),
+      Object.entries(filter).some(([key, values]) => {
+        const availableFilters = filtersConfig.availableFilters
+        if (!availableFilters.includes(key as keyof BrowserFilter)) {
+          return false
+        }
+        return values.length > 0
+      }),
     [filter, filtersConfig],
   )
 
@@ -81,7 +82,7 @@ export function BrowserTab<TItem>({
           onClick={() => setShowFilters(!showFilters)}
           priority='tertiary no outline'
         >
-          {hasCustomFilters ? filterButtonLabelActive : filterButtonLabel}
+          {hasCustomFilters ? filtersConfig.buttonLabelActive : filtersConfig.buttonLabel}
         </Button>
       </div>
       {isLoading && <Loader />}

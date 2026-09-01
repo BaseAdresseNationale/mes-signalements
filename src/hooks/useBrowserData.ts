@@ -20,8 +20,8 @@ export function useBrowserData<
   initialFilter: BrowserFilter,
 ) {
   const [filter, setFilter] = useState<BrowserFilter>(initialFilter)
-  const signalementsBrowser = useTabData<SPaginated>(fetchSignalements, initialFilter)
-  const alertsBrowser = useTabData<APaginated>(fetchAlerts, initialFilter)
+  const signalementsBrowser = useTabData<SPaginated>(fetchSignalements, filter)
+  const alertsBrowser = useTabData<APaginated>(fetchAlerts, filter)
 
   const syncFilterToUrl = useCallback((newFilter: BrowserFilter) => {
     // Update the URL directly via the History API so react-router's loader is not re-triggered.
@@ -102,7 +102,6 @@ function useTabData<TPaginated>(
 
   // Update URL when filter changes
   useEffect(() => {
-    console.log('Filter changed, resetting page to 1')
     let cancelled = false
     setIsLoading(true)
     fetcher(page, filter)
