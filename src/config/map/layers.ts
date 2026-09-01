@@ -271,6 +271,7 @@ export const alertPointsLayer = {
   type: 'symbol',
   minzoom: 10,
   layout: {
+    visibility: 'visible',
     'icon-image': 'alert-flag',
     'icon-anchor': 'bottom',
     'icon-size': 0.4,

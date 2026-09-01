@@ -26,11 +26,10 @@ import {
   signalementFilterStatusOptions,
   signalementFilterTypesOptions,
 } from './FiltersModal'
-import { AlertBrowserFilter, SignalementBrowserFilter } from './types'
+import { BrowserFilter } from './types'
 
 interface SignalementBrowserProps {
-  signalementsInitialFilter: SignalementBrowserFilter
-  alertsInitialFilter: AlertBrowserFilter
+  initialFilters: BrowserFilter
   fromSource?: { value: string; label: string }
 }
 
@@ -47,11 +46,7 @@ const PAGE_SIZE = 20
 const SIGNALEMENTS_TAB_ID = 'signalements'
 const ALERTS_TAB_ID = 'alerts'
 
-export function SignalementBrowser({
-  fromSource,
-  signalementsInitialFilter,
-  alertsInitialFilter,
-}: SignalementBrowserProps) {
+export function SignalementBrowser({ fromSource, initialFilters }: SignalementBrowserProps) {
   const hideSourceFilter = !!fromSource
   const { setViewedReport } = useContext(ReportViewerContext)
   const { setAdresseSearchMapLayersOptions, setSignalementSearchMapLayerOptions, mapRef } =
@@ -96,8 +91,8 @@ export function SignalementBrowser({
 
   // Data fetching per tab
   const fetchSignalements = useCallback(
-    async (page: number, filter: SignalementBrowserFilter): Promise<PaginatedSignalementsDTO> => {
-      const { status, types, communes, sources } = filter
+    async (page: number, filter: BrowserFilter): Promise<PaginatedSignalementsDTO> => {
+      const { status, signalementTypes: types, communes, sources } = filter
       return SignalementsService.getSignalements(
         PAGE_SIZE,
         page,
@@ -111,8 +106,8 @@ export function SignalementBrowser({
   )
 
   const fetchAlerts = useCallback(
-    async (page: number, filter: AlertBrowserFilter): Promise<PaginatedAlertsDTO> => {
-      const { status, types, communes, sources } = filter
+    async (page: number, filter: BrowserFilter): Promise<PaginatedAlertsDTO> => {
+      const { status, alertTypes: types, communes, sources } = filter
       return AlertsService.getAlerts(
         PAGE_SIZE,
         page,
@@ -125,8 +120,10 @@ export function SignalementBrowser({
     [],
   )
 
-  const signalementsBrowser = useBrowserData(fetchSignalements, signalementsInitialFilter)
-  const alertsBrowser = useBrowserData(fetchAlerts, alertsInitialFilter)
+  const { signalementsBrowser, alertsBrowser, filter, setFilter, resetFilter } = useBrowserData(
+    { fetchSignalements, fetchAlerts },
+    initialFilters,
+  )
 
   // flyTo helper
   const flyTo = useCallback(
@@ -195,7 +192,15 @@ export function SignalementBrowser({
 
   useMapContent(mapContent)
 
-  const sharedSourceOptions = hideSourceFilter ? undefined : sourceOptions
+  const getAvailableFiltersWithSource = useCallback(
+    (filters: string[]) => {
+      if (hideSourceFilter) {
+        return filters
+      }
+      return [...filters, 'sources']
+    },
+    [hideSourceFilter, sourceOptions],
+  )
 
   return (
     <StyledTabs
@@ -207,58 +212,64 @@ export function SignalementBrowser({
       ]}
     >
       {activeTabId === SIGNALEMENTS_TAB_ID && (
-        <BrowserTab<Signalement, Signalement.type, Signalement.status>
+        <BrowserTab
           isLoading={signalementsBrowser.isLoading}
           paginatedData={signalementsBrowser.paginatedData}
           pageSize={PAGE_SIZE}
           page={signalementsBrowser.page}
           onPageChange={signalementsBrowser.setPage}
-          filter={signalementsBrowser.filter}
-          initialFilter={signalementsInitialFilter}
-          onFilterChange={signalementsBrowser.setFilter}
-          onResetFilter={signalementsBrowser.resetFilter}
+          filter={filter}
+          onFilterChange={setFilter}
+          onResetFilter={resetFilter}
           renderItem={(signalement) => <SignalementCard signalement={signalement} />}
           getItemKey={(signalement, index) => signalement.id ?? index}
           onItemHover={setHoveredSignalement}
           onItemSelect={handleSelectSignalement}
           emptyMessage='Aucun signalement'
-          filterButtonLabel='Filtrer les signalements'
-          filterButtonLabelActive='Modifier les filtres'
           filtersConfig={{
             title: 'Filtrer les signalements',
             statusOptions: signalementFilterStatusOptions,
             typeOptions: signalementFilterTypesOptions,
-            sourceOptions: sharedSourceOptions,
+            sourceOptions: sourceOptions,
             sourceHint: 'Sources de provenance des signalements',
             communeHint: 'Communes sur lesquelles les signalements ont été effectués',
+            typeKey: 'signalementTypes',
+            availableFilters: getAvailableFiltersWithSource([
+              'status',
+              'signalementTypes',
+              'communes',
+            ]),
+            buttonLabel: 'Filtrer les signalements',
+            buttonLabelActive: 'Modifier les filtres',
           }}
         />
       )}
       {activeTabId === ALERTS_TAB_ID && (
-        <BrowserTab<Alert, Alert.type, Alert.status>
+        <BrowserTab
           isLoading={alertsBrowser.isLoading}
           paginatedData={alertsBrowser.paginatedData}
           pageSize={PAGE_SIZE}
           page={alertsBrowser.page}
           onPageChange={alertsBrowser.setPage}
-          filter={alertsBrowser.filter}
-          initialFilter={alertsInitialFilter}
-          onFilterChange={alertsBrowser.setFilter}
-          onResetFilter={alertsBrowser.resetFilter}
+          filter={filter}
+          onFilterChange={setFilter}
+          onResetFilter={resetFilter}
           renderItem={(alert) => <AlertCard alert={alert} />}
           getItemKey={(alert, index) => alert.id ?? index}
           onItemHover={setHoveredAlert}
           onItemSelect={handleSelectAlert}
           emptyMessage='Aucune alerte'
-          filterButtonLabel='Filtrer les alertes'
-          filterButtonLabelActive='Modifier les filtres'
           filtersConfig={{
             title: 'Filtrer les alertes',
             statusOptions: alertFilterStatusOptions,
             typeOptions: alertFilterTypesOptions,
-            sourceOptions: sharedSourceOptions,
+            sourceOptions: sourceOptions,
             sourceHint: 'Sources de provenance des alertes',
             communeHint: 'Communes sur lesquelles les alertes ont été effectuées',
+            availableFilters: getAvailableFiltersWithSource(['status', 'alertTypes', 'communes']),
+            typeKey: 'alertTypes',
+            buttonLabel: 'Filtrer les alertes',
+            buttonLabelActive: 'Modifier les filtres',
           }}
         />
       )}

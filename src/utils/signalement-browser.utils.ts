@@ -1,14 +1,10 @@
 import { SelectOptionType } from '../composants/common/MuiSelectInput'
 import {
-  alertFilterStatusOptions,
   alertFilterTypesOptions,
   signalementFilterStatusOptions,
   signalementFilterTypesOptions,
 } from '../composants/common/SignalementBrowser/FiltersModal'
-import {
-  AlertBrowserFilter,
-  SignalementBrowserFilter,
-} from '../composants/common/SignalementBrowser/types'
+import { BrowserFilter } from '../composants/common/SignalementBrowser/types'
 
 export function resolveOptions<T extends string>(
   values: string[] | null,
@@ -47,33 +43,23 @@ export async function resolveCommunes(
 }
 
 export async function getInitialFilter({ request }: { request: Request }): Promise<{
-  signalementsInitialFilter: SignalementBrowserFilter
-  alertsInitialFilter: AlertBrowserFilter
+  initialFilters: BrowserFilter
 }> {
   const url = new URL(request.url)
 
   const communesParam = url.searchParams.get('communes')?.split(',') || null
-  const typesParam = url.searchParams.get('types')?.split(',') || null
   const statusParam = url.searchParams.get('status')?.split(',') || null
-
+  const signalementTypesParam = url.searchParams.get('signalementTypes')?.split(',') || null
+  const alertTypesParam = url.searchParams.get('alertTypes')?.split(',') || null
   const communes = await resolveCommunes(communesParam)
 
-  const signalementsInitialFilter = {
+  const initialFilters = {
     status: resolveOptions(statusParam, signalementFilterStatusOptions),
-    types: resolveOptions(typesParam, signalementFilterTypesOptions),
+    signalementTypes: resolveOptions(signalementTypesParam, signalementFilterTypesOptions),
+    alertTypes: resolveOptions(alertTypesParam, alertFilterTypesOptions),
     communes,
     sources: [], // Source filter is only applied on SourcePage and options are loaded in the component, so we can ignore URL params for sources
-  } as SignalementBrowserFilter
+  } as BrowserFilter
 
-  const alertsInitialFilter = {
-    status: resolveOptions(statusParam, alertFilterStatusOptions),
-    types: resolveOptions(typesParam, alertFilterTypesOptions),
-    communes,
-    sources: [], // Source filter is only applied on SourcePage and options are loaded in the component, so we can ignore URL params for sources
-  } as AlertBrowserFilter
-
-  return {
-    signalementsInitialFilter,
-    alertsInitialFilter,
-  }
+  return { initialFilters }
 }

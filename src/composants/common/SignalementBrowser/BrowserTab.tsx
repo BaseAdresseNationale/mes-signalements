@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react'
+import { Alert, Signalement } from '../../../api/signalement'
 import Button from '@codegouvfr/react-dsfr/Button'
 import Loader from '../Loader'
 import Pagination from '../Pagination'
@@ -8,43 +9,43 @@ import { BrowserFilter } from './types'
 import { StyledBrowserTabWrapper } from './BrowserTab.styles'
 import { PaginatedData } from '../../../hooks/useBrowserData'
 
-export interface BrowserTabFiltersConfig<TType extends string, TStatus extends string> {
+export interface BrowserTabFiltersConfig {
   title: string
-  statusOptions: SelectOptionType<TStatus>[]
-  typeOptions: SelectOptionType<TType>[]
+  statusOptions: SelectOptionType<Alert.status | Signalement.status>[]
+  typeOptions: SelectOptionType<Alert.type | Signalement.type>[]
+  availableFilters: string[]
   sourceOptions?: SelectOptionType<string>[]
   sourceHint?: string
   communeHint?: string
+  buttonLabel: string
+  buttonLabelActive: string
+  typeKey: 'signalementTypes' | 'alertTypes'
 }
 
-interface BrowserTabProps<TItem, TType extends string, TStatus extends string> {
+interface BrowserTabProps<TItem> {
   isLoading: boolean
   paginatedData?: PaginatedData<TItem>
   pageSize: number
   page: number
   onPageChange: (page: number) => void
-  filter: BrowserFilter<TType, TStatus>
-  initialFilter: BrowserFilter<TType, TStatus>
-  onFilterChange: (filter: BrowserFilter<TType, TStatus>) => void
+  filter: BrowserFilter
+  onFilterChange: (filter: BrowserFilter) => void
   onResetFilter: () => void
   renderItem: (item: TItem) => React.ReactNode
   getItemKey: (item: TItem, index: number) => React.Key
   onItemHover?: (item: TItem | undefined) => void
   onItemSelect?: (item: TItem) => void
   emptyMessage: string
-  filterButtonLabel: string
-  filterButtonLabelActive: string
-  filtersConfig: BrowserTabFiltersConfig<TType, TStatus>
+  filtersConfig: BrowserTabFiltersConfig
 }
 
-export function BrowserTab<TItem, TType extends string, TStatus extends string>({
+export function BrowserTab<TItem>({
   isLoading,
   paginatedData,
   pageSize,
   page,
   onPageChange,
   filter,
-  initialFilter,
   onFilterChange,
   onResetFilter,
   renderItem,
@@ -52,19 +53,20 @@ export function BrowserTab<TItem, TType extends string, TStatus extends string>(
   onItemHover,
   onItemSelect,
   emptyMessage,
-  filterButtonLabel,
-  filterButtonLabelActive,
   filtersConfig,
-}: BrowserTabProps<TItem, TType, TStatus>) {
+}: BrowserTabProps<TItem>) {
   const [showFilters, setShowFilters] = useState(false)
 
   const hasCustomFilters = useMemo(
     () =>
-      filter.status.length > 0 ||
-      filter.types.length > 0 ||
-      filter.communes.length > 0 ||
-      JSON.stringify(filter.sources) !== JSON.stringify(initialFilter.sources),
-    [filter, initialFilter],
+      Object.entries(filter).some(([key, values]) => {
+        const availableFilters = filtersConfig.availableFilters
+        if (!availableFilters.includes(key as keyof BrowserFilter)) {
+          return false
+        }
+        return values.length > 0
+      }),
+    [filter, filtersConfig],
   )
 
   const handleResetFilter = useCallback(() => {
@@ -80,7 +82,7 @@ export function BrowserTab<TItem, TType extends string, TStatus extends string>(
           onClick={() => setShowFilters(!showFilters)}
           priority='tertiary no outline'
         >
-          {hasCustomFilters ? filterButtonLabelActive : filterButtonLabel}
+          {hasCustomFilters ? filtersConfig.buttonLabelActive : filtersConfig.buttonLabel}
         </Button>
       </div>
       {isLoading && <Loader />}
@@ -120,6 +122,7 @@ export function BrowserTab<TItem, TType extends string, TStatus extends string>(
           title={filtersConfig.title}
           statusOptions={filtersConfig.statusOptions}
           typeOptions={filtersConfig.typeOptions}
+          typeKey={filtersConfig.typeKey}
           sourceHint={filtersConfig.sourceHint}
           communeHint={filtersConfig.communeHint}
         />
