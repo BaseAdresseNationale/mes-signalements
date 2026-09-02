@@ -19,6 +19,7 @@ type StatsGroupRaw = {
   total?: number | string
   fromSources?: Record<string, Record<string, number | string>>
   processedBy?: Record<string, Record<string, number | string>>
+  byMonth?: CombinedStatsDTO['signalementStats']['byMonth']
 }
 
 type StatsOutput = {
@@ -29,6 +30,7 @@ type StatsOutput = {
   totalExpired: number
   sourceChartData: ChartData
   clientChartData: ChartData
+  byMonth: CombinedStatsDTO['signalementStats']['byMonth']
 }
 
 const labelMap = {
@@ -36,6 +38,11 @@ const labelMap = {
   [Signalement.status.PROCESSED]: 'Traités',
   [Signalement.status.IGNORED]: 'Ignorés',
   [Signalement.status.EXPIRED]: 'Expirés',
+}
+
+const byMonthTypeLabelMap: Record<string, string> = {
+  created: 'Créés',
+  processed: 'Traités',
 }
 
 const emptyTotals: StatByStatus = {
@@ -116,6 +123,10 @@ const buildStats = (group?: StatsGroupRaw): StatsOutput | null => {
     clientChartData: {
       children: getChildren(group.processedBy),
     },
+    byMonth: (group.byMonth || []).map((entry: Record<string, any>) => ({
+      ...entry,
+      type: byMonthTypeLabelMap[entry.type] || entry.type,
+    })),
   }
 }
 
