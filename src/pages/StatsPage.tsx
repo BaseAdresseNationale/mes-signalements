@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Sunburst } from '@ant-design/plots'
+import { Column } from '@ant-design/plots'
 import { useStats } from '../hooks/useStats'
 import { CountStat } from '../composants/stats/CountStat'
 import Loader from '../composants/common/Loader'
@@ -55,6 +56,35 @@ export function StatsPage() {
                       </section>
 
                       <section>
+                        <Column
+                          animate={{
+                            enter: { type: 'waveIn' },
+                          }}
+                          innerRadius={0.2}
+                          title={{
+                            title: 'Créations et traitements par mois',
+                            titleFontSize: 22,
+                          }}
+                          data={signalementStats.byMonth}
+                          xField='date'
+                          yField='count'
+                          colorField='type'
+                          group={{ padding: 0 }}
+                          axis={{
+                            x: {
+                              labelFormatter: (text: string) => {
+                                const [year, month] = text.split('-')
+                                return `${month}/${year}`
+                              },
+                            },
+                            y: {
+                              labelFormatter: (text: string) => `${text}`,
+                            },
+                          }}
+                        />
+                      </section>
+
+                      <section>
                         <Sunburst
                           data={signalementStats.sourceChartData}
                           animate={{
@@ -93,6 +123,35 @@ export function StatsPage() {
                           <CountStat label='Traités' count={alertStats.totalProcessed} />
                           <CountStat label='Ignorés' count={alertStats.totalIgnored} />
                         </div>
+                      </section>
+                      <section>
+                        <Column
+                          data={alertStats.byMonth}
+                          xField='date'
+                          yField='count'
+                          colorField='type'
+                          axis={{
+                            x: {
+                              labelFormatter: (text: string) => text.split('-').reverse().join('/'),
+                            },
+                            y: {
+                              labelFormatter: (text: string) => `${text}`,
+                            },
+                          }}
+                          meta={{
+                            date: { alias: 'Date' },
+                            count: { alias: "Nombre d'alertes" },
+                          }}
+                          animate={{
+                            enter: { type: 'waveIn' },
+                          }}
+                          innerRadius={0.2}
+                          title={{
+                            title: 'Créations et traitements par mois',
+                            titleFontSize: 22,
+                          }}
+                          group={{ padding: 0 }}
+                        />
                       </section>
                       <section>
                         <Sunburst
