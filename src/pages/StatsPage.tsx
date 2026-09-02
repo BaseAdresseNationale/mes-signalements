@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Sunburst } from '@ant-design/plots'
-import { Column } from '@ant-design/plots'
+import { Sunburst, DualAxes } from '@ant-design/plots'
 import { useStats } from '../hooks/useStats'
 import { CountStat } from '../composants/stats/CountStat'
 import Loader from '../composants/common/Loader'
@@ -56,20 +55,15 @@ export function StatsPage() {
                       </section>
 
                       <section>
-                        <Column
+                        <DualAxes
+                          xField='date'
                           animate={{
                             enter: { type: 'waveIn' },
                           }}
-                          innerRadius={0.2}
                           title={{
                             title: 'Créations et traitements par mois',
                             titleFontSize: 22,
                           }}
-                          data={signalementStats.byMonth}
-                          xField='date'
-                          yField='count'
-                          colorField='type'
-                          group={{ padding: 0 }}
                           axis={{
                             x: {
                               labelFormatter: (text: string) => {
@@ -80,6 +74,59 @@ export function StatsPage() {
                             y: {
                               labelFormatter: (text: string) => `${text}`,
                             },
+                          }}
+                          tooltip={{
+                            title: (datum: any) => {
+                              const [year, month] = datum.date.split('-')
+                              return `${month}/${year}`
+                            },
+                            items: [
+                              {
+                                channel: 'y',
+                                valueFormatter: (value: number) => value.toLocaleString('fr-FR'),
+                              },
+                            ],
+                          }}
+                          {...{
+                            children: [
+                              {
+                                type: 'interval',
+                                data: signalementStats.byMonth,
+                                yField: 'count',
+                                colorField: 'type',
+                                group: { padding: 0 },
+                                tooltip: {
+                                  items: [
+                                    (datum: any) => {
+                                      const [year, month] = datum.date.split('-')
+                                      return {
+                                        name: `${datum.type} (${month}/${year})`,
+                                        value: datum.count,
+                                      }
+                                    },
+                                  ],
+                                },
+                              },
+                              {
+                                type: 'line',
+                                data: signalementStats.byMonthStacked,
+                                yField: 'count',
+                                colorField: 'type',
+                                tooltip: {
+                                  items: [
+                                    (datum: any) => ({
+                                      name: `${datum.type} (cumulé)`,
+                                      value: datum.count,
+                                    }),
+                                  ],
+                                },
+                                axis: {
+                                  y: {
+                                    position: 'right',
+                                  },
+                                },
+                              },
+                            ],
                           }}
                         />
                       </section>
@@ -125,32 +172,62 @@ export function StatsPage() {
                         </div>
                       </section>
                       <section>
-                        <Column
-                          data={alertStats.byMonth}
+                        <DualAxes
                           xField='date'
-                          yField='count'
-                          colorField='type'
+                          animate={{
+                            enter: { type: 'waveIn' },
+                          }}
+                          title={{
+                            title: 'Créations et traitements par mois',
+                            titleFontSize: 22,
+                          }}
                           axis={{
                             x: {
-                              labelFormatter: (text: string) => text.split('-').reverse().join('/'),
+                              labelFormatter: (text: string) => {
+                                const [year, month] = text.split('-')
+                                return `${month}/${year}`
+                              },
                             },
                             y: {
                               labelFormatter: (text: string) => `${text}`,
                             },
                           }}
-                          meta={{
-                            date: { alias: 'Date' },
-                            count: { alias: "Nombre d'alertes" },
+                          {...{
+                            children: [
+                              {
+                                type: 'interval',
+                                data: alertStats.byMonth,
+                                yField: 'count',
+                                colorField: 'type',
+                                group: { padding: 0 },
+                                tooltip: {
+                                  items: [
+                                    (datum: any) => {
+                                      const [year, month] = datum.date.split('-')
+                                      return {
+                                        name: `${datum.type} (${month}/${year})`,
+                                        value: datum.count,
+                                      }
+                                    },
+                                  ],
+                                },
+                              },
+                              {
+                                type: 'line',
+                                data: alertStats.byMonthStacked,
+                                yField: 'count',
+                                colorField: 'type',
+                                tooltip: {
+                                  items: [
+                                    (datum: any) => ({
+                                      name: `${datum.type} (cumulé)`,
+                                      value: datum.count,
+                                    }),
+                                  ],
+                                },
+                              },
+                            ],
                           }}
-                          animate={{
-                            enter: { type: 'waveIn' },
-                          }}
-                          innerRadius={0.2}
-                          title={{
-                            title: 'Créations et traitements par mois',
-                            titleFontSize: 22,
-                          }}
-                          group={{ padding: 0 }}
                         />
                       </section>
                       <section>
