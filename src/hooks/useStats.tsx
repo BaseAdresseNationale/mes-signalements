@@ -31,6 +31,7 @@ type StatsOutput = {
   sourceChartData: ChartData
   clientChartData: ChartData
   byMonth: CombinedStatsDTO['signalementStats']['byMonth']
+  byMonthStacked: CombinedStatsDTO['signalementStats']['byMonth']
 }
 
 const labelMap = {
@@ -127,6 +128,35 @@ const buildStats = (group?: StatsGroupRaw): StatsOutput | null => {
       ...entry,
       type: byMonthTypeLabelMap[entry.type] || entry.type,
     })),
+    byMonthStacked: (group.byMonth || []).reduce(
+      (
+        acc: Array<{ type: string; date: string; count: number }>,
+        cur: { type: string; date: string; count: number },
+        index: number,
+      ) => {
+        const prev = acc[index - 2]
+
+        if (!prev) {
+          return [
+            ...acc,
+            {
+              ...cur,
+              type: byMonthTypeLabelMap[cur.type] || cur.type,
+            },
+          ]
+        }
+
+        return [
+          ...acc,
+          {
+            ...cur,
+            type: byMonthTypeLabelMap[cur.type] || cur.type + '(cumulé)',
+            count: cur.count + prev.count,
+          },
+        ]
+      },
+      [],
+    ),
   }
 }
 

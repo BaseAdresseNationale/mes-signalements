@@ -8,7 +8,6 @@ interface CardProps {
 const StyledContainer = styled.div`
   display: flex;
   flex-direction: column;
-  overflow: scroll;
 
   h1 {
     font-size: 1.5rem;
