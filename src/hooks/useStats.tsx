@@ -189,5 +189,10 @@ export function useStats() {
     [rawStats],
   )
 
-  return { signalementStats, alertStats, isLoading }
+  return {
+    signalementStats,
+    alertStats,
+    isLoading,
+    enabledCommuneCount: rawStats?.enabledCommuneCount || 0,
+  }
 }
