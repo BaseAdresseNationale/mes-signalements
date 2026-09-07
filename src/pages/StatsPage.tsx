@@ -26,7 +26,7 @@ const StyledWrapper = styled.div`
 `
 
 export function StatsPage() {
-  const { signalementStats, alertStats, isLoading } = useStats()
+  const { signalementStats, alertStats, isLoading, enabledCommuneCount } = useStats()
   const { mainElPortal } = useMainElPortal()
 
   return mainElPortal
@@ -35,231 +35,238 @@ export function StatsPage() {
           <h1>Tableau de bord statistiques</h1>
           {isLoading ? (
             <Loader />
-          ) : (
-            <Tabs
-              tabs={[
-                {
-                  label: 'Signalements',
-                  isDefault: true,
-                  content: signalementStats ? (
-                    <>
-                      <h2>Signalements</h2>
-                      <section>
-                        <div className='wrapper'>
-                          <CountStat label='Total' count={signalementStats.total} />
-                          <CountStat label='En attente' count={signalementStats.totalPending} />
-                          <CountStat label='Traités' count={signalementStats.totalProcessed} />
-                          <CountStat label='Ignorés' count={signalementStats.totalIgnored} />
-                          <CountStat label='Expirés' count={signalementStats.totalExpired} />
-                        </div>
-                      </section>
+          ) : signalementStats && alertStats ? (
+            <>
+              <section>
+                <div className='wrapper'>
+                  <CountStat label='Communes actives' count={enabledCommuneCount} />
+                </div>
+              </section>
+              <Tabs
+                tabs={[
+                  {
+                    label: 'Signalements',
+                    isDefault: true,
+                    content: signalementStats ? (
+                      <>
+                        <h2>Signalements</h2>
+                        <section>
+                          <div className='wrapper'>
+                            <CountStat label='Total' count={signalementStats.total} />
+                            <CountStat label='En attente' count={signalementStats.totalPending} />
+                            <CountStat label='Traités' count={signalementStats.totalProcessed} />
+                            <CountStat label='Ignorés' count={signalementStats.totalIgnored} />
+                            <CountStat label='Expirés' count={signalementStats.totalExpired} />
+                          </div>
+                        </section>
 
-                      <section>
-                        <DualAxes
-                          xField='date'
-                          animate={{
-                            enter: { type: 'waveIn' },
-                          }}
-                          title={{
-                            title: 'Créations et traitements par mois',
-                            titleFontSize: 22,
-                          }}
-                          axis={{
-                            x: {
-                              labelFormatter: (text: string) => {
-                                const [year, month] = text.split('-')
+                        <section>
+                          <DualAxes
+                            xField='date'
+                            animate={{
+                              enter: { type: 'waveIn' },
+                            }}
+                            title={{
+                              title: 'Créations et traitements par mois',
+                              titleFontSize: 22,
+                            }}
+                            axis={{
+                              x: {
+                                labelFormatter: (text: string) => {
+                                  const [year, month] = text.split('-')
+                                  return `${month}/${year}`
+                                },
+                              },
+                              y: {
+                                labelFormatter: (text: string) => `${text}`,
+                              },
+                            }}
+                            tooltip={{
+                              title: (datum: any) => {
+                                const [year, month] = datum.date.split('-')
                                 return `${month}/${year}`
                               },
-                            },
-                            y: {
-                              labelFormatter: (text: string) => `${text}`,
-                            },
-                          }}
-                          tooltip={{
-                            title: (datum: any) => {
-                              const [year, month] = datum.date.split('-')
-                              return `${month}/${year}`
-                            },
-                            items: [
-                              {
-                                channel: 'y',
-                                valueFormatter: (value: number) => value.toLocaleString('fr-FR'),
-                              },
-                            ],
-                          }}
-                          {...{
-                            children: [
-                              {
-                                type: 'interval',
-                                data: signalementStats.byMonth,
-                                yField: 'count',
-                                colorField: 'type',
-                                group: { padding: 0 },
-                                tooltip: {
-                                  items: [
-                                    (datum: any) => {
-                                      const [year, month] = datum.date.split('-')
-                                      return {
-                                        name: `${datum.type} (${month}/${year})`,
-                                        value: datum.count,
-                                      }
-                                    },
-                                  ],
+                              items: [
+                                {
+                                  channel: 'y',
+                                  valueFormatter: (value: number) => value.toLocaleString('fr-FR'),
                                 },
-                              },
-                              {
-                                type: 'line',
-                                data: signalementStats.byMonthStacked,
-                                yField: 'count',
-                                colorField: 'type',
-                                tooltip: {
-                                  items: [
-                                    (datum: any) => ({
-                                      name: `${datum.type} (cumulé)`,
-                                      value: datum.count,
-                                    }),
-                                  ],
-                                },
-                                axis: {
-                                  y: {
-                                    position: 'right',
+                              ],
+                            }}
+                            {...{
+                              children: [
+                                {
+                                  type: 'interval',
+                                  data: signalementStats.byMonth,
+                                  yField: 'count',
+                                  colorField: 'type',
+                                  group: { padding: 0 },
+                                  tooltip: {
+                                    items: [
+                                      (datum: any) => {
+                                        const [year, month] = datum.date.split('-')
+                                        return {
+                                          name: `${datum.type} (${month}/${year})`,
+                                          value: datum.count,
+                                        }
+                                      },
+                                    ],
                                   },
                                 },
-                              },
-                            ],
-                          }}
-                        />
-                      </section>
-
-                      <section>
-                        <Sunburst
-                          data={signalementStats.sourceChartData}
-                          animate={{
-                            enter: { type: 'waveIn' },
-                          }}
-                          innerRadius={0.2}
-                          title={{
-                            title: 'Créations par sources',
-                            titleFontSize: 22,
-                          }}
-                        />
-                        <Sunburst
-                          data={signalementStats.clientChartData}
-                          animate={{
-                            enter: { type: 'waveIn' },
-                          }}
-                          innerRadius={0.2}
-                          title={{
-                            title: 'Traitements par clients',
-                            titleFontSize: 22,
-                          }}
-                        />
-                      </section>
-                    </>
-                  ) : null,
-                },
-                {
-                  label: 'Alertes',
-                  content: alertStats ? (
-                    <>
-                      <h2>Alertes</h2>
-                      <section>
-                        <div className='wrapper'>
-                          <CountStat label='Total' count={alertStats.total} />
-                          <CountStat label='En attente' count={alertStats.totalPending} />
-                          <CountStat label='Traités' count={alertStats.totalProcessed} />
-                          <CountStat label='Ignorés' count={alertStats.totalIgnored} />
-                        </div>
-                      </section>
-                      <section>
-                        <DualAxes
-                          xField='date'
-                          animate={{
-                            enter: { type: 'waveIn' },
-                          }}
-                          title={{
-                            title: 'Créations et traitements par mois',
-                            titleFontSize: 22,
-                          }}
-                          axis={{
-                            x: {
-                              labelFormatter: (text: string) => {
-                                const [year, month] = text.split('-')
-                                return `${month}/${year}`
-                              },
-                            },
-                            y: {
-                              labelFormatter: (text: string) => `${text}`,
-                            },
-                          }}
-                          {...{
-                            children: [
-                              {
-                                type: 'interval',
-                                data: alertStats.byMonth,
-                                yField: 'count',
-                                colorField: 'type',
-                                group: { padding: 0 },
-                                tooltip: {
-                                  items: [
-                                    (datum: any) => {
-                                      const [year, month] = datum.date.split('-')
-                                      return {
-                                        name: `${datum.type} (${month}/${year})`,
+                                {
+                                  type: 'line',
+                                  data: signalementStats.byMonthStacked,
+                                  yField: 'count',
+                                  colorField: 'type',
+                                  tooltip: {
+                                    items: [
+                                      (datum: any) => ({
+                                        name: `${datum.type} (cumulé)`,
                                         value: datum.count,
-                                      }
+                                      }),
+                                    ],
+                                  },
+                                  axis: {
+                                    y: {
+                                      position: 'right',
                                     },
-                                  ],
+                                  },
+                                },
+                              ],
+                            }}
+                          />
+                        </section>
+
+                        <section>
+                          <Sunburst
+                            data={signalementStats.sourceChartData}
+                            animate={{
+                              enter: { type: 'waveIn' },
+                            }}
+                            innerRadius={0.2}
+                            title={{
+                              title: 'Créations par sources',
+                              titleFontSize: 22,
+                            }}
+                          />
+                          <Sunburst
+                            data={signalementStats.clientChartData}
+                            animate={{
+                              enter: { type: 'waveIn' },
+                            }}
+                            innerRadius={0.2}
+                            title={{
+                              title: 'Traitements par clients',
+                              titleFontSize: 22,
+                            }}
+                          />
+                        </section>
+                      </>
+                    ) : null,
+                  },
+                  {
+                    label: 'Alertes',
+                    content: alertStats ? (
+                      <>
+                        <h2>Alertes</h2>
+                        <section>
+                          <div className='wrapper'>
+                            <CountStat label='Total' count={alertStats.total} />
+                            <CountStat label='En attente' count={alertStats.totalPending} />
+                            <CountStat label='Traités' count={alertStats.totalProcessed} />
+                            <CountStat label='Ignorés' count={alertStats.totalIgnored} />
+                          </div>
+                        </section>
+                        <section>
+                          <DualAxes
+                            xField='date'
+                            animate={{
+                              enter: { type: 'waveIn' },
+                            }}
+                            title={{
+                              title: 'Créations et traitements par mois',
+                              titleFontSize: 22,
+                            }}
+                            axis={{
+                              x: {
+                                labelFormatter: (text: string) => {
+                                  const [year, month] = text.split('-')
+                                  return `${month}/${year}`
                                 },
                               },
-                              {
-                                type: 'line',
-                                data: alertStats.byMonthStacked,
-                                yField: 'count',
-                                colorField: 'type',
-                                tooltip: {
-                                  items: [
-                                    (datum: any) => ({
-                                      name: `${datum.type} (cumulé)`,
-                                      value: datum.count,
-                                    }),
-                                  ],
-                                },
+                              y: {
+                                labelFormatter: (text: string) => `${text}`,
                               },
-                            ],
-                          }}
-                        />
-                      </section>
-                      <section>
-                        <Sunburst
-                          data={alertStats.sourceChartData}
-                          animate={{
-                            enter: { type: 'waveIn' },
-                          }}
-                          innerRadius={0.2}
-                          title={{
-                            title: 'Créations par sources',
-                            titleFontSize: 22,
-                          }}
-                        />
-                        <Sunburst
-                          data={alertStats.clientChartData}
-                          animate={{
-                            enter: { type: 'waveIn' },
-                          }}
-                          innerRadius={0.2}
-                          title={{
-                            title: 'Traitements par clients',
-                            titleFontSize: 22,
-                          }}
-                        />
-                      </section>
-                    </>
-                  ) : null,
-                },
-              ]}
-            />
-          )}
+                            }}
+                            {...{
+                              children: [
+                                {
+                                  type: 'interval',
+                                  data: alertStats.byMonth,
+                                  yField: 'count',
+                                  colorField: 'type',
+                                  group: { padding: 0 },
+                                  tooltip: {
+                                    items: [
+                                      (datum: any) => {
+                                        const [year, month] = datum.date.split('-')
+                                        return {
+                                          name: `${datum.type} (${month}/${year})`,
+                                          value: datum.count,
+                                        }
+                                      },
+                                    ],
+                                  },
+                                },
+                                {
+                                  type: 'line',
+                                  data: alertStats.byMonthStacked,
+                                  yField: 'count',
+                                  colorField: 'type',
+                                  tooltip: {
+                                    items: [
+                                      (datum: any) => ({
+                                        name: `${datum.type} (cumulé)`,
+                                        value: datum.count,
+                                      }),
+                                    ],
+                                  },
+                                },
+                              ],
+                            }}
+                          />
+                        </section>
+                        <section>
+                          <Sunburst
+                            data={alertStats.sourceChartData}
+                            animate={{
+                              enter: { type: 'waveIn' },
+                            }}
+                            innerRadius={0.2}
+                            title={{
+                              title: 'Créations par sources',
+                              titleFontSize: 22,
+                            }}
+                          />
+                          <Sunburst
+                            data={alertStats.clientChartData}
+                            animate={{
+                              enter: { type: 'waveIn' },
+                            }}
+                            innerRadius={0.2}
+                            title={{
+                              title: 'Traitements par clients',
+                              titleFontSize: 22,
+                            }}
+                          />
+                        </section>
+                      </>
+                    ) : null,
+                  },
+                ]}
+              />
+            </>
+          ) : null}
         </StyledWrapper>,
       )
     : null

@@ -5,5 +5,6 @@
 export type CombinedStatsDTO = {
     alertStats: Record<string, any>;
     signalementStats: Record<string, any>;
+    enabledCommuneCount: number;
 };
 

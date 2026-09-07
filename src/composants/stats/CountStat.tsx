@@ -32,7 +32,7 @@ export function CountStat({ label, count }: CountStatProps) {
   return (
     <StyledWrapper>
       <label>{label}</label>
-      <b>{count}</b>
+      <b>{count.toLocaleString('fr-FR')}</b>
     </StyledWrapper>
   )
 }
