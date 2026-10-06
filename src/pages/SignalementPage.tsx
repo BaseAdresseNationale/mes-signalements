@@ -126,6 +126,11 @@ export function SignalementPage() {
   }
 
   useEffect(() => {
+    const isNotInSignalementForm = !signalement
+    const isEditingNumberPositions =
+      adresse.type === BANPlateformeResultTypeEnum.NUMERO &&
+      (signalement?.changesRequested as NumeroChangesRequestedDTO)?.positions?.length
+
     const filter =
       adresse.type === BANPlateformeResultTypeEnum.LIEU_DIT
         ? ([
@@ -152,7 +157,7 @@ export function SignalementPage() {
       'text-opacity': [
         'case',
         selection,
-        signalement ? 0.8 : 1,
+        isNotInSignalementForm ? 1 : isEditingNumberPositions ? 0 : 0.8,
         ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0.8],
       ] as ExpressionSpecification,
       'text-halo-color': DEFAULT_COLOR_LIGHT,
@@ -166,7 +171,7 @@ export function SignalementPage() {
           'circle-opacity': [
             'case',
             filter,
-            signalement ? 0.8 : 1,
+            isNotInSignalementForm ? 1 : isEditingNumberPositions ? 0 : 0.8,
             ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0.8],
           ],
         },
