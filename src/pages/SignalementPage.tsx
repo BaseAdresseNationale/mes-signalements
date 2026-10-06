@@ -22,7 +22,7 @@ import { MapContext } from '../contexts/map.context'
 import SignalementMap from '../composants/map/SignalementMap'
 import { useMapContent } from '../hooks/useMapContent'
 import { ChangesRequested } from '../types/signalement.types'
-import { FilterSpecification } from 'maplibre-gl'
+import { ExpressionSpecification } from '@maplibre/maplibre-gl-style-spec'
 import { SignalementContext } from '../contexts/signalement.context'
 import {
   getModalTitle,
@@ -36,7 +36,7 @@ import { getAdresseString } from '../utils/adresse.utils'
 import { useCommuneStatus } from '../hooks/useCommuneStatus'
 import Loader from '../composants/common/Loader'
 import { CommuneCard } from '../composants/adresse/Cards/CommuneCard'
-import { DEFAULT_COLOR_LIGHT } from '../config/map/layers'
+import { DEFAULT_COLOR_DARK, DEFAULT_COLOR_LIGHT } from '../config/map/layers'
 
 export function SignalementPage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -125,7 +125,6 @@ export function SignalementPage() {
     deleteSignalement()
   }
 
-  // Only show the adresses related to the current toponyme
   useEffect(() => {
     const filter =
       adresse.type === BANPlateformeResultTypeEnum.LIEU_DIT
@@ -133,32 +132,49 @@ export function SignalementPage() {
             'in',
             ['get', 'id'],
             ['literal', (adresse as IBANPlateformeLieuDit).numeros.map((numero) => numero.id)],
-          ] as FilterSpecification)
-        : (['in', adresse.id, ['get', 'id']] as FilterSpecification)
+          ] as ExpressionSpecification)
+        : ([
+            adresse.type === BANPlateformeResultTypeEnum.VOIE ||
+            adresse.type === BANPlateformeResultTypeEnum.COMMUNE
+              ? 'in'
+              : '==',
+            adresse.id,
+            ['get', 'id'],
+          ] as ExpressionSpecification)
 
-    // When signalement is created, we switch adresse map to read only mode
-    if (signalement) {
-      setAdresseSearchMapLayersOptions({
-        adresse: { layout: { visibility: 'none' } },
-        'adresse-label': {
-          filter,
-          paint: {
-            'text-opacity': 0.5,
-            'text-halo-color': DEFAULT_COLOR_LIGHT,
-            'text-halo-width': 2,
-          },
+    const toponymeSelection: ExpressionSpecification =
+      adresse.type === BANPlateformeResultTypeEnum.COMMUNE
+        ? ['in', adresse.id, ['get', 'id']]
+        : ['==', ['get', 'id'], adresse.id]
+
+    const textPaint = (selection: ExpressionSpecification) => ({
+      'text-color': ['case', selection, DEFAULT_COLOR_DARK, '#929292'] as ExpressionSpecification,
+      'text-opacity': [
+        'case',
+        selection,
+        signalement ? 0.8 : 1,
+        ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0.8],
+      ] as ExpressionSpecification,
+      'text-halo-color': DEFAULT_COLOR_LIGHT,
+      'text-halo-width': 2,
+    })
+
+    setAdresseSearchMapLayersOptions({
+      adresse: {
+        paint: {
+          'circle-color': ['case', filter, DEFAULT_COLOR_DARK, '#929292'],
+          'circle-opacity': [
+            'case',
+            filter,
+            signalement ? 0.8 : 1,
+            ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0.8],
+          ],
         },
-        voie: { layout: { visibility: 'none' } },
-        toponyme: { layout: { visibility: 'none' } },
-      })
-    } else {
-      setAdresseSearchMapLayersOptions({
-        adresse: { filter },
-        'adresse-label': { filter },
-        voie: { layout: { visibility: 'none' } },
-        toponyme: { layout: { visibility: 'none' } },
-      })
-    }
+      },
+      'adresse-label': { paint: textPaint(filter) },
+      voie: { paint: textPaint(toponymeSelection) },
+      toponyme: { paint: textPaint(toponymeSelection) },
+    })
   }, [setAdresseSearchMapLayersOptions, adresse, signalement])
 
   // Query the map to get existing signalements

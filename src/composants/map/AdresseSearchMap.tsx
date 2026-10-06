@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useContext, useEffect, useRef } from 'react'
 import { Layer, LayerProps, MapLayerMouseEvent, Source, useMap } from 'react-map-gl/maplibre'
 import { allBANLayers } from '../../config/map/layers'
 import useNavigateWithPreservedSearchParams from '../../hooks/useNavigateWithPreservedSearchParams'
+import { SignalementContext } from '../../contexts/signalement.context'
 
 interface AdresseSearchMapProps {
   options: Record<string, Partial<LayerProps>>
@@ -10,11 +11,13 @@ interface AdresseSearchMapProps {
 export function AdresseSearchMap({ options }: Readonly<AdresseSearchMapProps>) {
   const map = useMap()
   const { navigate } = useNavigateWithPreservedSearchParams()
+  const { signalement } = useContext(SignalementContext)
+  const layersClickable = !signalement
   const hoveredStateId = useRef<{ id: string; source: string; sourceLayer: string } | null>(null)
 
   // Add select handlers to BAN layers
   useEffect(() => {
-    if (!map.current) {
+    if (!map.current || !layersClickable) {
       return
     }
 
@@ -75,6 +78,7 @@ export function AdresseSearchMap({ options }: Readonly<AdresseSearchMapProps>) {
     })
 
     return () => {
+      handleMouseLeave()
       allBANLayers.forEach(({ layer, interactive }) => {
         if (map?.current) {
           if (interactive) {
@@ -85,7 +89,7 @@ export function AdresseSearchMap({ options }: Readonly<AdresseSearchMapProps>) {
         }
       })
     }
-  }, [map, navigate])
+  }, [map, navigate, layersClickable])
 
   return (
     <Source
@@ -97,7 +101,12 @@ export function AdresseSearchMap({ options }: Readonly<AdresseSearchMapProps>) {
       promoteId='id'
     >
       {allBANLayers.map(({ layer }) => (
-        <Layer key={layer.id} {...(layer as any)} {...options[layer.id]} />
+        <Layer
+          key={layer.id}
+          {...(layer as any)}
+          {...options[layer.id]}
+          paint={{ ...layer.paint, ...options[layer.id]?.paint } as any}
+        />
       ))}
     </Source>
   )

@@ -1,12 +1,12 @@
 import Map, { Layer, NavigationControl, Source } from 'react-map-gl/maplibre'
-import React, { useCallback, useContext, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { Drawer } from '../composants/common/Drawer'
 import { useNavigation } from 'react-router-dom'
 import { AdresseSearch } from '../composants/adresse/AdresseSearch'
 import Loader from '../composants/common/Loader'
 import useNavigateWithPreservedSearchParams from '../hooks/useNavigateWithPreservedSearchParams'
 import MapContext from '../contexts/map.context'
-import { interactiveLayers, staticCadastreLayers } from '../config/map/layers'
+import { allBANLayers, interactiveLayers, staticCadastreLayers } from '../config/map/layers'
 import { mapStyles } from '../config/map/styles'
 import { StylesSwitch } from '../composants/map/StylesSwitch'
 import { MaplibreStyleDefinition } from '../types/maplibre.types'
@@ -24,6 +24,7 @@ import { PanoramaxMap } from '../composants/map/PanoramaxMap'
 import { PanoramaxLensDrag } from '../composants/map/PanoramaxLensDrag'
 import { PANORAMAX_PICTURE_LAYER_ID } from '../config/map/panoramax'
 import PanoramaxContext from '../contexts/panoramax.context'
+import { SignalementContext } from '../contexts/signalement.context'
 
 interface MapLayoutProps {
   children?: React.ReactNode
@@ -69,6 +70,11 @@ export function MapLayout({ children }: MapLayoutProps) {
   const onMouseEnter = useCallback(() => setCursor('pointer'), [])
   const onMouseLeave = useCallback(() => setCursor(null), [])
   const { showPanoramax, setShowPanoramax } = useContext(PanoramaxContext)
+  const { signalement } = useContext(SignalementContext)
+
+  useEffect(() => {
+    setCursor(null)
+  }, [signalement])
 
   const {
     mapRefCb,
@@ -111,7 +117,11 @@ export function MapLayout({ children }: MapLayoutProps) {
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
           interactiveLayerIds={[
-            ...interactiveLayers.map((layer) => layer.id),
+            ...interactiveLayers
+              .filter(
+                (layer) => !signalement || !allBANLayers.some((ban) => ban.layer.id === layer.id),
+              )
+              .map((layer) => layer.id),
             ...[PANORAMAX_PICTURE_LAYER_ID],
           ]}
           {...(cursor ? { cursor } : {})}
