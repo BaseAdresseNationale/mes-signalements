@@ -1,4 +1,5 @@
-import React, { createContext, useCallback, useMemo, useState } from 'react'
+import React, { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useLocation, useNavigationType } from 'react-router-dom'
 import { Author, ExistingLocation, PositionDTO, Signalement } from '../api/signalement'
 import { getInitialSignalement, getPositionTypeLabel } from '../utils/signalement.utils'
 import { IBANPlateformeResult } from '../api/ban-plateforme/types'
@@ -33,6 +34,21 @@ interface SignalementContextProviderProps {
 export function SignalementContextProvider(props: Readonly<SignalementContextProviderProps>) {
   const [initialSignalement, setInitialSignalement] = useState<Signalement | null>(null)
   const [signalement, setSignalement] = useState<Signalement | null>(null)
+  const location = useLocation()
+  const navigationType = useNavigationType()
+  const previousLocationKey = useRef(location.key)
+
+  useEffect(() => {
+    if (previousLocationKey.current === location.key) {
+      return
+    }
+
+    previousLocationKey.current = location.key
+    if (navigationType === 'POP' && signalement) {
+      setInitialSignalement(null)
+      setSignalement(null)
+    }
+  }, [location.key, navigationType, signalement])
 
   const onEditSignalement = useCallback(
     (property: keyof Signalement, key?: string) => (value: any) => {
