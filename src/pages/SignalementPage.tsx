@@ -174,6 +174,7 @@ export function SignalementPage() {
             isNotInSignalementForm ? 1 : isEditingNumberPositions ? 0 : 0.8,
             ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0.8],
           ],
+          'circle-stroke-opacity': ['case', filter, isEditingNumberPositions ? 0 : 1, 1],
         },
       },
       'adresse-label': { paint: textPaint(filter) },
