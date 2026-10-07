@@ -1,6 +1,6 @@
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { SignalementContext } from '../contexts/signalement.context'
-import { useContext } from 'react'
+import { useContext, useCallback } from 'react'
 
 const searchParamsToPreserve = ['sourceId']
 
@@ -9,32 +9,35 @@ function useNavigateWithPreservedSearchParams() {
   const [searchParams] = useSearchParams()
   const { signalement, deleteSignalement } = useContext(SignalementContext)
 
-  const navigate = (to: string, params: Record<string, string> = {}) => {
-    if (signalement) {
-      deleteSignalement()
-    }
+  const navigate = useCallback(
+    (to: string, params: Record<string, string> = {}) => {
+      if (signalement) {
+        deleteSignalement()
+      }
 
-    const paramsToPreserve = searchParamsToPreserve.reduce(
-      (acc, param) => {
-        const value = searchParams.get(param)
-        if (value) {
-          acc[param] = value
-        }
-        return acc
-      },
-      {} as Record<string, string>,
-    )
+      const paramsToPreserve = searchParamsToPreserve.reduce(
+        (acc, param) => {
+          const value = searchParams.get(param)
+          if (value) {
+            acc[param] = value
+          }
+          return acc
+        },
+        {} as Record<string, string>,
+      )
 
-    const mergedParams = new URLSearchParams({
-      ...paramsToPreserve,
-      ...params,
-    })
+      const mergedParams = new URLSearchParams({
+        ...paramsToPreserve,
+        ...params,
+      })
 
-    const queryString = mergedParams.toString()
-    const url = queryString ? `${to}?${queryString}` : to
+      const queryString = mergedParams.toString()
+      const url = queryString ? `${to}?${queryString}` : to
 
-    _navigate(url)
-  }
+      _navigate(url)
+    },
+    [signalement, deleteSignalement, searchParams, _navigate],
+  )
 
   return { navigate }
 }
