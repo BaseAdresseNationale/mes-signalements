@@ -16,6 +16,7 @@ import {
 import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox'
 import { Input } from '@codegouvfr/react-dsfr/Input'
 import MapContext from '../../contexts/map.context'
+import Alert from '@codegouvfr/react-dsfr/Alert'
 
 interface SignalementRecapModalProps {
   signalement: Signalement
@@ -79,8 +80,8 @@ export default function SignalementRecapModal({
           <section>
             <h4>Contact</h4>
             <p>
-              Laissez nous vos coordonnées pour que nous puissions vous tenir informé de l&apos;état
-              d&apos;avancement de votre signalement.
+              Laissez vos coordonnées afin que la mairie puisse vous recontacter et vous informer du
+              traitement de votre signalement.
             </p>
             <div className='form-row'>
               <Input
@@ -159,32 +160,38 @@ export default function SignalementRecapModal({
             </p>
           </div>
         )}
-        <div className='form-controls' style={{ justifyContent: 'flex-start' }}>
-          {submitStatus !== 'success' ? (
-            <>
+        {submitStatus !== 'success' ? (
+          <>
+            <Alert
+              style={{ marginBottom: '0.5rem' }}
+              severity='info'
+              title='Le signalement sera transmis à la mairie'
+              description='La mairie recevra votre signalement et pourra y répondre. Le délai de traitement peut varier en fonction de la commune.'
+            />
+            <div className='form-controls' style={{ justifyContent: 'flex-start' }}>
               <button
                 className='fr-btn'
                 disabled={submitStatus === 'loading' || submitStatus === 'success'}
                 type='submit'
               >
-                Envoyer le signalement
+                Envoyer le signalement à la mairie
               </button>
 
               <button className='fr-btn fr-btn--tertiary' type='button' onClick={onCloseModal}>
                 Annuler
               </button>
-            </>
-          ) : (
-            <>
-              <button className='fr-btn ' type='button' onClick={() => window.print()}>
-                Imprimer le récapitulatif
-              </button>
-              <button className='fr-btn fr-btn--tertiary' type='button' onClick={onClose}>
-                Quitter
-              </button>
-            </>
-          )}
-        </div>
+            </div>
+          </>
+        ) : (
+          <div className='form-controls' style={{ justifyContent: 'flex-start' }}>
+            <button className='fr-btn ' type='button' onClick={() => window.print()}>
+              Imprimer le récapitulatif
+            </button>
+            <button className='fr-btn fr-btn--tertiary' type='button' onClick={onClose}>
+              Quitter
+            </button>
+          </div>
+        )}
       </StyledForm>
     </Modal>
   )

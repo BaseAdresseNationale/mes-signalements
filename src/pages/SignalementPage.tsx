@@ -247,31 +247,14 @@ export function SignalementPage() {
           <Loader />
         </div>
       ) : signalement && communeStatus.mode ? (
-        <>
-          <Alert
-            style={{ marginBottom: '0.5rem' }}
-            severity='info'
-            title='Vous êtes une mairie?'
-            description={
-              <>
-                Cet outil est destiné aux organismes et aux citoyens pour contribuer à
-                l&apos;adressage des communes. Pour gérer vos adresses rendez-vous{' '}
-                <a href='https://mes-adresses.data.gouv.fr/' rel='noreferrer'>
-                  ici
-                </a>
-                .
-              </>
-            }
-          />
-          <SignalementForm
-            address={adresse}
-            mode={communeStatus.mode}
-            signalement={signalement as Signalement}
-            onEditSignalement={onEditSignalement}
-            onClose={handleCloseSignalementForm}
-            hasSignalementChanged={hasSignalementChanged}
-          />
-        </>
+        <SignalementForm
+          address={adresse}
+          mode={communeStatus.mode}
+          signalement={signalement as Signalement}
+          onEditSignalement={onEditSignalement}
+          onClose={handleCloseSignalementForm}
+          hasSignalementChanged={hasSignalementChanged}
+        />
       ) : (
         <>
           {pendingSignalements.length > 0 && (
