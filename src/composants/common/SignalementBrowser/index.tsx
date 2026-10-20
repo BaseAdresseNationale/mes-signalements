@@ -92,13 +92,14 @@ export function SignalementBrowser({ fromSource, initialFilters }: SignalementBr
   // Data fetching per tab
   const fetchSignalements = useCallback(
     async (page: number, filter: BrowserFilter): Promise<PaginatedSignalementsDTO> => {
-      const { status, signalementTypes: types, communes, sources } = filter
+      const { status, signalementTypes: types, communes, departements, sources } = filter
       return SignalementsService.getSignalements(
         PAGE_SIZE,
         page,
         status.map((s) => s.value),
         types.map((t) => t.value),
         sources.map((s) => s.value),
+        departements.map((d) => d.value),
         communes.map((c) => c.value),
       )
     },
@@ -107,13 +108,14 @@ export function SignalementBrowser({ fromSource, initialFilters }: SignalementBr
 
   const fetchAlerts = useCallback(
     async (page: number, filter: BrowserFilter): Promise<PaginatedAlertsDTO> => {
-      const { status, alertTypes: types, communes, sources } = filter
+      const { status, alertTypes: types, communes, departements, sources } = filter
       return AlertsService.getAlerts(
         PAGE_SIZE,
         page,
         status.map((s) => s.value),
         types.map((t) => t.value),
         sources.map((s) => s.value),
+        departements.map((d) => d.value),
         communes.map((c) => c.value),
       )
     },
@@ -232,12 +234,14 @@ export function SignalementBrowser({ fromSource, initialFilters }: SignalementBr
             typeOptions: signalementFilterTypesOptions,
             sourceOptions: sourceOptions,
             sourceHint: 'Sources de provenance des signalements',
-            communeHint: 'Communes sur lesquelles les signalements ont été effectués',
+            communeHint:
+              'Départements ou communes sur lesquelles les signalements ont été effectués',
             typeKey: 'signalementTypes',
             availableFilters: getAvailableFiltersWithSource([
               'status',
               'signalementTypes',
               'communes',
+              'departements',
             ]),
             buttonLabel: 'Filtrer les signalements',
             buttonLabelActive: 'Modifier les filtres',
@@ -265,8 +269,13 @@ export function SignalementBrowser({ fromSource, initialFilters }: SignalementBr
             typeOptions: alertFilterTypesOptions,
             sourceOptions: sourceOptions,
             sourceHint: 'Sources de provenance des alertes',
-            communeHint: 'Communes sur lesquelles les alertes ont été effectuées',
-            availableFilters: getAvailableFiltersWithSource(['status', 'alertTypes', 'communes']),
+            communeHint: 'Départements ou communes sur lesquelles les alertes ont été effectuées',
+            availableFilters: getAvailableFiltersWithSource([
+              'status',
+              'alertTypes',
+              'communes',
+              'departements',
+            ]),
             typeKey: 'alertTypes',
             buttonLabel: 'Filtrer les alertes',
             buttonLabelActive: 'Modifier les filtres',

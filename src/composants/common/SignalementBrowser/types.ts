@@ -6,5 +6,6 @@ export type BrowserFilter = {
   alertTypes: SelectOptionType<Alert.type>[]
   status: SelectOptionType<Signalement.status | Alert.status>[]
   communes: SelectOptionType<string>[]
+  departements: SelectOptionType<string>[]
   sources: SelectOptionType<string>[]
 }

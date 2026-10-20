@@ -54,6 +54,10 @@ export function useBrowserData<
       'communes',
       newFilter.communes.map((c) => c.value),
     )
+    apply(
+      'departements',
+      newFilter.departements.map((d) => d.value),
+    )
     const search = params.toString()
     url.hash = '#' + (hashPath || '/') + (search ? '?' + search : '')
     window.history.replaceState(window.history.state, '', url.toString())
@@ -65,6 +69,7 @@ export function useBrowserData<
       alertTypes: [],
       status: [],
       communes: [],
+      departements: [],
       sources: initialFilter.sources,
     }
     setFilter(reset)

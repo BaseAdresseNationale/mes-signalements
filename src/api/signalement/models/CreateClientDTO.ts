@@ -4,5 +4,6 @@
 /* eslint-disable */
 export type CreateClientDTO = {
     nom: string;
+    partenaireId?: string | null;
 };
 

@@ -7,6 +7,7 @@ import styled from 'styled-components'
 import Button from '@codegouvfr/react-dsfr/Button'
 import { MuiAsyncSelectInput } from '../MuiAsyncSelectInput'
 import { search as searchAPIAdresse } from '../../../api/api-adresse'
+import { searchDepartements } from '../../../api/api-geo'
 import { APIAdressePropertyType } from '../../../api/api-adresse/types'
 import { getAlertTypeLabel } from '../../../utils/alert.utils'
 
@@ -78,6 +79,11 @@ const StyledForm = styled.form`
   }
 `
 
+type GeoFilterValue = { type: 'commune' | 'departement'; code: string }
+
+const EXCLUDED_DEPARTEMENT_CODES = ['75']
+const EXCLUDED_COMMUNE_CODES = ['75056', '69123', '13055']
+
 interface FiltersModalProps {
   filters: BrowserFilter
   onClose: () => void
@@ -111,6 +117,29 @@ export function FiltersModal({
     e.preventDefault()
     onSubmit(value)
     onClose()
+  }
+
+  const geoValue: SelectOptionType<GeoFilterValue>[] = [
+    ...value.departements.map((d) => ({
+      label: d.label,
+      value: { type: 'departement' as const, code: d.value },
+    })),
+    ...value.communes.map((c) => ({
+      label: c.label,
+      value: { type: 'commune' as const, code: c.value },
+    })),
+  ]
+
+  const handleGeoChange = (newValue: SelectOptionType<GeoFilterValue>[]) => {
+    const toOption = (option: SelectOptionType<GeoFilterValue>) => ({
+      label: option.label,
+      value: option.value.code,
+    })
+    setValue((prev) => ({
+      ...prev,
+      departements: newValue.filter((o) => o.value.type === 'departement').map(toOption),
+      communes: newValue.filter((o) => o.value.type === 'commune').map(toOption),
+    }))
   }
 
   return (
@@ -161,32 +190,46 @@ export function FiltersModal({
         ) : null}
 
         <MuiAsyncSelectInput
-          label='Communes'
+          label='Départements ou communes'
           isMultiSelect
-          value={value.communes}
-          onChange={(newValue) =>
-            setValue((prev) => ({
-              ...prev,
-              communes: newValue as SelectOptionType<string>[],
-            }))
-          }
+          value={geoValue}
+          onChange={(newValue) => handleGeoChange(newValue as SelectOptionType<GeoFilterValue>[])}
           onFetchOptions={async (search: string) => {
-            const results = await searchAPIAdresse({
-              q: search,
-              type: APIAdressePropertyType.MUNICIPALITY,
-              limit: 10,
-            })
+            const [departementsResults, communesResults] = await Promise.all([
+              searchDepartements(search),
+              searchAPIAdresse({
+                q: search,
+                type: APIAdressePropertyType.MUNICIPALITY,
+                limit: 10,
+              }),
+            ])
 
-            return results.features
-              .map(({ properties }: { properties: { id: string; name: string } }) => ({
-                value: properties.id,
-                label: `${properties.name} (${properties.id})`,
+            const departementOptions: SelectOptionType<GeoFilterValue>[] = departementsResults
+              .filter((departement) => !EXCLUDED_DEPARTEMENT_CODES.includes(departement.code))
+              .map((departement) => ({
+                label: `${departement.nom} (${departement.code})`,
+                value: { type: 'departement', code: departement.code },
               }))
+
+            const communeOptions: SelectOptionType<GeoFilterValue>[] = communesResults.features
               .filter(
-                (option) =>
-                  // Filter out options that are already selected
-                  !value.communes.some((selected) => selected.value === option.value),
+                ({ properties }: { properties: { id: string } }) =>
+                  !EXCLUDED_COMMUNE_CODES.includes(properties.id),
               )
+              .map(({ properties }: { properties: { id: string; name: string } }) => ({
+                label: `${properties.name} (${properties.id})`,
+                value: { type: 'commune', code: properties.id },
+              }))
+
+            return [...departementOptions, ...communeOptions].filter(
+              (option) =>
+                // Filter out options that are already selected
+                !geoValue.some(
+                  (selected) =>
+                    selected.value.type === option.value.type &&
+                    selected.value.code === option.value.code,
+                ),
+            )
           }}
           hint={communeHint}
           searchMinLength={3}

@@ -1,5 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { Author, CreateAlertDTO } from '../api/signalement'
+import { getCommuneByPosition } from '../api/api-geo'
 import { getValueFromLocalStorage, LocalStorageKeys } from '../utils/localStorage.utils'
 import { useCommuneStatus } from '../hooks/useCommuneStatus'
 import MapContext from '../contexts/map.context'
@@ -50,10 +51,7 @@ export function useAlert({ initialAlert }: useAlertParams) {
       const [longitude, latitude] = alert.point.coordinates
       const fetchCommune = async () => {
         try {
-          const response = await fetch(
-            `https://geo.api.gouv.fr/communes?lat=${latitude}&lon=${longitude}&fields=nom,code,centre&format=json&geometry=centre`,
-          )
-          const communes = await response.json()
+          const communes = await getCommuneByPosition(longitude, latitude)
           if (communes.length > 0) {
             setCodeCommune(communes[0].code)
           }
