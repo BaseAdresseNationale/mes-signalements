@@ -9,6 +9,7 @@ export type Client = {
     updatedAt: string;
     deletedAt?: string | null;
     nom: string;
+    partenaireId?: string | null;
     processedReports?: Array<Report> | null;
 };
 
