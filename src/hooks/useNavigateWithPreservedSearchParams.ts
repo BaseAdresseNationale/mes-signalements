@@ -1,4 +1,4 @@
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { NavigateOptions, useNavigate, useSearchParams } from 'react-router-dom'
 import { SignalementContext } from '../contexts/signalement.context'
 import { useContext, useCallback } from 'react'
 
@@ -10,7 +10,7 @@ function useNavigateWithPreservedSearchParams() {
   const { signalement, deleteSignalement } = useContext(SignalementContext)
 
   const navigate = useCallback(
-    (to: string, params: Record<string, string> = {}) => {
+    (to: string, params: Record<string, string> = {}, options?: NavigateOptions) => {
       if (signalement) {
         deleteSignalement()
       }
@@ -34,7 +34,7 @@ function useNavigateWithPreservedSearchParams() {
       const queryString = mergedParams.toString()
       const url = queryString ? `${to}?${queryString}` : to
 
-      _navigate(url)
+      _navigate(url, options)
     },
     [signalement, deleteSignalement, searchParams, _navigate],
   )

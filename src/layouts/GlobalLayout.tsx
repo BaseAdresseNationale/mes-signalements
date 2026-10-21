@@ -1,7 +1,6 @@
 import React from 'react'
 import { LayoutContextProvider } from '../contexts/layout.context'
 import { MapContextProvider } from '../contexts/map.context'
-import { ReportViewerContextProvider } from '../contexts/report-viewer.context'
 import { SignalementContextProvider } from '../contexts/signalement.context'
 import { SourceContextProvider } from '../contexts/source.context'
 import { PanoramaxContextProvider } from '../contexts/panoramax.context'
@@ -22,11 +21,9 @@ export function GlobalLayout({ children, showSearch, showDrawer }: GlobalLayoutP
       <LayoutContextProvider showSearch={showSearch} showDrawer={showDrawer}>
         <SourceContextProvider>
           <SignalementContextProvider>
-            <ReportViewerContextProvider>
-              <PanoramaxContextProvider>
-                <MapLayout>{children}</MapLayout>
-              </PanoramaxContextProvider>
-            </ReportViewerContextProvider>
+            <PanoramaxContextProvider>
+              <MapLayout>{children}</MapLayout>
+            </PanoramaxContextProvider>
           </SignalementContextProvider>
         </SourceContextProvider>
       </LayoutContextProvider>

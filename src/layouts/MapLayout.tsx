@@ -1,7 +1,7 @@
 import Map, { Layer, NavigationControl, Source } from 'react-map-gl/maplibre'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { Drawer } from '../composants/common/Drawer'
-import { useNavigation } from 'react-router-dom'
+import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
 import { AdresseSearch } from '../composants/adresse/AdresseSearch'
 import Loader from '../composants/common/Loader'
 import useNavigateWithPreservedSearchParams from '../hooks/useNavigateWithPreservedSearchParams'
@@ -25,6 +25,7 @@ import { PanoramaxLensDrag } from '../composants/map/PanoramaxLensDrag'
 import { PANORAMAX_PICTURE_LAYER_ID } from '../config/map/panoramax'
 import PanoramaxContext from '../contexts/panoramax.context'
 import { SignalementContext } from '../contexts/signalement.context'
+import { ReportLocationState } from '../hooks/useOpenReport'
 
 interface MapLayoutProps {
   children?: React.ReactNode
@@ -90,8 +91,14 @@ export function MapLayout({ children }: MapLayoutProps) {
 
   const { navigate } = useNavigateWithPreservedSearchParams()
   const navigation = useNavigation()
+  const location = useLocation()
+  const routerNavigate = useNavigate()
 
   const handleCloseDrawer = () => {
+    if ((location.state as ReportLocationState | null)?.backOnClose) {
+      routerNavigate(-1)
+      return
+    }
     navigate('/')
   }
 
