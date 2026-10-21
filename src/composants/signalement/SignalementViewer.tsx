@@ -1,50 +1,57 @@
 import React from 'react'
-import { ExistingLocation, Signalement } from '../../api/signalement'
-import SignalementNumeroUpdateViewer from './signalement-viewer/signalement-numero/SignalementNumeroUpdateViewer'
-import SignalementInfos from './signalement-viewer/SignalementInfos'
-import SignalementNumeroDeleteViewer from './signalement-viewer/signalement-numero/SignalementNumeroDeleteViewer'
-import SignalementNumeroCreateViewer from './signalement-viewer/signalement-numero/SignalementNumeroCreateViewer'
-import SignalementVoieUpdateViewer from './signalement-viewer/signalement-voie/SignalementVoieUpdateViewer'
-import SignalementToponymeUpdateViewer from './signalement-viewer/signalement-toponyme/SignalementToponymeUpdateViewer'
-import { isToponymeChangesRequested } from '../../utils/signalement.utils'
-import SignalementToponymeCreateViewer from './signalement-viewer/signalement-toponyme/SignalementToponymeCreateViewer'
-import SignalementVoieDeleteViewer from './signalement-viewer/signalement-voie/SignalementVoieDeleteViewer'
-import SignalementToponymeDeleteViewer from './signalement-viewer/signalement-toponyme/SignalementToponymeDeleteViewer'
+import CallOut from '@codegouvfr/react-dsfr/CallOut'
+import { Signalement } from '../../api/signalement'
+import ReportHeader from '../report/ReportHeader'
+import ReportLocationCard from '../report/ReportLocationCard'
+import { getExistingReportLocation, getRequestedReportLocation } from '../../utils/report.utils'
+import { getSignalementColor, getSignalementTypeLabel } from '../../utils/signalement.utils'
 
-interface SignalementFormProps {
+interface SignalementViewerProps {
   signalement: Signalement
 }
 
-export default function SignalementViewer({ signalement }: SignalementFormProps) {
-  const { type, existingLocation } = signalement
+export default function SignalementViewer({ signalement }: Readonly<SignalementViewerProps>) {
+  const { type, changesRequested } = signalement
+  const existing = getExistingReportLocation(signalement)
+  const requested = getRequestedReportLocation(signalement)
+  const isUpdate = type === Signalement.type.LOCATION_TO_UPDATE
+  const hasPositions = !!existing?.positions.length || !!requested?.positions.length
 
   return (
     <>
-      <SignalementInfos signalement={signalement} />
-      {type === Signalement.type.LOCATION_TO_UPDATE &&
-        (existingLocation?.type === ExistingLocation.type.TOPONYME ? (
-          <SignalementToponymeUpdateViewer signalement={signalement} />
-        ) : existingLocation?.type === ExistingLocation.type.VOIE ? (
-          <SignalementVoieUpdateViewer signalement={signalement} />
-        ) : (
-          <SignalementNumeroUpdateViewer signalement={signalement} />
-        ))}
+      <ReportHeader
+        report={signalement}
+        title={(existing ?? requested)?.title ?? 'Demande de signalement'}
+        typeLabel={getSignalementTypeLabel(type)}
+        typeColor={getSignalementColor(type)}
+      />
 
-      {signalement.type === Signalement.type.LOCATION_TO_CREATE &&
-        (isToponymeChangesRequested(signalement.changesRequested) ? (
-          <SignalementToponymeCreateViewer signalement={signalement} />
-        ) : (
-          <SignalementNumeroCreateViewer signalement={signalement} />
-        ))}
+      {existing && (
+        <ReportLocationCard
+          role='existing'
+          heading={isUpdate ? 'Situation actuelle' : 'Lieu à supprimer'}
+          location={existing}
+        />
+      )}
+      {requested && (
+        <ReportLocationCard
+          role='requested'
+          heading={isUpdate ? 'Modification demandée' : 'Ajout demandé'}
+          location={requested}
+        />
+      )}
 
-      {signalement.type === Signalement.type.LOCATION_TO_DELETE &&
-        (existingLocation?.type === ExistingLocation.type.TOPONYME ? (
-          <SignalementToponymeDeleteViewer signalement={signalement} />
-        ) : existingLocation?.type === ExistingLocation.type.VOIE ? (
-          <SignalementVoieDeleteViewer signalement={signalement} />
-        ) : (
-          <SignalementNumeroDeleteViewer signalement={signalement} />
-        ))}
+      {hasPositions && (
+        <p className='fr-hint-text fr-mb-2w'>
+          {existing && requested
+            ? 'Sur la carte : en rouge la situation actuelle, en vert la modification demandée.'
+            : 'Les positions sont affichées sur la carte.'}
+        </p>
+      )}
+
+      {changesRequested?.comment && (
+        <CallOut title='Commentaire'>{changesRequested.comment}</CallOut>
+      )}
     </>
   )
 }

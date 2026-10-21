@@ -30,7 +30,7 @@ import {
   getSignalementFromFeatureAPISignalement,
 } from '../utils/signalement.utils'
 import Alert from '@codegouvfr/react-dsfr/Alert'
-import { ReportViewerContext } from '../contexts/report-viewer.context'
+import { useOpenReport } from '../hooks/useOpenReport'
 import Button from '@codegouvfr/react-dsfr/Button'
 import { getAdresseString } from '../utils/adresse.utils'
 import { useCommuneStatus } from '../hooks/useCommuneStatus'
@@ -40,7 +40,7 @@ import { DEFAULT_COLOR_DARK, DEFAULT_COLOR_LIGHT } from '../config/map/layers'
 
 export function SignalementPage() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const { setViewedReport } = useContext(ReportViewerContext)
+  const openReport = useOpenReport()
   const [pendingSignalements, setPendingSignalements] = useState<Signalement[]>([])
   const { isMobile } = useWindowSize()
   const {
@@ -269,7 +269,7 @@ export function SignalementPage() {
                       size='small'
                       priority='tertiary no outline'
                       key={signalement.id}
-                      onClick={() => setViewedReport(signalement)}
+                      onClick={() => openReport(signalement)}
                     >
                       {`${getModalTitle(signalement)} déposée le ${new Date(signalement.createdAt).toLocaleDateString()}`}
                     </Button>

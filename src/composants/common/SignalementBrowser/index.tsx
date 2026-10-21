@@ -11,7 +11,7 @@ import {
   SourcesService,
 } from '../../../api/signalement'
 import MapContext from '../../../contexts/map.context'
-import { ReportViewerContext } from '../../../contexts/report-viewer.context'
+import { useOpenReport } from '../../../hooks/useOpenReport'
 import { useMapContent } from '../../../hooks/useMapContent'
 import { useBrowserData } from '../../../hooks/useBrowserData'
 import { SelectOptionType } from '../MuiSelectInput'
@@ -26,10 +26,13 @@ import {
   signalementFilterStatusOptions,
   signalementFilterTypesOptions,
 } from './FiltersModal'
-import { BrowserFilter } from './types'
+import { BrowserFilter, BrowserTabId } from './types'
+import { updateHashSearchParams } from '../../../utils/signalement-browser.utils'
 
 interface SignalementBrowserProps {
   initialFilters: BrowserFilter
+  initialTab?: BrowserTabId
+  initialPage?: number
   fromSource?: { value: string; label: string }
 }
 
@@ -43,16 +46,21 @@ const StyledTabs = styled(Tabs)`
 
 const PAGE_SIZE = 20
 
-const SIGNALEMENTS_TAB_ID = 'signalements'
-const ALERTS_TAB_ID = 'alerts'
+const SIGNALEMENTS_TAB_ID: BrowserTabId = 'signalements'
+const ALERTS_TAB_ID: BrowserTabId = 'alerts'
 
-export function SignalementBrowser({ fromSource, initialFilters }: SignalementBrowserProps) {
+export function SignalementBrowser({
+  fromSource,
+  initialFilters,
+  initialTab = SIGNALEMENTS_TAB_ID,
+  initialPage = 1,
+}: SignalementBrowserProps) {
   const hideSourceFilter = !!fromSource
-  const { setViewedReport } = useContext(ReportViewerContext)
-  const { setAdresseSearchMapLayersOptions, setSignalementSearchMapLayerOptions, mapRef } =
+  const openReport = useOpenReport()
+  const { setAdresseSearchMapLayersOptions, setSignalementSearchMapLayerOptions } =
     useContext(MapContext)
 
-  const [activeTabId, setActiveTabId] = useState<string>(SIGNALEMENTS_TAB_ID)
+  const [activeTabId, setActiveTabId] = useState<string>(initialTab)
   const [hoveredSignalement, setHoveredSignalement] = useState<Signalement>()
   const [hoveredAlert, setHoveredAlert] = useState<Alert>()
   const [sourceOptions, setSourceOptions] = useState<SelectOptionType<string>[]>([])
@@ -125,37 +133,30 @@ export function SignalementBrowser({ fromSource, initialFilters }: SignalementBr
   const { signalementsBrowser, alertsBrowser, filter, setFilter, resetFilter } = useBrowserData(
     { fetchSignalements, fetchAlerts },
     initialFilters,
+    {
+      signalements: initialTab === SIGNALEMENTS_TAB_ID ? initialPage : 1,
+      alerts: initialTab === ALERTS_TAB_ID ? initialPage : 1,
+    },
   )
 
-  // flyTo helper
-  const flyTo = useCallback(
-    (coordinates?: [number, number]) => {
-      if (!mapRef || !coordinates) {
-        return
-      }
-      mapRef.flyTo({ center: coordinates, zoom: 18, maxDuration: 3000 })
-    },
-    [mapRef],
-  )
+  const activePage = activeTabId === ALERTS_TAB_ID ? alertsBrowser.page : signalementsBrowser.page
+
+  // Keep tab and page in the URL so that closing a report brings back to the same view.
+  useEffect(() => {
+    updateHashSearchParams({
+      tab: activeTabId === ALERTS_TAB_ID ? ALERTS_TAB_ID : null,
+      page: activePage > 1 ? String(activePage) : null,
+    })
+  }, [activeTabId, activePage])
 
   const handleSelectSignalement = useCallback(
-    (signalement: Signalement) => {
-      setViewedReport(signalement)
-      if (signalement.point) {
-        flyTo(signalement.point.coordinates as [number, number])
-      }
-    },
-    [flyTo, setViewedReport],
+    (signalement: Signalement) => openReport(signalement, { backOnClose: true }),
+    [openReport],
   )
 
   const handleSelectAlert = useCallback(
-    (alert: Alert) => {
-      setViewedReport(alert)
-      if (alert.point) {
-        flyTo(alert.point.coordinates as [number, number])
-      }
-    },
-    [flyTo, setViewedReport],
+    (alert: Alert) => openReport(alert, { backOnClose: true }),
+    [openReport],
   )
 
   // Map content per active tab
