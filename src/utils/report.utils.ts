@@ -13,10 +13,19 @@ import {
   getExistingLocationLabel,
   getPositionTypeLabel,
   getRequestedLocationLabel,
+  getSignalementColorHex,
   isToponymeChangesRequested,
 } from './signalement.utils'
 
-export type ReportPositionChange = 'unchanged' | 'added' | 'removed' | 'moved'
+export type ReportPositionChange = 'unchanged' | 'added' | 'removed' | 'retyped'
+
+// Ajout/suppression/modification reprennent les couleurs des types de signalement.
+export const REPORT_COLORS = {
+  unchanged: '#0053b3',
+  added: getSignalementColorHex(Signalement.type.LOCATION_TO_CREATE),
+  removed: getSignalementColorHex(Signalement.type.LOCATION_TO_DELETE),
+  retyped: getSignalementColorHex(Signalement.type.LOCATION_TO_UPDATE),
+}
 
 export type ReportRole = 'existing' | 'requested'
 
@@ -24,6 +33,8 @@ type RawPosition = { type: string; coordinates: [number, number] }
 
 export interface ReportLocationPosition extends RawPosition {
   change: ReportPositionChange
+  // Ancien type, renseigné pour une position dont seul le type a changé (côté demande).
+  previousType?: string
 }
 
 export interface ReportLocation {
@@ -112,7 +123,7 @@ function buildRequestedLocation(signalement: Signalement): RawReportLocation | n
   }
 }
 
-// Les positions sont appariées par type : même type = même position (inchangée ou déplacée).
+// Les positions sont appariées par emplacement : un point déplacé est une suppression plus un ajout.
 function diffPositions(
   signalement: Signalement,
   existing: RawPosition[],
@@ -127,8 +138,8 @@ function diffPositions(
   const existingByRequested = new Map<number, number>()
   existing.forEach((position, index) => {
     const match = requested.findIndex(
-      ({ type }, requestedIndex) =>
-        type === position.type && !existingByRequested.has(requestedIndex),
+      ({ coordinates }, requestedIndex) =>
+        !existingByRequested.has(requestedIndex) && isSamePoint(coordinates, position.coordinates),
     )
     if (match !== -1) {
       requestedByExisting.set(index, match)
@@ -147,9 +158,7 @@ function diffPositions(
       }
       return {
         ...position,
-        change: isSamePoint(position.coordinates, requested[match].coordinates)
-          ? 'unchanged'
-          : 'moved',
+        change: requested[match].type === position.type ? 'unchanged' : 'retyped',
       }
     }),
     requested: requested.map((position, index): ReportLocationPosition => {
@@ -157,10 +166,10 @@ function diffPositions(
       if (match === undefined) {
         return { ...position, change: 'added' }
       }
-      const previousCoordinates = existing[match].coordinates
-      return isSamePoint(previousCoordinates, position.coordinates)
+      const previousType = existing[match].type
+      return previousType === position.type
         ? { ...position, change: 'unchanged' }
-        : { ...position, change: 'moved' }
+        : { ...position, change: 'retyped', previousType }
     }),
   }
 }
@@ -212,23 +221,36 @@ export function getReportParcelles(signalement: Signalement): ReportParcelle[] {
   ]
 }
 
+export function hasReportMapChanges(signalement: Signalement): boolean {
+  const positions = [
+    ...(getExistingReportLocation(signalement)?.positions ?? []),
+    ...(getRequestedReportLocation(signalement)?.positions ?? []),
+  ]
+
+  return (
+    positions.some(({ change }) => change !== 'unchanged') ||
+    getReportParcelles(signalement).some(({ change }) => change !== 'unchanged')
+  )
+}
+
 export function getReportMapPositions(signalement: Signalement): ReportMapPosition[] {
   const existing = getExistingReportLocation(signalement)?.positions ?? []
   const requested = getRequestedReportLocation(signalement)?.positions ?? []
 
   const toMapPosition = (position: ReportLocationPosition, role: ReportRole): ReportMapPosition => {
     const typeLabel = getPositionTypeLabel(position.type as Position.type)
-    const prefix = role === 'existing' ? 'Avant' : 'Après'
-    return {
-      ...position,
-      role,
-      label: position.change === 'moved' ? `${prefix} · ${typeLabel}` : typeLabel,
-    }
+    const label = position.previousType
+      ? `${getPositionTypeLabel(position.previousType as Position.type)} → ${typeLabel}`
+      : typeLabel
+
+    return { ...position, role, label }
   }
 
-  // Une position inchangée existe des deux côtés : on ne la dessine qu'une fois.
+  // Une position inchangée ou dont seul le type change existe des deux côtés : on la dessine une fois.
   return [
-    ...existing.map((position) => toMapPosition(position, 'existing')),
+    ...existing
+      .filter(({ change }) => change !== 'retyped')
+      .map((position) => toMapPosition(position, 'existing')),
     ...requested
       .filter(({ change }) => change !== 'unchanged')
       .map((position) => toMapPosition(position, 'requested')),

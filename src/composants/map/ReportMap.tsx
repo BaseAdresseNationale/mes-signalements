@@ -3,29 +3,20 @@ import { Layer } from 'react-map-gl/maplibre'
 import { ExpressionSpecification } from '@maplibre/maplibre-gl-style-spec'
 import { Marker } from './Marker'
 import MapContext from '../../contexts/map.context'
-import { ReportMapPosition, ReportParcelle, ReportRole } from '../../utils/report.utils'
+import {
+  ReportMapPosition,
+  ReportParcelle,
+  ReportRole,
+  REPORT_COLORS,
+} from '../../utils/report.utils'
 import { PARCELLES_MINZOOM } from '../../config/map/layers'
-
-// Rouge/vert du DSFR (background-flat-error/-success) et bleu du cadastre
-const RED = '#ce0500'
-const GREEN = '#18753c'
-const BLUE = '#0053b3'
 
 const INACTIVE_OPACITY = 0.45
 const PARCELLE_ACTIVE_OPACITY = 0.5
 const PARCELLE_INACTIVE_OPACITY = 0.15
 
-function getMarkerColor({ change, role }: ReportMapPosition) {
-  switch (change) {
-    case 'unchanged':
-      return BLUE
-    case 'added':
-      return GREEN
-    case 'removed':
-      return RED
-    default:
-      return role === 'existing' ? RED : GREEN
-  }
+function getMarkerColor({ change }: ReportMapPosition) {
+  return REPORT_COLORS[change]
 }
 
 const hasId = (ids: string[]): ExpressionSpecification | false =>
@@ -55,10 +46,10 @@ export default function ReportMap({ positions, parcelles, activeRole }: Readonly
       'fill-color': [
         'case',
         hasId(idsOf(({ change }) => change === 'removed')),
-        RED,
+        REPORT_COLORS.removed,
         hasId(idsOf(({ change }) => change === 'added')),
-        GREEN,
-        BLUE,
+        REPORT_COLORS.added,
+        REPORT_COLORS.unchanged,
       ] as ExpressionSpecification,
       'fill-opacity': [
         'case',
@@ -91,7 +82,11 @@ export default function ReportMap({ positions, parcelles, activeRole }: Readonly
           coordinates={position.coordinates}
           color={getMarkerColor(position)}
           opacity={
-            position.change === 'unchanged' || position.role === activeRole ? 1 : INACTIVE_OPACITY
+            position.change === 'unchanged' ||
+            position.change === 'retyped' ||
+            position.role === activeRole
+              ? 1
+              : INACTIVE_OPACITY
           }
         />
       ))}

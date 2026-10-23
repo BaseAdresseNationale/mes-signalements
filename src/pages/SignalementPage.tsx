@@ -274,6 +274,11 @@ export function SignalementPage() {
             {isRecap ? (
               <SignalementRecap
                 signalement={signalement as Signalement}
+                communeName={
+                  adresse.type === BANPlateformeResultTypeEnum.COMMUNE
+                    ? (adresse as IBANPlateformeCommune).nomCommune
+                    : (adresse as IBANPlateformeNumero).commune.nom
+                }
                 onEditSignalement={onEditSignalement}
                 activeRole={recapMap.activeRole}
                 onActiveRoleChange={recapMap.setActiveRole}

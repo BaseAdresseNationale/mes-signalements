@@ -31,6 +31,10 @@ const StyledHeader = styled.header`
     margin-bottom: 0.5rem;
   }
 
+  h4 {
+    margin-bottom: 0.5rem;
+  }
+
   .meta {
     display: flex;
     flex-direction: column;
@@ -61,20 +65,20 @@ const StyledHeader = styled.header`
 
 interface ReportHeaderProps {
   report: Signalement | AlertModel
-  title: string
   typeLabel: string
   typeColor: string
   outcomeDetails?: React.ReactNode
+  showCommune?: boolean
   // Brouillon non envoyé : ni statut ni date de dépôt.
   preview?: boolean
 }
 
 export default function ReportHeader({
   report,
-  title,
   typeLabel,
   typeColor,
   outcomeDetails,
+  showCommune = false,
   preview = false,
 }: Readonly<ReportHeaderProps>) {
   const { status, createdAt, updatedAt, source, processedBy, rejectionReason } = report
@@ -94,13 +98,14 @@ export default function ReportHeader({
           </Badge>
         )}
       </div>
-      <h4>{title}</h4>
       {!preview && (
         <ul className='meta fr-text--sm'>
-          <li>
-            <span className='fr-icon-map-pin-2-line fr-icon--sm' aria-hidden='true' />
-            {report.nomCommune} ({report.codeCommune})
-          </li>
+          {showCommune && (
+            <li>
+              <span className='fr-icon-map-pin-2-line fr-icon--sm' aria-hidden='true' />
+              {report.nomCommune} ({report.codeCommune})
+            </li>
+          )}
           <li>
             <span className='fr-icon-calendar-event-line fr-icon--sm' aria-hidden='true' />
             {Date.now() - new Date(createdAt).getTime() > MONTH_IN_MS ? (
