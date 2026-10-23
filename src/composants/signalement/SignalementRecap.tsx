@@ -18,6 +18,7 @@ import Alert from '@codegouvfr/react-dsfr/Alert'
 
 interface SignalementRecapProps {
   signalement: Signalement
+  communeName?: string
   onEditSignalement: (property: keyof Signalement, key?: string) => (event: string) => void
   activeRole: ReportRole
   onActiveRoleChange: (role: ReportRole) => void
@@ -27,6 +28,7 @@ interface SignalementRecapProps {
 
 export default function SignalementRecap({
   signalement,
+  communeName,
   onEditSignalement,
   activeRole,
   onActiveRoleChange,
@@ -99,7 +101,7 @@ export default function SignalementRecap({
         </p>
         <SignalementViewer
           preview
-          signalement={signalement}
+          signalement={{ ...signalement, nomCommune: communeName }}
           activeRole={activeRole}
           onActiveRoleChange={onActiveRoleChange}
         />

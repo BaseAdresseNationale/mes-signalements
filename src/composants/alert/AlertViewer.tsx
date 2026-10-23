@@ -3,7 +3,7 @@ import ReportCommentCard from '../report/ReportCommentCard'
 import Tag from '@codegouvfr/react-dsfr/Tag'
 import { Alert } from '../../api/signalement'
 import ReportHeader from '../report/ReportHeader'
-import { getAlertColor } from '../../utils/alert.utils'
+import { getAlertColor, getAlertTypeLabel } from '../../utils/alert.utils'
 
 interface AlertViewerProps {
   alert: Alert
@@ -16,9 +16,9 @@ export default function AlertViewer({ alert }: Readonly<AlertViewerProps>) {
     <>
       <ReportHeader
         report={alert}
-        title='Adresse manquante'
-        typeLabel='Alerte'
+        typeLabel={getAlertTypeLabel(type)}
         typeColor={getAlertColor(type)}
+        showCommune
         outcomeDetails={
           context?.createdAddress?.label && (
             <>

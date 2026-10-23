@@ -1,11 +1,14 @@
 import styled, { css } from 'styled-components'
+import { REPORT_COLORS } from '../../utils/report.utils'
 
-export const BLUE = '#0053b3'
+export const BLUE = REPORT_COLORS.unchanged
 
 export const StyledCard = styled.section<{
   $color: string
   $selectable: boolean
   $selected: boolean
+  // Les champs texte ne sont en gras que s'ils ont changé.
+  $compare?: boolean
 }>`
   margin-bottom: 1rem;
   padding: 1rem;
@@ -57,6 +60,19 @@ export const StyledCard = styled.section<{
     font-weight: 700;
   }
 
+  ${({ $compare }) =>
+    $compare &&
+    css`
+      .title {
+        font-weight: 400;
+      }
+    `}
+
+  .title.is-changed,
+  .subtitle.is-changed {
+    font-weight: 700;
+  }
+
   .comment {
     margin: 0;
     white-space: pre-line;
@@ -64,6 +80,10 @@ export const StyledCard = styled.section<{
   }
 
   .subtitle {
+    margin-bottom: 0.25rem;
+  }
+
+  .commune {
     margin-bottom: 0.25rem;
   }
 
@@ -110,27 +130,24 @@ export const StyledCard = styled.section<{
       width: 1rem;
 
       &[data-change='added'] {
-        color: var(--background-flat-success);
+        color: ${REPORT_COLORS.added};
       }
 
       &[data-change='removed'] {
-        color: var(--background-flat-error);
+        color: ${REPORT_COLORS.removed};
       }
 
-      &[data-change='moved'][data-role='existing'] {
-        color: var(--background-flat-error);
-      }
-
-      &[data-change='moved'][data-role='requested'] {
-        color: var(--background-flat-success);
+      &[data-change='retyped'] {
+        color: ${REPORT_COLORS.retyped};
       }
     }
 
     .dot {
+      box-sizing: border-box;
       width: 0.75rem;
       height: 0.75rem;
+      border: 2px solid ${BLUE};
       border-radius: 50%;
-      background: ${BLUE};
     }
   }
 

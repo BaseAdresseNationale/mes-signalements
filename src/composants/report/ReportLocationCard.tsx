@@ -4,43 +4,47 @@ import { Position } from '../../api/signalement'
 import MapContext from '../../contexts/map.context'
 import { getPositionTypeLabel } from '../../utils/signalement.utils'
 import { ReportLocation, ReportPositionChange, ReportRole } from '../../utils/report.utils'
-import { BLUE, StyledCard } from './ReportCard.styles'
-
-const ROLE_COLORS: Record<ReportRole, string> = {
-  existing: BLUE,
-  requested: 'var(--background-flat-success)',
-}
+import { StyledCard } from './ReportCard.styles'
 
 const CHANGE_META: Record<ReportPositionChange, { icon?: string; label: string }> = {
   unchanged: { label: 'Position inchangée' },
   added: { icon: 'fr-icon-add-line', label: 'Position ajoutée' },
   removed: { icon: 'fr-icon-subtract-line', label: 'Position supprimée' },
-  moved: { icon: 'fr-icon-arrow-right-line', label: 'Position déplacée' },
+  retyped: { icon: 'fr-icon-edit-line', label: 'Type de position modifié' },
 }
 
 interface ReportLocationCardProps {
   heading: string
   role: ReportRole
+  // Couleur du type de signalement (même code que les badges et les cônes de la carte).
+  color: string
   location: ReportLocation
+  commune?: string
   selected?: boolean
   onSelect?: () => void
+  // Champs texte modifiés par rapport à l'existant : ils sont mis en gras.
+  changedFields?: { title: boolean; complement: boolean }
 }
 
 export default function ReportLocationCard({
   heading,
   role,
+  color,
   location,
+  commune,
   selected = false,
   onSelect,
+  changedFields,
 }: Readonly<ReportLocationCardProps>) {
   const { mapRef } = useContext(MapContext)
   const { title, complement, positions, parcelles } = location
 
   return (
     <StyledCard
-      $color={ROLE_COLORS[role]}
+      $color={color}
       $selectable={!!onSelect}
       $selected={!!onSelect && selected}
+      $compare={!!changedFields}
       onClick={onSelect}
     >
       {onSelect ? (
@@ -50,8 +54,13 @@ export default function ReportLocationCard({
       ) : (
         <p className='heading fr-text--xs'>{heading}</p>
       )}
-      <p className='title'>{title}</p>
-      {complement && <p className='subtitle fr-text--sm'>{complement}</p>}
+      <p className={`title${changedFields?.title ? ' is-changed' : ''}`}>{title}</p>
+      {complement && (
+        <p className={`subtitle fr-text--sm${changedFields?.complement ? ' is-changed' : ''}`}>
+          {complement}
+        </p>
+      )}
+      {commune && <p className='commune fr-text--sm'>{commune}</p>}
 
       {positions.length > 0 && (
         <ul className='positions'>
