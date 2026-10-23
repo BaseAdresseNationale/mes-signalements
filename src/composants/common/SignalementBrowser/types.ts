@@ -1,6 +1,8 @@
 import { Alert, Signalement } from '../../../api/signalement'
 import { SelectOptionType } from '../MuiSelectInput'
 
+export type BrowserTabId = 'signalements' | 'alerts'
+
 export type BrowserFilter = {
   signalementTypes: SelectOptionType<Signalement.type>[]
   alertTypes: SelectOptionType<Alert.type>[]

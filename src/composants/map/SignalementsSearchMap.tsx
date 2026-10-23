@@ -11,7 +11,7 @@ import SignalementCard from '../signalement/SignalementCard'
 import { getSignalementFromFeatureAPISignalement } from '../../utils/signalement.utils'
 import { getAlertFromFeatureAPISignalement } from '../../utils/alert.utils'
 import AlertCard from '../alert/AlertCard'
-import { ReportViewerContext } from '../../contexts/report-viewer.context'
+import { useOpenReport } from '../../hooks/useOpenReport'
 import SourceContext from '../../contexts/source.context'
 import { mergeLayerOptions } from '../../utils/map.utils'
 
@@ -26,7 +26,7 @@ enum FeatureType {
 
 export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMapProps>) {
   const map = useMap()
-  const { setViewedReport } = useContext(ReportViewerContext)
+  const openReport = useOpenReport()
   const [communeSettings, setCommuneSettings] = useState<Record<string, CommuneSettingsDTO>>({})
   const [hoveredFeature, setHoveredFeature] = useState<{
     type: FeatureType
@@ -98,9 +98,9 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
       if (e.features.length > 0) {
         const feature = e.features[0]
         if (feature.layer.id === signalementPointsLayer.id) {
-          setViewedReport(getSignalementFromFeatureAPISignalement(feature))
+          openReport(getSignalementFromFeatureAPISignalement(feature))
         } else if (feature.layer.id === alertPointsLayer.id) {
-          setViewedReport(getAlertFromFeatureAPISignalement(feature))
+          openReport(getAlertFromFeatureAPISignalement(feature))
         }
       }
     }
@@ -168,7 +168,7 @@ export function SignalementsSearchMap({ options }: Readonly<SignalementSearchMap
         map.current.off('mouseleave', alertPointsLayer.id, handleMouseLeave)
       }
     }
-  }, [map, communeSettings])
+  }, [map, communeSettings, openReport])
 
   return (
     <>

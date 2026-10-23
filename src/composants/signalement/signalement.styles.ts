@@ -89,12 +89,10 @@ export const StyledForm = styled.form`
   }
 
   @media print {
-    section {
-      display: none;
+    overflow: visible;
 
-      &:has(> .signalement-recap) {
-        display: block;
-      }
+    > section {
+      display: none;
     }
 
     .send-date {
@@ -105,33 +103,8 @@ export const StyledForm = styled.form`
       display: none;
     }
 
-    button {
+    .form-controls {
       display: none;
-    }
-  }
-`
-
-export const StyledRecapSection = styled.section`
-  .signalement-recap {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 1em;
-
-    > div {
-      width: 100%;
-    }
-
-    h6 {
-      font-size: 1.2em;
-      margin-bottom: 0.5em;
-    }
-
-    @media screen and (max-width: ${MOBILE_BREAKPOINT}px) {
-      flex-direction: column;
-
-      > div:not(:first-of-type) > h5 {
-        margin-top: 1em;
-      }
     }
   }
 `

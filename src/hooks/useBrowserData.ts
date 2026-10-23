@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { BrowserFilter } from '../composants/common/SignalementBrowser/types'
+import { updateHashSearchParams } from '../utils/signalement-browser.utils'
 
 export interface PaginatedData<TItem> {
   data: TItem[]
@@ -18,49 +19,27 @@ export function useBrowserData<
     fetchAlerts: (page: number, filter: BrowserFilter) => Promise<APaginated>
   },
   initialFilter: BrowserFilter,
+  initialPages: { signalements?: number; alerts?: number } = {},
 ) {
   const [filter, setFilter] = useState<BrowserFilter>(initialFilter)
-  const signalementsBrowser = useTabData<SPaginated>(fetchSignalements, filter)
-  const alertsBrowser = useTabData<APaginated>(fetchAlerts, filter)
+  const signalementsBrowser = useTabData<SPaginated>(
+    fetchSignalements,
+    filter,
+    initialPages.signalements,
+  )
+  const alertsBrowser = useTabData<APaginated>(fetchAlerts, filter, initialPages.alerts)
 
   const syncFilterToUrl = useCallback((newFilter: BrowserFilter) => {
-    // Update the URL directly via the History API so react-router's loader is not re-triggered.
-    // HashRouter stores the route (and its search params) inside window.location.hash.
-    const url = new URL(window.location.href)
-    const [hashPath, hashSearch = ''] = (url.hash.startsWith('#') ? url.hash.slice(1) : '').split(
-      '?',
-    )
-    const params = new URLSearchParams(hashSearch)
-    const apply = (key: string, values: string[]) => {
-      if (values.length === 0) {
-        params.delete(key)
-      } else {
-        params.set(key, values.join(','))
-      }
-    }
-    apply(
-      'status',
-      newFilter.status.map((s) => s.value),
-    )
-    apply(
-      'signalementTypes',
-      newFilter.signalementTypes.map((t) => t.value),
-    )
-    apply(
-      'alertTypes',
-      newFilter.alertTypes.map((t) => t.value),
-    )
-    apply(
-      'communes',
-      newFilter.communes.map((c) => c.value),
-    )
-    apply(
-      'departements',
-      newFilter.departements.map((d) => d.value),
-    )
-    const search = params.toString()
-    url.hash = '#' + (hashPath || '/') + (search ? '?' + search : '')
-    window.history.replaceState(window.history.state, '', url.toString())
+    const toParam = (values: { value: string }[]) =>
+      values.length === 0 ? null : values.map((v) => v.value).join(',')
+
+    updateHashSearchParams({
+      status: toParam(newFilter.status),
+      signalementTypes: toParam(newFilter.signalementTypes),
+      alertTypes: toParam(newFilter.alertTypes),
+      communes: toParam(newFilter.communes),
+      departements: toParam(newFilter.departements),
+    })
   }, [])
 
   const resetFilter = useCallback(() => {
@@ -100,10 +79,11 @@ export function useBrowserData<
 function useTabData<TPaginated>(
   fetcher: (page: number, filter: BrowserFilter) => Promise<TPaginated>,
   filter: BrowserFilter,
+  initialPage = 1,
 ) {
   const [paginatedData, setPaginatedData] = useState<TPaginated>()
   const [isLoading, setIsLoading] = useState(false)
-  const [page, setPage] = useState(1)
+  const [page, setPage] = useState(initialPage)
 
   // Update URL when filter changes
   useEffect(() => {

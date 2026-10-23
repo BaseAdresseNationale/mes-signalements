@@ -30,7 +30,7 @@ export function BaseLayout({ children }: BaseLayoutProps) {
   const { source } = useContext(SourceContext)
 
   return (
-    <Layout>
+    <Layout className='base-layout'>
       <Header customSource={source} toggleShowInfo={() => setShowInfo((state) => !state)} />
       <main>{children}</main>
       {showInfo && <AboutModal onClose={() => setShowInfo(false)} />}

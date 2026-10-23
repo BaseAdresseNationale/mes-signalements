@@ -73,9 +73,9 @@ export default function SignalementVoieForm({
           style={{ color: 'white' }}
           type='submit'
         >
-          Envoyer le signalement
+          Suivant
         </button>
-        <button className='fr-btn' type='button' onClick={onClose}>
+        <button className='fr-btn fr-btn--tertiary' type='button' onClick={onClose}>
           Annuler
         </button>
       </div>
