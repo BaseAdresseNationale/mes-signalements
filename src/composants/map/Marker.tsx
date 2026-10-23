@@ -33,6 +33,7 @@ export interface MarkerProps {
   label?: string
   coordinates: [number, number]
   color?: string
+  opacity?: number
   onDragEnd?: (event: MarkerDragEvent<any>) => void
   popupContent?: React.ReactNode
   showPopup?: boolean
@@ -43,6 +44,7 @@ export function Marker({
   label,
   coordinates,
   color = DEFAULT_COLOR_DARK,
+  opacity,
   onDragEnd,
   popupContent,
   onClick,
@@ -51,6 +53,10 @@ export function Marker({
   const [isHovered, setIsHovered] = useState(false)
 
   const _showPopup = popupContent && (showPopup || isHovered)
+  // MapLibre réécrit l'opacité de l'élément du marqueur à chaque déplacement : on l'applique aux enfants.
+  const fadeStyle: React.CSSProperties | undefined =
+    opacity === undefined ? undefined : { opacity, transition: 'opacity 0.2s' }
+
   return (
     <div onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
       <StyledMarker
@@ -68,12 +74,18 @@ export function Marker({
           : {})}
       >
         {label && (
-          <label className='map-pin-label' style={{ color }}>
+          <label className='map-pin-label' style={{ color, ...fadeStyle }}>
             {label}
           </label>
         )}
 
-        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'>
+        <svg
+          xmlns='http://www.w3.org/2000/svg'
+          viewBox='0 0 24 24'
+          width='24'
+          height='24'
+          style={fadeStyle}
+        >
           <path
             fill={color}
             stroke='white'
