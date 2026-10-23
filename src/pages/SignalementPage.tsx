@@ -10,6 +10,9 @@ import {
 } from '../api/ban-plateforme/types'
 import { NumeroCard } from '../composants/adresse/Cards/NumeroCard'
 import SignalementForm from '../composants/signalement/SignalementForm'
+import SignalementRecap from '../composants/signalement/SignalementRecap'
+import { AnimatePresence, motion } from 'motion/react'
+import { useReportMap } from '../hooks/useReportMap'
 import {
   NumeroChangesRequestedDTO,
   Signalement,
@@ -125,6 +128,15 @@ export function SignalementPage() {
     deleteSignalement()
   }
 
+  // Le formulaire laisse place au récapitulatif de confirmation, qui affiche le signalement comme un rapport.
+  const [isRecap, setIsRecap] = useState(false)
+  useEffect(() => {
+    if (!signalement) {
+      setIsRecap(false)
+    }
+  }, [signalement])
+  const recapMap = useReportMap(isRecap ? signalement : null)
+
   useEffect(() => {
     const isNotInSignalementForm = !signalement
     const isEditingNumberPositions =
@@ -226,6 +238,10 @@ export function SignalementPage() {
 
   // Map content
   const mapContent = useMemo(() => {
+    if (isRecap) {
+      return recapMap.mapContent
+    }
+
     return (
       (signalement?.changesRequested as NumeroChangesRequestedDTO | ToponymeChangesRequestedDTO)
         ?.positions && (
@@ -236,7 +252,7 @@ export function SignalementPage() {
         />
       )
     )
-  }, [signalement, editParcelles])
+  }, [signalement, editParcelles, isRecap, recapMap.mapContent])
 
   useMapContent(mapContent)
 
@@ -247,14 +263,36 @@ export function SignalementPage() {
           <Loader />
         </div>
       ) : signalement && communeStatus.mode ? (
-        <SignalementForm
-          address={adresse}
-          mode={communeStatus.mode}
-          signalement={signalement as Signalement}
-          onEditSignalement={onEditSignalement}
-          onClose={handleCloseSignalementForm}
-          hasSignalementChanged={hasSignalementChanged}
-        />
+        <AnimatePresence mode='wait' initial={false}>
+          <motion.div
+            key={isRecap ? 'recap' : 'form'}
+            initial={{ opacity: 0, x: isRecap ? 24 : -24 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: isRecap ? 24 : -24 }}
+            transition={{ duration: 0.18, ease: 'easeOut' }}
+          >
+            {isRecap ? (
+              <SignalementRecap
+                signalement={signalement as Signalement}
+                onEditSignalement={onEditSignalement}
+                activeRole={recapMap.activeRole}
+                onActiveRoleChange={recapMap.setActiveRole}
+                onBack={() => setIsRecap(false)}
+                onClose={handleCloseSignalementForm}
+              />
+            ) : (
+              <SignalementForm
+                address={adresse}
+                mode={communeStatus.mode}
+                signalement={signalement as Signalement}
+                onEditSignalement={onEditSignalement}
+                onClose={handleCloseSignalementForm}
+                onReview={() => setIsRecap(true)}
+                hasSignalementChanged={hasSignalementChanged}
+              />
+            )}
+          </motion.div>
+        </AnimatePresence>
       ) : (
         <>
           {pendingSignalements.length > 0 && (

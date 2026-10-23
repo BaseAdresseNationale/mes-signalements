@@ -1,7 +1,6 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import SignalementToponymeForm from './signalement-form/signalement-toponyme/SignalementToponymeForm'
 import SignalementNumeroForm from './signalement-form/signalement-numero/SignalementNumeroForm'
-import RecapModal from './RecapModal'
 import SignalementDeleteForm from './signalement-form/SignalementDeleteForm'
 import { CommuneStatusDTO, Signalement } from '../../api/signalement'
 import {
@@ -20,6 +19,7 @@ interface SignalementFormProps {
   signalement: Signalement
   onEditSignalement: (property: keyof Signalement, key?: string) => (value: any) => void
   onClose: () => void
+  onReview: () => void
   address: IBANPlateformeResult
   hasSignalementChanged: boolean
   mode: CommuneStatusDTO.mode
@@ -29,16 +29,16 @@ export default function SignalementForm({
   signalement,
   onEditSignalement,
   onClose,
+  onReview,
   address,
   hasSignalementChanged,
   mode,
 }: SignalementFormProps) {
-  const [showRecapModal, setShowRecapModal] = useState(false)
   const { showCadastre, setShowCadastre } = useContext(MapContext)
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    setShowRecapModal(true)
+    onReview()
     if (showCadastre) {
       setShowCadastre(false)
     }
@@ -111,16 +111,6 @@ export default function SignalementForm({
           address={address}
           onClose={onClose}
           onSubmit={handleSubmit}
-          onEditSignalement={onEditSignalement}
-        />
-      )}
-
-      {showRecapModal && (
-        <RecapModal
-          onClose={onClose}
-          onCloseModal={() => setShowRecapModal(false)}
-          signalement={signalement}
-          address={address}
           onEditSignalement={onEditSignalement}
         />
       )}

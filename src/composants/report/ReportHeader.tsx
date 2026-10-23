@@ -65,6 +65,8 @@ interface ReportHeaderProps {
   typeLabel: string
   typeColor: string
   outcomeDetails?: React.ReactNode
+  // Brouillon non envoyé : ni statut ni date de dépôt.
+  preview?: boolean
 }
 
 export default function ReportHeader({
@@ -73,6 +75,7 @@ export default function ReportHeader({
   typeLabel,
   typeColor,
   outcomeDetails,
+  preview = false,
 }: Readonly<ReportHeaderProps>) {
   const { status, createdAt, updatedAt, source, processedBy, rejectionReason } = report
   const statusBadge = STATUS_BADGES[status] ?? STATUS_BADGES.PENDING
@@ -85,37 +88,41 @@ export default function ReportHeader({
         <Badge small className={`fr-badge--${typeColor}`} noIcon>
           {typeLabel}
         </Badge>
-        <Badge small severity={statusBadge.severity}>
-          {statusBadge.label}
-        </Badge>
+        {!preview && (
+          <Badge small severity={statusBadge.severity}>
+            {statusBadge.label}
+          </Badge>
+        )}
       </div>
       <h4>{title}</h4>
-      <ul className='meta fr-text--sm'>
-        <li>
-          <span className='fr-icon-map-pin-2-line fr-icon--sm' aria-hidden='true' />
-          {report.nomCommune} ({report.codeCommune})
-        </li>
-        <li>
-          <span className='fr-icon-calendar-event-line fr-icon--sm' aria-hidden='true' />
-          {Date.now() - new Date(createdAt).getTime() > MONTH_IN_MS ? (
-            <>
-              Déposée le <b>{new Date(createdAt).toLocaleDateString()}</b>
-            </>
-          ) : (
-            <>
-              Déposée il y a <b>{getDuration(new Date(createdAt))}</b>
-            </>
-          )}
-          {source && (
-            <>
-              {' '}
-              via <b>{source.nom}</b>
-            </>
-          )}
-        </li>
-      </ul>
+      {!preview && (
+        <ul className='meta fr-text--sm'>
+          <li>
+            <span className='fr-icon-map-pin-2-line fr-icon--sm' aria-hidden='true' />
+            {report.nomCommune} ({report.codeCommune})
+          </li>
+          <li>
+            <span className='fr-icon-calendar-event-line fr-icon--sm' aria-hidden='true' />
+            {Date.now() - new Date(createdAt).getTime() > MONTH_IN_MS ? (
+              <>
+                Déposée le <b>{new Date(createdAt).toLocaleDateString()}</b>
+              </>
+            ) : (
+              <>
+                Déposée il y a <b>{getDuration(new Date(createdAt))}</b>
+              </>
+            )}
+            {source && (
+              <>
+                {' '}
+                via <b>{source.nom}</b>
+              </>
+            )}
+          </li>
+        </ul>
+      )}
 
-      {(isProcessed || isIgnored) && (
+      {!preview && (isProcessed || isIgnored) && (
         <Alert
           small
           severity={isProcessed ? 'success' : 'error'}
