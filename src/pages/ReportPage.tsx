@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo } from 'react'
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useLoaderData } from 'react-router-dom'
 import { ExpressionSpecification } from '@maplibre/maplibre-gl-style-spec'
 import { Alert, ExistingLocation, ExistingNumero, Signalement } from '../api/signalement'
@@ -8,7 +8,13 @@ import AlertViewer from '../composants/alert/AlertViewer'
 import ReportMap from '../composants/map/ReportMap'
 import { useMapContent } from '../hooks/useMapContent'
 import { MOBILE_BREAKPOINT } from '../hooks/useWindowSize'
-import { getReportMapPositions, isReportSignalement } from '../utils/report.utils'
+import {
+  getReportMapPositions,
+  getReportParcelles,
+  getRequestedReportLocation,
+  isReportSignalement,
+  ReportRole,
+} from '../utils/report.utils'
 import { isToponymeChangesRequested } from '../utils/signalement.utils'
 
 const NUMERO_ZOOM = 20
@@ -38,13 +44,19 @@ function getMapPadding() {
 
 export function ReportPage() {
   const { report } = useLoaderData() as { report: Signalement | Alert }
-  const { mapRef, setAdresseSearchMapLayersOptions, setSignalementSearchMapLayerOptions } =
-    useContext(MapContext)
+  const {
+    mapRef,
+    showCadastre,
+    setShowCadastre,
+    setAdresseSearchMapLayersOptions,
+    setSignalementSearchMapLayerOptions,
+  } = useContext(MapContext)
 
   // Les tuiles BAN n'exposent pas le banId : on retrouve l'adresse par ses propriétés.
   const existingNumeroFilter = useMemo<ExpressionSpecification | null>(() => {
     if (
       !isReportSignalement(report) ||
+      report.type === Signalement.type.LOCATION_TO_CREATE ||
       report.existingLocation?.type !== ExistingLocation.type.NUMERO
     ) {
       return null
@@ -65,9 +77,37 @@ export function ReportPage() {
     [report],
   )
 
+  const parcelles = useMemo(
+    () => (isReportSignalement(report) ? getReportParcelles(report) : []),
+    [report],
+  )
+  const hasParcelles = parcelles.length > 0
+
+  // Le cadastre est affiché le temps de la consultation, puis remis comme avant.
+  const showCadastreRef = useRef(showCadastre)
+  showCadastreRef.current = showCadastre
+  useEffect(() => {
+    if (!hasParcelles || showCadastreRef.current) {
+      return
+    }
+
+    setShowCadastre(true)
+    return () => setShowCadastre(false)
+  }, [hasParcelles, setShowCadastre])
+
+  // La demande est affichée par défaut ; sans demande (suppression), c'est l'existant.
+  const [selectedRole, setSelectedRole] = useState<ReportRole | null>(null)
+  useEffect(() => setSelectedRole(null), [report])
+  const activeRole: ReportRole =
+    selectedRole ??
+    (isReportSignalement(report) && getRequestedReportLocation(report) ? 'requested' : 'existing')
+
   const mapContent = useMemo(
-    () => (mapPositions.length > 0 ? <ReportMap positions={mapPositions} /> : null),
-    [mapPositions],
+    () =>
+      mapPositions.length > 0 || hasParcelles ? (
+        <ReportMap positions={mapPositions} parcelles={parcelles} activeRole={activeRole} />
+      ) : null,
+    [mapPositions, parcelles, hasParcelles, activeRole],
   )
 
   useMapContent(mapContent)
@@ -136,7 +176,11 @@ export function ReportPage() {
   return (
     <div className='fr-p-1w'>
       {isReportSignalement(report) ? (
-        <SignalementViewer signalement={report} />
+        <SignalementViewer
+          signalement={report}
+          activeRole={activeRole}
+          onActiveRoleChange={setSelectedRole}
+        />
       ) : (
         <AlertViewer alert={report} />
       )}

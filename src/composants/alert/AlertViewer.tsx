@@ -1,5 +1,5 @@
 import React from 'react'
-import CallOut from '@codegouvfr/react-dsfr/CallOut'
+import ReportCommentCard from '../report/ReportCommentCard'
 import Tag from '@codegouvfr/react-dsfr/Tag'
 import { Alert } from '../../api/signalement'
 import ReportHeader from '../report/ReportHeader'
@@ -29,7 +29,7 @@ export default function AlertViewer({ alert }: Readonly<AlertViewerProps>) {
         }
       />
 
-      {comment && <CallOut title='Commentaire'>{comment}</CallOut>}
+      {comment && <ReportCommentCard comment={comment} />}
 
       {context?.idRNB && (
         <p className='fr-text--sm'>

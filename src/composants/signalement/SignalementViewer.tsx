@@ -1,21 +1,36 @@
 import React from 'react'
-import CallOut from '@codegouvfr/react-dsfr/CallOut'
-import { Signalement } from '../../api/signalement'
+import ReportCommentCard from '../report/ReportCommentCard'
+import { ExistingLocation, Signalement } from '../../api/signalement'
 import ReportHeader from '../report/ReportHeader'
 import ReportLocationCard from '../report/ReportLocationCard'
-import { getExistingReportLocation, getRequestedReportLocation } from '../../utils/report.utils'
+import {
+  getExistingReportLocation,
+  getRequestedReportLocation,
+  ReportRole,
+} from '../../utils/report.utils'
 import { getSignalementColor, getSignalementTypeLabel } from '../../utils/signalement.utils'
 
 interface SignalementViewerProps {
   signalement: Signalement
+  activeRole: ReportRole
+  onActiveRoleChange: (role: ReportRole) => void
 }
 
-export default function SignalementViewer({ signalement }: Readonly<SignalementViewerProps>) {
+export default function SignalementViewer({
+  signalement,
+  activeRole,
+  onActiveRoleChange,
+}: Readonly<SignalementViewerProps>) {
   const { type, changesRequested } = signalement
   const existing = getExistingReportLocation(signalement)
   const requested = getRequestedReportLocation(signalement)
   const isUpdate = type === Signalement.type.LOCATION_TO_UPDATE
-  const hasPositions = !!existing?.positions.length || !!requested?.positions.length
+  // Une voie n'a ni position ni parcelle : seule la modification demandée est affichée.
+  const isVoieUpdate = isUpdate && signalement.existingLocation?.type === ExistingLocation.type.VOIE
+  const shownExisting = isVoieUpdate ? null : existing
+  const hasPositions = !!shownExisting?.positions.length || !!requested?.positions.length
+  const hasParcelles = !!shownExisting?.parcelles.length || !!requested?.parcelles.length
+  const isComparison = !!shownExisting && !!requested
 
   return (
     <>
@@ -26,11 +41,13 @@ export default function SignalementViewer({ signalement }: Readonly<SignalementV
         typeColor={getSignalementColor(type)}
       />
 
-      {existing && (
+      {shownExisting && (
         <ReportLocationCard
           role='existing'
           heading={isUpdate ? 'Situation actuelle' : 'Lieu à supprimer'}
-          location={existing}
+          location={shownExisting}
+          selected={activeRole === 'existing'}
+          onSelect={isComparison ? () => onActiveRoleChange('existing') : undefined}
         />
       )}
       {requested && (
@@ -38,20 +55,25 @@ export default function SignalementViewer({ signalement }: Readonly<SignalementV
           role='requested'
           heading={isUpdate ? 'Modification demandée' : 'Ajout demandé'}
           location={requested}
+          selected={activeRole === 'requested'}
+          onSelect={isComparison ? () => onActiveRoleChange('requested') : undefined}
         />
       )}
 
-      {hasPositions && (
+      {(hasPositions || hasParcelles) && (
         <p className='fr-hint-text fr-mb-2w'>
-          {existing && requested
-            ? 'Sur la carte : en rouge la situation actuelle, en vert la modification demandée.'
-            : 'Les positions sont affichées sur la carte.'}
+          {hasPositions &&
+            (isComparison
+              ? 'Positions : bleu = inchangée, vert = ajoutée ou nouvel emplacement, rouge = supprimée ou ancien emplacement. '
+              : 'Les positions sont affichées sur la carte. ')}
+          {hasParcelles &&
+            (isComparison
+              ? 'Parcelles : bleu = inchangée, vert = ajoutée, rouge = supprimée. '
+              : 'Les parcelles sont surlignées sur la carte. ')}
         </p>
       )}
 
-      {changesRequested?.comment && (
-        <CallOut title='Commentaire'>{changesRequested.comment}</CallOut>
-      )}
+      {changesRequested?.comment && <ReportCommentCard comment={changesRequested.comment} />}
     </>
   )
 }
