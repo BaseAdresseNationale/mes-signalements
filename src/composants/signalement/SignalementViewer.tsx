@@ -14,12 +14,14 @@ interface SignalementViewerProps {
   signalement: Signalement
   activeRole: ReportRole
   onActiveRoleChange: (role: ReportRole) => void
+  preview?: boolean
 }
 
 export default function SignalementViewer({
   signalement,
   activeRole,
   onActiveRoleChange,
+  preview = false,
 }: Readonly<SignalementViewerProps>) {
   const { type, changesRequested } = signalement
   const existing = getExistingReportLocation(signalement)
@@ -39,6 +41,7 @@ export default function SignalementViewer({
         title={(existing ?? requested)?.title ?? 'Demande de signalement'}
         typeLabel={getSignalementTypeLabel(type)}
         typeColor={getSignalementColor(type)}
+        preview={preview}
       />
 
       {shownExisting && (

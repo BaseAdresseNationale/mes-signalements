@@ -31,7 +31,7 @@ export function BaseLayout({ children }: BaseLayoutProps) {
   const { source } = useContext(SourceContext)
 
   return (
-    <Layout>
+    <Layout className='base-layout'>
       <AlertBanner />
       <Header customSource={source} toggleShowInfo={() => setShowInfo((state) => !state)} />
       <main>{children}</main>

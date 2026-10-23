@@ -104,7 +104,7 @@ export function MapLayout({ children }: MapLayoutProps) {
 
   return (
     <BaseLayout>
-      <StyledMapWrapper>
+      <StyledMapWrapper className='map-wrapper'>
         <Map
           ref={mapRefCb}
           style={{

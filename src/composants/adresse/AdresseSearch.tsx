@@ -65,7 +65,7 @@ function _AdresseSearch(props: any, ref: React.ForwardedRef<HTMLDivElement>) {
   )
 
   return (
-    <StyledSearch ref={ref} $animationDuration={ANIMATION_DURATION}>
+    <StyledSearch ref={ref} className='adresse-search' $animationDuration={ANIMATION_DURATION}>
       <SearchInput
         onSearch={fetchAPIAdresse()}
         onSelect={(result?: SearchItemType<MappedAPIAdresseResult> | null) => {

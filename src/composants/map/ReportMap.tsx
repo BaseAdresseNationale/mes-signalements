@@ -1,7 +1,8 @@
-import React, { useMemo } from 'react'
+import React, { useContext, useMemo } from 'react'
 import { Layer } from 'react-map-gl/maplibre'
 import { ExpressionSpecification } from '@maplibre/maplibre-gl-style-spec'
 import { Marker } from './Marker'
+import MapContext from '../../contexts/map.context'
 import { ReportMapPosition, ReportParcelle, ReportRole } from '../../utils/report.utils'
 import { PARCELLES_MINZOOM } from '../../config/map/layers'
 
@@ -37,6 +38,8 @@ interface ReportMapProps {
 }
 
 export default function ReportMap({ positions, parcelles, activeRole }: Readonly<ReportMapProps>) {
+  const { showCadastre } = useContext(MapContext)
+
   const parcellePaint = useMemo(() => {
     const idsOf = (predicate: (parcelle: ReportParcelle) => boolean) =>
       parcelles.filter(predicate).map(({ id }) => id)
@@ -75,6 +78,7 @@ export default function ReportMap({ positions, parcelles, activeRole }: Readonly
           source='cadastre'
           source-layer='parcelles'
           minzoom={PARCELLES_MINZOOM}
+          layout={{ visibility: showCadastre ? 'visible' : 'none' }}
           filter={hasId(parcelles.map(({ id }) => id)) as ExpressionSpecification}
           paint={parcellePaint}
           beforeId='parcelles'

@@ -68,17 +68,6 @@ export function MapContextProvider(props: { children: React.ReactNode }) {
   >({})
   const [mapMessage, setMapMessage] = useState<string | null>(null)
 
-  // Update cadastre toggle button
-  useEffect(() => {
-    const cadastreToggleBtn = document.getElementById('cadastre-toggle')
-    if (cadastreToggleBtn) {
-      cadastreToggleBtn.title = showCadastre ? 'Masquer le cadastre' : 'Afficher le cadastre'
-      showCadastre
-        ? cadastreToggleBtn.classList.add('active')
-        : cadastreToggleBtn.classList.remove('active')
-    }
-  }, [showCadastre])
-
   useEffect(() => {
     if (!showCadastre && editParcelles) {
       setEditParcelles(false)
