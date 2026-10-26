@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import React, { useContext, useState } from 'react'
 import { Header } from '../composants/common/Header'
 import { AboutModal } from '../composants/about/AboutModal'
+import { AlertBanner } from '../composants/common/AlertBanner'
 import SourceContext from '../contexts/source.context'
 
 const Layout = styled.div`
@@ -31,6 +32,7 @@ export function BaseLayout({ children }: BaseLayoutProps) {
 
   return (
     <Layout>
+      <AlertBanner />
       <Header customSource={source} toggleShowInfo={() => setShowInfo((state) => !state)} />
       <main>{children}</main>
       {showInfo && <AboutModal onClose={() => setShowInfo(false)} />}
