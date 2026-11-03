@@ -88,7 +88,7 @@ export default function ReportLocationCard({
                 </span>
                 <span className='position-label fr-text--sm' style={{ margin: 0 }}>
                   <span className='fr-sr-only'>{CHANGE_META[change].label} : </span>
-                  Position : {getPositionTypeLabel(type as Position.type)}
+                  Position : {getPositionTypeLabel(type as Position.type)} ({coordinates.join(', ')})
                 </span>
               </button>
             </li>
