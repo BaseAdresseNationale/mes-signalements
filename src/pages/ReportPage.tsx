@@ -14,6 +14,7 @@ export function ReportPage() {
   const { setAdresseSearchMapLayersOptions, setSignalementSearchMapLayerOptions } =
     useContext(MapContext)
 
+  const isAlert = !isReportSignalement(report)
   const { mapContent, mapPositions, activeRole, setActiveRole } = useReportMap(report)
   useMapContent(mapContent)
 
@@ -64,13 +65,14 @@ export function ReportPage() {
     })
     // Les marqueurs du rapport remplacent les points de l'API pour ne pas se superposer.
     setSignalementSearchMapLayerOptions(
-      mapPositions.length > 0 ? { layout: { visibility: 'none' } } : {},
+      mapPositions.length > 0 || isAlert ? { layout: { visibility: 'none' } } : {},
     )
   }, [
     setAdresseSearchMapLayersOptions,
     setSignalementSearchMapLayerOptions,
     mapPositions,
     existingNumeroFilter,
+    isAlert,
   ])
 
   return (

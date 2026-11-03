@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { Alert, ExistingLocation, Signalement } from '../api/signalement'
 import MapContext from '../contexts/map.context'
+import { Marker } from '../composants/map/Marker'
 import ReportMap from '../composants/map/ReportMap'
 import { MOBILE_BREAKPOINT } from './useWindowSize'
 import {
@@ -83,11 +84,21 @@ export function useReportMap(report: Signalement | Alert | null) {
       : 'existing')
 
   const mapContent = useMemo(
-    () =>
-      mapPositions.length > 0 || hasParcelles ? (
+    () => {
+      if (stableReport && !isReportSignalement(stableReport)) {
+        return (
+          <Marker
+            coordinates={stableReport.point.coordinates as [number, number]}
+            color='#E1000F'
+          />
+        )
+      }
+
+      return mapPositions.length > 0 || hasParcelles ? (
         <ReportMap positions={mapPositions} parcelles={parcelles} activeRole={activeRole} />
-      ) : null,
-    [mapPositions, parcelles, hasParcelles, activeRole],
+      ) : null
+    },
+    [stableReport, mapPositions, parcelles, hasParcelles, activeRole],
   )
 
   useEffect(() => {
