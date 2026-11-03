@@ -20,6 +20,7 @@ export function useBrowserData<
   },
   initialFilter: BrowserFilter,
   initialPages: { signalements?: number; alerts?: number } = {},
+  syncSources = true,
 ) {
   const [filter, setFilter] = useState<BrowserFilter>(initialFilter)
   const signalementsBrowser = useTabData<SPaginated>(
@@ -29,18 +30,22 @@ export function useBrowserData<
   )
   const alertsBrowser = useTabData<APaginated>(fetchAlerts, filter, initialPages.alerts)
 
-  const syncFilterToUrl = useCallback((newFilter: BrowserFilter) => {
-    const toParam = (values: { value: string }[]) =>
-      values.length === 0 ? null : values.map((v) => v.value).join(',')
+  const syncFilterToUrl = useCallback(
+    (newFilter: BrowserFilter) => {
+      const toParam = (values: { value: string }[]) =>
+        values.length === 0 ? null : values.map((v) => v.value).join(',')
 
-    updateHashSearchParams({
-      status: toParam(newFilter.status),
-      signalementTypes: toParam(newFilter.signalementTypes),
-      alertTypes: toParam(newFilter.alertTypes),
-      communes: toParam(newFilter.communes),
-      departements: toParam(newFilter.departements),
-    })
-  }, [])
+      updateHashSearchParams({
+        status: toParam(newFilter.status),
+        signalementTypes: toParam(newFilter.signalementTypes),
+        alertTypes: toParam(newFilter.alertTypes),
+        communes: toParam(newFilter.communes),
+        departements: toParam(newFilter.departements),
+        ...(syncSources && { sources: toParam(newFilter.sources) }),
+      })
+    },
+    [syncSources],
+  )
 
   const resetFilter = useCallback(() => {
     const reset = {

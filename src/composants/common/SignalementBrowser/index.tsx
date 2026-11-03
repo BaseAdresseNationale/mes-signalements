@@ -137,6 +137,7 @@ export function SignalementBrowser({
       signalements: initialTab === SIGNALEMENTS_TAB_ID ? initialPage : 1,
       alerts: initialTab === ALERTS_TAB_ID ? initialPage : 1,
     },
+    !hideSourceFilter,
   )
 
   const activePage = activeTabId === ALERTS_TAB_ID ? alertsBrowser.page : signalementsBrowser.page

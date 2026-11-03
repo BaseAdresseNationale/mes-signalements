@@ -1,4 +1,5 @@
 import { getCommune, getDepartement } from '../api/api-geo'
+import { SourcesService } from '../api/signalement'
 import { SelectOptionType } from '../composants/common/MuiSelectInput'
 import {
   alertFilterTypesOptions,
@@ -77,6 +78,23 @@ export async function resolveDepartements(
   }
 }
 
+export async function resolveSources(values: string[] | null): Promise<SelectOptionType<string>[]> {
+  if (!values) {
+    return []
+  }
+
+  try {
+    const allSources = await SourcesService.getSources()
+    return values
+      .map((value) => allSources.find((source) => source.id === value))
+      .filter((source): source is NonNullable<typeof source> => source !== undefined)
+      .map((source) => ({ value: source.id, label: source.nom }))
+  } catch (error) {
+    console.error('Error fetching sources data:', error)
+    return []
+  }
+}
+
 export async function getInitialFilter({ request }: { request: Request }): Promise<{
   initialFilters: BrowserFilter
   initialTab: BrowserTabId
@@ -94,9 +112,11 @@ export async function getInitialFilter({ request }: { request: Request }): Promi
   const statusParam = url.searchParams.get('status')?.split(',') || null
   const signalementTypesParam = url.searchParams.get('signalementTypes')?.split(',') || null
   const alertTypesParam = url.searchParams.get('alertTypes')?.split(',') || null
-  const [communes, departements] = await Promise.all([
+  const sourcesParam = url.searchParams.get('sources')?.split(',') || null
+  const [communes, departements, sources] = await Promise.all([
     resolveCommunes(communesParam),
     resolveDepartements(departementsParam),
+    resolveSources(sourcesParam),
   ])
 
   const initialFilters = {
@@ -105,7 +125,7 @@ export async function getInitialFilter({ request }: { request: Request }): Promi
     alertTypes: resolveOptions(alertTypesParam, alertFilterTypesOptions),
     communes,
     departements,
-    sources: [], // Source filter is only applied on SourcePage and options are loaded in the component, so we can ignore URL params for sources
+    sources,
   } as BrowserFilter
 
   return { initialFilters, initialTab, initialPage }
