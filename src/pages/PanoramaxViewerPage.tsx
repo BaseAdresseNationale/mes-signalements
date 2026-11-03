@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect } from 'react'
+import React, { useCallback, useContext, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { PanoramaxViewer } from '../composants/panoramax/PanoramaxViewer'
 import { PANORAMAX_VIEWER_URL } from '../config/map/panoramax'
@@ -14,6 +14,12 @@ export function PanoramaxViewerPage() {
   const { mapRef } = useContext(MapContext)
   const { savedView, setSavedView } = useContext(PanoramaxContext)
   const { mainElPortal } = useMainElPortal()
+  const historyLengthAtOpenRef = useRef(window.history.length)
+
+  // Chaque navigation interne à l'iframe ajoute une entrée à l'historique de la fenêtre.
+  useEffect(() => {
+    historyLengthAtOpenRef.current = window.history.length
+  }, [pictureId])
 
   const handleClose = useCallback(() => {
     const m = mapRef?.getMap()
@@ -28,7 +34,8 @@ export function PanoramaxViewerPage() {
       })
     }
     setSavedView(null)
-    navigate(-1)
+    const iframeEntries = Math.max(0, window.history.length - historyLengthAtOpenRef.current)
+    navigate(-(iframeEntries + 1))
   }, [mapRef, savedView, setSavedView, navigate])
 
   // Safety: if the user lands on this page directly (no pictureId), go home.
