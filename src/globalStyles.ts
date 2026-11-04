@@ -48,6 +48,37 @@ const GlobalStyle = createGlobalStyle`
       margin-top: 0;
       overflow: visible;
     }
+
+    .react-modal-sheet-root {
+      position: static !important;
+      width: 100% !important;
+      height: auto !important;
+      max-height: none !important;
+      overflow: visible !important;
+      transform: none !important;
+    }
+
+    .react-modal-sheet-backdrop,
+    .react-modal-sheet-header {
+      display: none !important;
+    }
+
+    .react-modal-sheet-container {
+      position: static !important;
+      width: 100% !important;
+      height: auto !important;
+      max-height: none !important;
+      overflow: visible !important;
+      transform: none !important;
+    }
+
+    .react-modal-sheet-content {
+      position: static !important;
+      height: auto !important;
+      max-height: none !important;
+      overflow: visible !important;
+      transform: none !important;
+    }
   }
 }
 
