@@ -18,6 +18,8 @@ import {
 import { ChangesRequested } from '../types/signalement.types'
 import { isDefined } from '../api/signalement/core/request'
 
+export const DRAFT_ORIGINAL_POSITIONS = Symbol('draftOriginalPositions')
+
 export const positionTypeOptions = [
   {
     value: Position.type.ENTR_E,
@@ -363,6 +365,20 @@ export const getInitialSignalement = (
       break
     default:
       throw new Error(`Type de signalement inconnu : ${signalementType}`)
+  }
+
+  if (
+    address.type === BANPlateformeResultTypeEnum.NUMERO &&
+    signalementType !== Signalement.type.LOCATION_TO_CREATE
+  ) {
+    Object.assign(initialSignalement, {
+      [DRAFT_ORIGINAL_POSITIONS]: (address as IBANPlateformeNumero).positions.map(
+        ({ position, positionType }) => ({
+          type: positionType || Position.type.ENTR_E,
+          coordinates: [...position.coordinates] as [number, number],
+        }),
+      ),
+    })
   }
 
   return initialSignalement as Signalement

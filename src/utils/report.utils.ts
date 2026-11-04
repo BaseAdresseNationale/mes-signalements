@@ -10,6 +10,7 @@ import {
 } from '../api/signalement'
 import { ChangesRequested } from '../types/signalement.types'
 import {
+  DRAFT_ORIGINAL_POSITIONS,
   getExistingLocationLabel,
   getPositionTypeLabel,
   getRequestedLocationLabel,
@@ -45,6 +46,7 @@ export interface ReportLocation {
 }
 
 type RawReportLocation = Omit<ReportLocation, 'positions'> & { positions: RawPosition[] }
+type DraftSignalement = Signalement & { [DRAFT_ORIGINAL_POSITIONS]?: RawPosition[] }
 
 export interface ReportMapPosition extends ReportLocationPosition {
   label: string
@@ -86,19 +88,21 @@ function buildExistingLocation(signalement: Signalement): RawReportLocation | nu
   }
 
   const location = existingLocation as ExistingNumero
+  const draftPositions = (signalement as DraftSignalement)[DRAFT_ORIGINAL_POSITIONS]
   return {
     title: getExistingLocationLabel(location),
     complement: location.type === ExistingLocation.type.NUMERO ? location.nomComplement : undefined,
     // La position d'une voie est calculée à partir de ses adresses : elle n'est pas modifiable.
     positions:
-      location.position && location.type !== ExistingLocation.type.VOIE
+      draftPositions ??
+      (location.position && location.type !== ExistingLocation.type.VOIE
         ? [
             {
               type: location.position.type,
               coordinates: location.position.point.coordinates as [number, number],
             },
           ]
-        : [],
+        : []),
     parcelles: location.parcelles ?? [],
   }
 }
