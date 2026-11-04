@@ -116,6 +116,7 @@ export default function SignalementRecap({
           <div className='form-row'>
             <Input
               label='Nom*'
+              disabled={submitStatus === 'success'}
               nativeInputProps={{
                 required: true,
                 name: 'lastName',
@@ -124,6 +125,7 @@ export default function SignalementRecap({
               }}
             />
             <Input
+              disabled={submitStatus === 'success'}
               label='Prénom*'
               nativeInputProps={{
                 required: true,
@@ -136,6 +138,7 @@ export default function SignalementRecap({
           <div className='form-row'>
             <Input
               label='Email*'
+              disabled={submitStatus === 'success'}
               nativeInputProps={{
                 required: true,
                 name: 'email',
@@ -154,6 +157,7 @@ export default function SignalementRecap({
                   hintText:
                     'Le formulaire de contact sera pré-rempli lors des prochains signalements',
                   nativeInputProps: {
+                    disabled: submitStatus === 'success',
                     name: 'save-contact',
                     checked: saveContact,
                     onChange: (event) => {
