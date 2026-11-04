@@ -116,6 +116,7 @@ export const StyledCard = styled.section<{
       cursor: pointer;
       color: inherit;
       text-align: left;
+      background: transparent !important;
 
       &:hover .position-label {
         text-decoration: underline;
