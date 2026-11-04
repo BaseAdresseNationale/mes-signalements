@@ -10,7 +10,6 @@ import {
 } from '../api/signalement'
 import { ChangesRequested } from '../types/signalement.types'
 import {
-  DRAFT_ORIGINAL_POSITIONS,
   getExistingLocationLabel,
   getPositionTypeLabel,
   getRequestedLocationLabel,
@@ -36,6 +35,8 @@ export interface ReportLocationPosition extends RawPosition {
   change: ReportPositionChange
   // Ancien type, renseigné pour une position dont seul le type a changé (côté demande).
   previousType?: string
+  // Position sans équivalent connu dans l'existant (stocké incomplet) : considérée inchangée.
+  unpaired?: boolean
 }
 
 export interface ReportLocation {
@@ -46,7 +47,6 @@ export interface ReportLocation {
 }
 
 type RawReportLocation = Omit<ReportLocation, 'positions'> & { positions: RawPosition[] }
-type DraftSignalement = Signalement & { [DRAFT_ORIGINAL_POSITIONS]?: RawPosition[] }
 
 export interface ReportMapPosition extends ReportLocationPosition {
   label: string
@@ -88,21 +88,19 @@ function buildExistingLocation(signalement: Signalement): RawReportLocation | nu
   }
 
   const location = existingLocation as ExistingNumero
-  const draftPositions = (signalement as DraftSignalement)[DRAFT_ORIGINAL_POSITIONS]
   return {
     title: getExistingLocationLabel(location),
     complement: location.type === ExistingLocation.type.NUMERO ? location.nomComplement : undefined,
     // La position d'une voie est calculée à partir de ses adresses : elle n'est pas modifiable.
     positions:
-      draftPositions ??
-      (location.position && location.type !== ExistingLocation.type.VOIE
-        ? [
-            {
-              type: location.position.type,
-              coordinates: location.position.point.coordinates as [number, number],
-            },
-          ]
-        : []),
+      location.type === ExistingLocation.type.VOIE
+        ? []
+        : [location.position, ...(location.additionalPositions ?? [])]
+            .filter(Boolean)
+            .map(({ type, point }) => ({
+              type,
+              coordinates: point.coordinates as [number, number],
+            })),
     parcelles: location.parcelles ?? [],
   }
 }
@@ -140,6 +138,13 @@ function diffPositions(
 
   const requestedByExisting = new Map<number, number>()
   const existingByRequested = new Map<number, number>()
+
+  // Les anciens rapports ne stockent qu'une position existante : les autres sont indiscernables d'un ajout.
+  const isExistingIncomplete =
+    !Array.isArray((signalement.existingLocation as ExistingNumero | null)?.additionalPositions) &&
+    signalement.existingLocation?.type === ExistingLocation.type.NUMERO &&
+    existing.length === 1 &&
+    requested.length > 1
   existing.forEach((position, index) => {
     const match = requested.findIndex(
       ({ coordinates }, requestedIndex) =>
@@ -168,7 +173,9 @@ function diffPositions(
     requested: requested.map((position, index): ReportLocationPosition => {
       const match = existingByRequested.get(index)
       if (match === undefined) {
-        return { ...position, change: 'added' }
+        return isExistingIncomplete
+          ? { ...position, change: 'unchanged', unpaired: true }
+          : { ...position, change: 'added' }
       }
       const previousType = existing[match].type
       return previousType === position.type
@@ -256,7 +263,7 @@ export function getReportMapPositions(signalement: Signalement): ReportMapPositi
       .filter(({ change }) => change !== 'retyped')
       .map((position) => toMapPosition(position, 'existing')),
     ...requested
-      .filter(({ change }) => change !== 'unchanged')
+      .filter(({ change, unpaired }) => change !== 'unchanged' || unpaired)
       .map((position) => toMapPosition(position, 'requested')),
   ]
 }
