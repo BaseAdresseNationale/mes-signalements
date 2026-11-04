@@ -11,6 +11,7 @@ export type ExistingNumero = {
     numero: number;
     suffixe: string;
     position: Position;
+    additionalPositions?: Array<Position> | null;
     parcelles?: Array<string> | null;
     toponyme: (ExistingVoie | ExistingToponyme);
     nomComplement?: string;

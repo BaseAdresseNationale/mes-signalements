@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { ControlPosition, IControl, MapInstance, useControl } from 'react-map-gl/maplibre'
 
 type CadastreToggleProps = {
@@ -9,6 +10,7 @@ type CadastreToggleProps = {
 
 export class MaplibreLayerVisibilityControl implements IControl {
   private controlContainer: HTMLElement | undefined
+  private buttonElement: HTMLButtonElement | undefined
   private map?: MapInstance
 
   constructor(private props: CadastreToggleProps) {}
@@ -16,6 +18,22 @@ export class MaplibreLayerVisibilityControl implements IControl {
   public getDefaultPosition(): string {
     const defaultPosition = 'top-right'
     return defaultPosition
+  }
+
+  public setProps(props: CadastreToggleProps) {
+    this.props = props
+    this.syncButton()
+  }
+
+  private syncButton() {
+    if (!this.buttonElement) {
+      return
+    }
+
+    const label = this.props.showCadastre ? 'Masquer le cadastre' : 'Afficher le cadastre'
+    this.buttonElement.title = label
+    this.buttonElement.ariaLabel = label
+    this.buttonElement.classList.toggle('active', this.props.showCadastre)
   }
 
   public onAdd(map: MapInstance): HTMLElement {
@@ -26,10 +44,8 @@ export class MaplibreLayerVisibilityControl implements IControl {
     const buttonElement = document.createElement('button')
     buttonElement.id = 'cadastre-toggle'
     buttonElement.type = 'button'
-    buttonElement.title = this.props.showCadastre ? 'Masquer le cadastre' : 'Afficher le cadastre'
-    buttonElement.ariaLabel = this.props.showCadastre
-      ? 'Masquer le cadastre'
-      : 'Afficher le cadastre'
+    this.buttonElement = buttonElement
+    this.syncButton()
 
     buttonElement.addEventListener('click', () => {
       const isVisible = this.props.layers.every((layerId) => {
@@ -56,15 +72,20 @@ export class MaplibreLayerVisibilityControl implements IControl {
       return
     }
     this.controlContainer.parentNode.removeChild(this.controlContainer)
+    this.buttonElement = undefined
     this.map = undefined
   }
 }
 
 export function CadastreToggle(props: CadastreToggleProps) {
   const { position, ...rest } = props
-  useControl(() => new MaplibreLayerVisibilityControl(rest), {
+  const control = useControl(() => new MaplibreLayerVisibilityControl(rest), {
     position,
   })
+
+  useEffect(() => {
+    control.setProps(rest)
+  }, [control, rest.showCadastre, rest.setShowCadastre])
 
   return null
 }

@@ -203,6 +203,26 @@ export const getSignalementTypeLabel = (type: Signalement.type) => {
   return label
 }
 
+const COORDINATES_TOLERANCE = 1e-9
+
+function getAdditionalPositions(address: IBANPlateformeNumero): Position[] {
+  const mainType = address.positionType || Position.type.ENTR_E
+
+  return (address.positions ?? [])
+    .filter(
+      ({ position, positionType }) =>
+        !(
+          (positionType || Position.type.ENTR_E) === mainType &&
+          Math.abs(position.coordinates[0] - address.lon) < COORDINATES_TOLERANCE &&
+          Math.abs(position.coordinates[1] - address.lat) < COORDINATES_TOLERANCE
+        ),
+    )
+    .map(({ position, positionType }) => ({
+      point: { type: 'Point', coordinates: [...position.coordinates] },
+      type: positionType || Position.type.ENTR_E,
+    }))
+}
+
 export function getExistingLocation(
   address: any,
 ): ExistingNumero | ExistingVoie | ExistingToponyme {
@@ -247,6 +267,8 @@ export function getExistingLocation(
           },
           type: address.positionType,
         },
+        // `position` est la position principale de la BAN ; les autres sont conservées ici.
+        additionalPositions: getAdditionalPositions(address),
         parcelles: address.parcelles,
         toponyme: {
           type: ExistingLocation.type.VOIE,

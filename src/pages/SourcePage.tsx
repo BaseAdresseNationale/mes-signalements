@@ -1,13 +1,15 @@
 import React, { useContext } from 'react'
 import { SignalementBrowser } from '../composants/common/SignalementBrowser'
 import SourceContext from '../contexts/source.context'
-import { BrowserFilter } from '../composants/common/SignalementBrowser/types'
+import { BrowserFilter, BrowserTabId } from '../composants/common/SignalementBrowser/types'
 import { useLoaderData } from 'react-router-dom'
 
 export function SourcePage() {
   const { source } = useContext(SourceContext)
-  const { initialFilters } = useLoaderData() as {
+  const { initialFilters, initialTab, initialPage } = useLoaderData() as {
     initialFilters: BrowserFilter
+    initialTab: BrowserTabId
+    initialPage: number
   }
   const sourceOption = source ? [{ value: source.id, label: source.nom }] : []
 
@@ -20,6 +22,8 @@ export function SourcePage() {
     <SignalementBrowser
       fromSource={{ value: source.id, label: source.nom }}
       initialFilters={initialFiltersWithSource}
+      initialTab={initialTab}
+      initialPage={initialPage}
     />
   ) : null
 }

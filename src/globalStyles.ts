@@ -8,6 +8,78 @@ const GlobalStyle = createGlobalStyle`
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
   }
+
+  /* Récapitulatif de signalement : on n'imprime que le contenu du drawer, sur toute la page */
+  body.print-recap {
+    .base-layout {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .base-layout > main {
+      display: block;
+    }
+
+    .map-wrapper {
+      position: static;
+      height: auto;
+      overflow: visible;
+    }
+
+    .maplibregl-map,
+    .adresse-search {
+      display: none !important;
+    }
+
+    [role='complementary'] {
+      position: static;
+      width: 100%;
+      height: auto;
+      padding: 0;
+      box-shadow: none;
+    }
+
+    [role='complementary'] > .fr-btn--close {
+      display: none;
+    }
+
+    [role='complementary'] .content {
+      margin-top: 0;
+      overflow: visible;
+    }
+
+    .react-modal-sheet-root {
+      position: static !important;
+      width: 100% !important;
+      height: auto !important;
+      max-height: none !important;
+      overflow: visible !important;
+      transform: none !important;
+    }
+
+    .react-modal-sheet-backdrop,
+    .react-modal-sheet-header {
+      display: none !important;
+    }
+
+    .react-modal-sheet-container {
+      position: static !important;
+      width: 100% !important;
+      height: auto !important;
+      max-height: none !important;
+      overflow: visible !important;
+      transform: none !important;
+    }
+
+    .react-modal-sheet-content {
+      position: static !important;
+      height: auto !important;
+      max-height: none !important;
+      overflow: visible !important;
+      transform: none !important;
+    }
+  }
 }
 
 /**

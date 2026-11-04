@@ -20,6 +20,8 @@ import { PanoramaxViewerPage } from './pages/PanoramaxViewerPage'
 import { ProconnectCallbackPage } from './pages/ProconnectCallbackPage'
 import { getInitialFilter } from './utils/signalement-browser.utils'
 import { SourceSettingsPage } from './pages/SourceSettingsPage'
+import { ReportPage } from './pages/ReportPage'
+import { fetchReportById } from './utils/report.utils'
 
 import 'maplibre-gl/dist/maplibre-gl.css'
 
@@ -170,6 +172,22 @@ const router = createHashRouter([
         <StatsPage />
       </GlobalLayout>
     ),
+  },
+  {
+    path: '/report/:idReport',
+    element: (
+      <GlobalLayout showDrawer>
+        <ReportPage />
+      </GlobalLayout>
+    ),
+    loader: async ({ params }) => {
+      try {
+        return { report: await fetchReportById(params.idReport as string) }
+      } catch (error) {
+        console.error('Unable to load report:', error)
+        return redirect('/')
+      }
+    },
   },
   {
     path: '/panoramax/:pictureId',

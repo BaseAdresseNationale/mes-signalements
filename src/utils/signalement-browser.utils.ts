@@ -1,11 +1,30 @@
 import { getCommune, getDepartement } from '../api/api-geo'
+import { SourcesService } from '../api/signalement'
 import { SelectOptionType } from '../composants/common/MuiSelectInput'
 import {
   alertFilterTypesOptions,
   signalementFilterStatusOptions,
   signalementFilterTypesOptions,
 } from '../composants/common/SignalementBrowser/FiltersModal'
-import { BrowserFilter } from '../composants/common/SignalementBrowser/types'
+import { BrowserFilter, BrowserTabId } from '../composants/common/SignalementBrowser/types'
+
+// HashRouter stores the route and its search params inside window.location.hash.
+// Updating it through the History API avoids re-triggering react-router's loaders.
+export function updateHashSearchParams(updates: Record<string, string | null>) {
+  const url = new URL(window.location.href)
+  const [hashPath, hashSearch = ''] = (url.hash.startsWith('#') ? url.hash.slice(1) : '').split('?')
+  const params = new URLSearchParams(hashSearch)
+  Object.entries(updates).forEach(([key, value]) => {
+    if (value === null) {
+      params.delete(key)
+    } else {
+      params.set(key, value)
+    }
+  })
+  const search = params.toString()
+  url.hash = '#' + (hashPath || '/') + (search ? '?' + search : '')
+  window.history.replaceState(window.history.state, '', url.toString())
+}
 
 export function resolveOptions<T extends string>(
   values: string[] | null,
@@ -59,19 +78,45 @@ export async function resolveDepartements(
   }
 }
 
+export async function resolveSources(values: string[] | null): Promise<SelectOptionType<string>[]> {
+  if (!values) {
+    return []
+  }
+
+  try {
+    const allSources = await SourcesService.getSources()
+    return values
+      .map((value) => allSources.find((source) => source.id === value))
+      .filter((source): source is NonNullable<typeof source> => source !== undefined)
+      .map((source) => ({ value: source.id, label: source.nom }))
+  } catch (error) {
+    console.error('Error fetching sources data:', error)
+    return []
+  }
+}
+
 export async function getInitialFilter({ request }: { request: Request }): Promise<{
   initialFilters: BrowserFilter
+  initialTab: BrowserTabId
+  initialPage: number
 }> {
   const url = new URL(request.url)
+
+  const initialTab: BrowserTabId =
+    url.searchParams.get('tab') === 'alerts' ? 'alerts' : 'signalements'
+  const pageParam = Number(url.searchParams.get('page'))
+  const initialPage = Number.isInteger(pageParam) && pageParam > 1 ? pageParam : 1
 
   const communesParam = url.searchParams.get('communes')?.split(',') || null
   const departementsParam = url.searchParams.get('departements')?.split(',') || null
   const statusParam = url.searchParams.get('status')?.split(',') || null
   const signalementTypesParam = url.searchParams.get('signalementTypes')?.split(',') || null
   const alertTypesParam = url.searchParams.get('alertTypes')?.split(',') || null
-  const [communes, departements] = await Promise.all([
+  const sourcesParam = url.searchParams.get('sources')?.split(',') || null
+  const [communes, departements, sources] = await Promise.all([
     resolveCommunes(communesParam),
     resolveDepartements(departementsParam),
+    resolveSources(sourcesParam),
   ])
 
   const initialFilters = {
@@ -80,8 +125,8 @@ export async function getInitialFilter({ request }: { request: Request }): Promi
     alertTypes: resolveOptions(alertTypesParam, alertFilterTypesOptions),
     communes,
     departements,
-    sources: [], // Source filter is only applied on SourcePage and options are loaded in the component, so we can ignore URL params for sources
+    sources,
   } as BrowserFilter
 
-  return { initialFilters }
+  return { initialFilters, initialTab, initialPage }
 }
