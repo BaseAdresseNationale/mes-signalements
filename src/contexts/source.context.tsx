@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { OpenAPI, Source, SourcesService } from '../api/signalement'
+import type { ApiRequestOptions } from '../api/signalement/core/ApiRequestOptions'
 import {
   getValueFromLocalStorage,
   LocalStorageKeys,
@@ -12,6 +13,14 @@ interface SourceContextValue {
   setSource: (source: Source | undefined) => void
   fetchSourceByToken: (sourceToken: string) => Promise<void>
 }
+
+// L'API traite tout Bearer de ces routes comme un token client et répond 401 pour un token de source.
+const CLIENT_ONLY_ROUTES = ['/signalements/{idSignalement}', '/alerts/{idAlert}']
+
+const buildSourceTokenResolver =
+  (sourceToken: string) =>
+  async ({ method, url }: ApiRequestOptions) =>
+    method === 'GET' && CLIENT_ONLY_ROUTES.includes(url) ? '' : sourceToken
 
 export const SourceContext = createContext<SourceContextValue>({
   fetchSourceByToken: async () => {},
@@ -32,7 +41,7 @@ export function SourceContextProvider(props: { children: React.ReactNode }) {
   const fetchSourceByToken = useCallback(async (sourceToken: string) => {
     const source = await SourcesService.getSourceByToken(sourceToken)
     setSource(source)
-    Object.assign(OpenAPI, { TOKEN: sourceToken })
+    Object.assign(OpenAPI, { TOKEN: buildSourceTokenResolver(sourceToken) })
     setValueInLocalStorage(LocalStorageKeys.SOURCE_TOKEN, sourceToken)
   }, [])
 
